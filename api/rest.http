@@ -1,0 +1,63 @@
+@baseUrl = http://localhost:3333
+
+### API Status
+GET {{baseUrl}}/
+
+### Auth
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "João Felipe",
+  "email": "joao@example.com",
+  "password": "password123"
+}
+
+###
+
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "joao@example.com",
+  "password": "password123"
+}
+
+### Capture token from login response
+@token = {{login.response.body.token}}
+
+### Users (Protected)
+GET {{baseUrl}}/users
+Authorization: Bearer {{token}}
+
+### Get User by ID
+GET {{baseUrl}}/users/REPLACE_WITH_USER_ID
+Authorization: Bearer {{token}}
+
+### Products
+POST {{baseUrl}}/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "iPhone 15",
+  "price": 5999.99
+}
+
+### List My Products
+GET {{baseUrl}}/products
+Authorization: Bearer {{token}}
+
+### Update Product
+PATCH {{baseUrl}}/products/REPLACE_WITH_PRODUCT_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "price": 5499.99
+}
+
+### Delete Product
+DELETE {{baseUrl}}/products/REPLACE_WITH_PRODUCT_ID
+Authorization: Bearer {{token}}

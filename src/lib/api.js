@@ -1,0 +1,92 @@
+const API_URL = 'http://localhost:3333';
+
+export async function apiRequest(endpoint, options = {}) {
+  let token = null;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('token');
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers,
+  };
+
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    let data = null;
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.warn('Falha ao processar JSON da resposta:', jsonError);
+      }
+    }
+
+    if (!response.ok) {
+      const errorMessage = (data && data.message) || `Erro ${response.status}: ${response.statusText}`;
+      
+      // Log detalhado para depuração
+      console.group(`API Error: ${options.method || 'GET'} ${endpoint}`);
+      console.error('Status:', response.status);
+      console.error('Message:', errorMessage);
+      console.error('Body:', data);
+      console.groupEnd();
+
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+      console.error('Erro de conexão com a API. Verifique se o backend está rodando em:', API_URL);
+      throw new Error('Não foi possível conectar ao servidor. Verifique sua conexão.');
+    }
+    throw error;
+  }
+}
+
+export const api = {
+  login: (credentials) => apiRequest('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  }),
+  register: (userData) => apiRequest('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(userData),
+  }),
+  getMe: () => apiRequest('/auth/me'),
+  getProducts: () => apiRequest('/pedidos'),
+  createProduct: (data) => apiRequest('/pedidos', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateProduct: (id, data) => apiRequest(`/pedidos/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  deleteProduct: (id) => apiRequest(`/pedidos/${id}`, {
+    method: 'DELETE',
+  }),
+  getUsers: () => apiRequest('/users'),
+  createUser: (userData) => apiRequest('/users', {
+    method: 'POST',
+    body: JSON.stringify(userData),
+  }),
+  updateUser: (id, userData) => apiRequest(`/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(userData),
+  }),
+  deleteUser: (id) => apiRequest(`/users/${id}`, {
+    method: 'DELETE',
+  }),
+};
