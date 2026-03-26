@@ -87,7 +87,7 @@ export default function LoginPage() {
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                "Entrar no Painel"
+                "Entrar"
               )}
             </Button>
           </form>

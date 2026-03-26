@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ShoppingBag, LogIn } from "lucide-react";
+import { ShoppingBag, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import Onboarding from "@/components/Onboarding";
 import { useAuth } from "@/context/AuthContext";
@@ -49,11 +49,21 @@ export default function Home() {
 
           <div className="flex items-center gap-2">
             {user ? (
-              <Link href="/pedidos">
-                <Button variant="ghost" className="rounded-full px-4 text-sm font-medium">
-                  Meus Pedidos
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                {user.isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10">
+                      <ShieldCheck className="h-4 w-4" />
+                      Painel Admin
+                    </Button>
+                  </Link>
+                )}
+                <Link href="/pedidos">
+                  <Button variant="ghost" className="rounded-full px-4 text-sm font-medium">
+                    Meus Pedidos
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <Link href="/login">
                 <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium">

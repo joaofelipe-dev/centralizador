@@ -7,7 +7,9 @@ import { authRoutes } from './modules/auth/auth.routes.js'
 import { productRoutes } from './modules/product/product.routes.js'
 import 'dotenv/config'
 
-export const app = fastify()
+export const app = fastify({
+  logger: true,
+})
 
 app.register(cors, {
   origin: true,
