@@ -5,7 +5,7 @@ export const createUserSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().optional(),
   password: z.string().min(6),
-  stores: z.array(z.string()).min(1),
+  storeIds: z.array(z.string()).min(1),
   isAdmin: z.boolean().optional().default(false),
 })
 
@@ -14,7 +14,7 @@ export const updateUserSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email().optional(),
   password: z.string().min(6).optional(),
-  stores: z.array(z.string()).optional(),
+  storeIds: z.array(z.string()).optional(),
   isAdmin: z.boolean().optional(),
 })
 

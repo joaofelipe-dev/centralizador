@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingBag, ShieldCheck, LogOut, Loader2, ArrowLeft } from "lucide-react";
+import { ShoppingBag, ShieldCheck, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import StoreSelector from "@/components/StoreSelector";
 import OrderForm from "@/components/OrderForm";
-import { stores } from "@/constants/stores";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,9 +31,7 @@ export default function PedidosFlowPage() {
     );
   }
 
-  const permittedStores = user?.stores?.length
-    ? stores.filter((store) => user.stores.includes(store.name))
-    : [];
+  const permittedStores = user?.stores || [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -63,9 +60,9 @@ export default function PedidosFlowPage() {
                 Painel Admin
               </Button>
             )}
-            
+
             <div className="h-8 w-[1px] bg-white/10 mx-2 hidden md:block" />
-            
+
             <div className="text-right hidden sm:block">
               <p className="text-xs font-medium text-white">{user.name}</p>
               <p className="text-[10px] text-muted-foreground">{user.username}</p>

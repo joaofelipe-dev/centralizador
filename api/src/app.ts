@@ -5,6 +5,9 @@ import { errorHandler } from './utils/error-handler.js'
 import { userRoutes } from './modules/user/user.routes.js'
 import { authRoutes } from './modules/auth/auth.routes.js'
 import { productRoutes } from './modules/product/product.routes.js'
+import { categoryRoutes } from './modules/category/category.routes.js'
+import { storeRoutes } from './modules/store/store.routes.js'
+import { orderRoutes } from './modules/order/order.routes.js'
 import 'dotenv/config'
 
 export const app = fastify({
@@ -29,4 +32,7 @@ app.get('/', async () => {
 // Routes
 app.register(authRoutes, { prefix: '/auth' })
 app.register(userRoutes, { prefix: '/users' })
-app.register(productRoutes, { prefix: '/pedidos' })
+app.register(productRoutes, { prefix: '/products' })
+app.register(categoryRoutes, { prefix: '/categories' })
+app.register(storeRoutes, { prefix: '/stores' })
+app.register(orderRoutes, { prefix: '/orders' })

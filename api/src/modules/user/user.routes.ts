@@ -9,13 +9,11 @@ export async function userRoutes(app: FastifyInstance) {
   const userService = new UserService(userRepository)
   const userController = new UserController(userService)
 
-  // Public (ou pode ser admin também se preferir)
-  app.post('/', (request, reply) => userController.create(request, reply))
-
   // Protected (Admin only)
   app.register(async (protectedApp) => {
     protectedApp.addHook('preHandler', adminMiddleware)
     
+    protectedApp.post('/', (request, reply) => userController.create(request, reply))
     protectedApp.get('/', (request, reply) => userController.list(request, reply))
     protectedApp.get('/:id', (request, reply) => userController.findById(request, reply))
     protectedApp.patch('/:id', (request, reply) => userController.update(request, reply))

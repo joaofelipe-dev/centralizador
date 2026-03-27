@@ -9,18 +9,17 @@ export async function productRoutes(app: FastifyInstance) {
   const productService = new ProductService(productRepository)
   const productController = new ProductController(productService)
 
-  // Rotas de leitura e criação podem ser para usuários autenticados
+  // Rotas de leitura (Authenticated)
   app.register(async (authApp) => {
     authApp.addHook('preHandler', authMiddleware)
-    
-    authApp.post('/', (request, reply) => productController.create(request, reply))
     authApp.get('/', (request, reply) => productController.list(request, reply))
   })
 
-  // Rotas de edição e exclusão (Admin only)
+  // Rotas de criação, edição e exclusão (Admin only)
   app.register(async (adminApp) => {
     adminApp.addHook('preHandler', adminMiddleware)
     
+    adminApp.post('/', (request, reply) => productController.create(request, reply))
     adminApp.patch('/:id', (request, reply) => productController.update(request, reply))
     adminApp.delete('/:id', (request, reply) => productController.delete(request, reply))
   })

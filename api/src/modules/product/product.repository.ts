@@ -7,17 +7,24 @@ export class ProductRepository {
   }
 
   async findById(id: string) {
-    return prisma.product.findUnique({ where: { id } })
+    return prisma.product.findUnique({
+      where: { id },
+      include: { category: true }
+    })
   }
 
   async listByUser(userId: string) {
-    return prisma.product.findMany({ where: { userId } })
+    return prisma.product.findMany({
+      include: { category: true },
+      orderBy: { name: 'asc' }
+    })
   }
 
   async update(id: string, data: UpdateProductInput) {
     return prisma.product.update({
       where: { id },
       data,
+      include: { category: true }
     })
   }
 

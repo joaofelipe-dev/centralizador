@@ -1,64 +1,138 @@
 import { prisma } from '../src/lib/prisma.js'
 import bcrypt from 'bcryptjs'
 
-const productsData = {
-    "Legumes": [
-        { name: "Acelga", category: "Legumes", price: 25.90, stock: 10 },
-        { name: "Abóbora Baby", category: "Legumes", price: 1.50, stock: 10 },
-        { name: "Abóbora para Doce", category: "Legumes", price: 4.20, stock: 10 },
-        { name: "Abobrinha Caipira", category: "Legumes", price: 15.00, stock: 10 },
-    ],
-    "Frutas": [
-        { name: "Banana Nanica", category: "Frutas", price: 25.90, stock: 10 },
-        { name: "Maçã Gala", category: "Frutas", price: 1.50, stock: 10 },
-        { name: "Laranja Pera", category: "Frutas", price: 4.20, stock: 10 },
-        { name: "Uva Thompson", category: "Frutas", price: 15.00, stock: 10 },
-    ],
-    "Verduras": [
-        { name: "Alface Crespa", category: "Verduras", price: 3.50, stock: 10 },
-        { name: "Couve Manteiga", category: "Verduras", price: 4.00, stock: 10 },
-        { name: "Espinafre", category: "Verduras", price: 5.20, stock: 10 },
+const storesData = [
+  { id: "18", name: "Av. Portugal", address: "Av. Portugal, 1397" },
+  { id: "20", name: "Henrique Dumont", address: "Rua Henrique Dumont, 1365" },
+  { id: "16", name: "Tamandaré", address: "Rua Tamandaré, 977" },
+  { id: "15", name: "Sertãozinho", address: "Rua Humberto Hortolan, 970" },
+  { id: "17", name: "Nova Aliança", address: "Rua Professor Roberto José, 200" },
+  { id: "14", name: "Jardim Botânico", address: "Av. Carlos Eduardo de Gasperi Consoni, 1392" },
+  { id: "8", name: "San Marco", address: "Estr. da Limeirinha, 1350" },
+  { id: "21", name: "Jardim Califórnia", address: "Av. Califórnia, 747" },
+  { id: "19", name: "Centro de Distribuição", address: "Av. Celso Daniel, 505" }
+]
+
+const productCategories = [
+  {
+    category: "Legumes",
+    products: [
+      "Acelga", "Abóbora Baby", "Abóbora p/ Doce", "Moranga", "Moranga Baby", "Mugango", "Cabotiá",
+      "Abobrinha Caipira", "Abobrinha Italiana", "Abobrinha Menina", "Abobrinha Paulista", "Abobrinha Clarita",
+      "Alcachofra", "Alcachofra Baby", "Alho descascado", "Alho roxo",
+      "Batata Doce", "Batata Monalisa", "Batata Asterix", "Batata Binge", "Batata Yacon",
+      "Berinjela", "Beterraba", "Beterraba Média", "Beterraba Cozida",
+      "Cará", "Caxi", "Cebola Branca", "Cebola Roxa", "Cenoura", "Cenoura Média", "Chuchu",
+      "Couve-flor", "Couve-flor Roxa", "Couve-flor Band",
+      "Ervilha Grão", "Ervilha Torta", "Gengibre", "Gengibre Miúdo",
+      "Inhame", "Inhame Miúdo", "Jiló Verde", "Jiló Branco",
+      "Mandioca", "Mandioquinha", "Maxixe", "Pepino", "Pimentas", "Pimentões", "Quiabo", "Quiabo Band",
+      "Repolho Verde", "Repolho Roxo", "Tomates", "Vagem", "Milho Doce", "Feijão de Corda"
     ]
-}
+  },
+  {
+    category: "Frutas",
+    products: [
+      "Abacate", "Avocado", "Abacaxi", "Acerola", "Achachairu", "Abiu", "Ameixas", "Amora", "Atemoia",
+      "Bananas", "Cacau", "Caju", "Cajamanga", "Caqui", "Carambola", "Cereja", "Coco Verde", "Coco Seco",
+      "Cupuaçu", "Damasco", "Figo", "Framboesa", "Fruta do Conde", "Goiaba Branca", "Goiaba Vermelha",
+      "Granadila", "Groselha", "Graviola", "Jabuticaba", "Jaca", "Jambo", "Kiwi", "Laranja", "Lichia",
+      "Limões", "Maçã", "Mamão", "Manga", "Mangostim", "Maracujá Doce", "Maracujá Azedo", "Melancia", "Melões",
+      "Milho Verde", "Mirtilho", "Morango", "Nectarina", "Nêspera", "Noni", "Peras", "Pêssegos", "Physalis",
+      "Pinha", "Pinhão", "Pitaya", "Pitanga", "Rambutan", "Romã", "Sapoti", "Seriguela", "Tamarindo", "Tamarillo",
+      "Tangerinas", "Umbu", "Uvas", "Pequi", "Uva Mista", "Uva Nubia", "Uva Isis", "Uva Ouro", "Uva Estela",
+      "Mix Frutas Vermelhas", "Água de Coco (500ml)", "Água de Coco (1L)"
+    ]
+  },
+  {
+    category: "Verduras",
+    products: [
+      "Agrião", "Agrião Hidro", "Agrião Lavado", "Alfaces", "Alho-poró", "Almeirão", "Almeirão Lavado",
+      "Brócolis Comum", "Brócolis Ninja", "Brócolis Lavado", "Cebolinha", "Cebolinha Lavada", "Cheiro Verde",
+      "Chicória", "Chicória Lavada", "Couve", "Couve Lavada", "Coentro", "Coentro Industrial", "Coentro Lavado",
+      "Erva Doce", "Espinafre", "Espinafre Lavado", "Hortelã", "Hortelã Lavado", "Nabo", "Rabanete",
+      "Rúcula", "Rúcula Selvática", "Rúcula Baby", "Rúcula Lavada", "Salsa", "Salsa Lavada", "Salsão"
+    ]
+  },
+  {
+    category: "Ervas e Especiais",
+    products: [
+      "Açafrão", "Alecrim", "Manjericão", "Tomilho", "Orégano", "Hortelã", "Melissa", "Menta", "Capim Cidreira",
+      "Folha de Uva", "Folha de Beterraba", "Folha de Cenoura", "Couve Kale", "Couve Bruxelas",
+      "Broto de Bambu", "Nirá", "Mizuna", "Pak Choi", "Tofu", "Raiz Forte", "Flores Comestíveis",
+      "Mini Alface", "Mini Crespa"
+    ]
+  },
+  {
+    category: "Diversos",
+    products: [
+      "Shimeji", "Shitake", "Paris", "Porto Belo", "Cogumelo Mix", "Hiratake", "Shimeji Salmão",
+      "Aspargos Verde", "Aspargos Branco", "Endívia", "Endívia Roxa", "Moyashi", "Palmito Pupunha",
+      "Hortaliças Lavadas", "Bandejados"
+    ]
+  }
+]
 
 async function main() {
   console.log('Seed started...')
 
-  // 1. Create a default user
   const username = 'admin'
-  let user = await prisma.user.findUnique({ where: { username } })
 
-  if (!user) {
-    const hashedPassword = await bcrypt.hash('admin123', 10)
-    user = await prisma.user.create({
-      data: {
-        username,
-        name: 'Admin',
-        email: 'admin@admin.com',
-        password: hashedPassword,
-        isAdmin: true,
-        stores: JSON.stringify(['Av. Portugal', 'Henrique Dumont']),
-      }
+  // 1. Clear existing data safely (order matters due to FKs)
+  await prisma.product.deleteMany({})
+  await prisma.category.deleteMany({})
+  await prisma.user.deleteMany({ where: { username } })
+  await prisma.store.deleteMany({})
+
+  // 2. Create Stores
+  const createdStores = []
+  for (const s of storesData) {
+    const store = await prisma.store.create({
+      data: s
     })
-    console.log('Admin user created with stores')
+    createdStores.push(store)
   }
+  console.log(`Created ${createdStores.length} stores`)
 
-  // 2. Flatten and insert products
-  const allProducts = Object.values(productsData).flat()
+  const hashedPassword = await bcrypt.hash('admin123', 10)
+  const user = await prisma.user.create({
+    data: {
+      username,
+      name: 'Admin',
+      email: 'admin@admin.com',
+      password: hashedPassword,
+      isAdmin: true,
+      stores: {
+        connect: createdStores.map(s => ({ id: s.id }))
+      }
+    }
+  })
+  console.log('Admin user created and linked to all stores')
+
+  // 3. Re-seed products & categories
+  // (No need to delete products/categories again here)
   
-  for (const product of allProducts) {
-    await prisma.product.create({
-      data: {
-        name: product.name,
-        price: product.price,
-        category: product.category,
-        stock: product.stock,
-        userId: user.id
-      }
+  for (const item of productCategories) {
+    const category = await prisma.category.create({
+      data: { name: item.category }
     })
+
+    console.log(`Category created: ${category.name}`)
+
+    for (const productName of item.products) {
+      await prisma.product.create({
+        data: {
+          name: productName,
+          price: 0,
+          stock: 999,
+          categoryId: category.id,
+          userId: user.id
+        }
+      })
+    }
+    console.log(`Inserted ${item.products.length} products for ${item.category}`)
   }
 
-  console.log(`${allProducts.length} products inserted.`)
   console.log('Seed finished successfully.')
 }
 
@@ -66,7 +140,4 @@ main()
   .catch((e) => {
     console.error(e)
     process.exit(1)
-  })
-  .finally(async () => {
-    // No need to disconnect explicitly as it's a script
   })

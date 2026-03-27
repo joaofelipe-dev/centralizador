@@ -2,14 +2,14 @@ import { z } from 'zod'
 
 export const createProductSchema = z.object({
   name: z.string().min(2),
-  category: z.string().optional(),
+  categoryId: z.string().uuid(),
   price: z.number().positive(),
   stock: z.number().int().nonnegative().optional(),
 })
 
 export const updateProductSchema = z.object({
   name: z.string().min(2).optional(),
-  category: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
   price: z.number().positive().optional(),
   stock: z.number().int().nonnegative().optional(),
 })

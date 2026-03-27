@@ -3,94 +3,60 @@ import { CreateUserInput, UpdateUserInput } from './user.schema'
 
 export class UserRepository {
   async create(data: CreateUserInput) {
-    const storesJson = JSON.stringify(data.stores)
+    const { storeIds, ...userData } = data
     return prisma.user.create({
       data: {
-        ...data,
-        stores: storesJson,
+        ...userData,
+        stores: {
+          connect: storeIds.map((id: string) => ({ id })),
+        },
       },
+      include: { stores: true },
     })
   }
 
   async findById(id: string) {
-    const user = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        email: true,
-        isAdmin: true,
-        stores: true,
-        createdAt: true,
-      },
+      include: { stores: true },
     })
-    if (user) {
-      return {
-        ...user,
-        stores: JSON.parse(user.stores || '[]'),
-      }
-    }
-    return null
   }
 
   async findByUsername(username: string) {
-    const user = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { username: username.toLowerCase() },
+      include: { stores: true },
     })
-    if (user) {
-      return {
-        ...user,
-        stores: JSON.parse(user.stores || '[]'),
-      }
-    }
-    return null
   }
 
   async findByEmail(email: string) {
-    return prisma.user.findUnique({ where: { email } })
+    return prisma.user.findUnique({ 
+      where: { email },
+      include: { stores: true },
+    })
   }
 
   async list() {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        email: true,
-        isAdmin: true,
-        stores: true,
-        createdAt: true,
-      },
+    return prisma.user.findMany({
+      include: { stores: true },
     })
-    return users.map((u) => ({
-      ...u,
-      stores: JSON.parse(u.stores || '[]'),
-    }))
   }
 
   async update(id: string, data: UpdateUserInput) {
-    const updateData: any = { ...data }
-    if (data.stores) {
-      updateData.stores = JSON.stringify(data.stores)
-    }
-    const user = await prisma.user.update({
+    const { storeIds, ...updateData } = data
+    
+    return prisma.user.update({
       where: { id },
-      data: updateData,
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        email: true,
-        isAdmin: true,
-        stores: true,
-        createdAt: true,
+      data: {
+        ...updateData,
+        ...(storeIds && {
+          stores: {
+            set: storeIds.map((sid: string) => ({ id: sid })),
+          },
+        }),
       },
+      include: { stores: true },
     })
-    return {
-      ...user,
-      stores: JSON.parse(user.stores || '[]'),
-    }
   }
 
   async delete(id: string) {

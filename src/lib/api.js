@@ -65,16 +65,16 @@ export const api = {
     body: JSON.stringify(userData),
   }),
   getMe: () => apiRequest('/auth/me'),
-  getProducts: () => apiRequest('/pedidos'),
-  createProduct: (data) => apiRequest('/pedidos', {
+  getProducts: () => apiRequest('/products'),
+  createProduct: (data) => apiRequest('/products', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateProduct: (id, data) => apiRequest(`/pedidos/${id}`, {
+  updateProduct: (id, data) => apiRequest(`/products/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
-  deleteProduct: (id) => apiRequest(`/pedidos/${id}`, {
+  deleteProduct: (id) => apiRequest(`/products/${id}`, {
     method: 'DELETE',
   }),
   getUsers: () => apiRequest('/users'),
@@ -89,4 +89,17 @@ export const api = {
   deleteUser: (id) => apiRequest(`/users/${id}`, {
     method: 'DELETE',
   }),
+  getStores: () => apiRequest('/stores'),
+  getCategories: () => apiRequest('/categories'),
+  getOrders: (date) => apiRequest(`/orders${date ? `?date=${date}` : ''}`),
+  createOrder: (orderData) => apiRequest('/orders', {
+    method: 'POST',
+    body: JSON.stringify(orderData),
+  }),
+  getConsolidatedOrders: (date) => apiRequest(`/orders/consolidated${date ? `?date=${date}` : ''}`),
+  updateOrder: (id, data) => apiRequest(`/orders/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  apiRequest: apiRequest,
 };
