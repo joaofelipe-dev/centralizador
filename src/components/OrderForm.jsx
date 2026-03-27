@@ -15,9 +15,6 @@ const ProductRow = React.memo(({ product, categoryName, cartItem, updateField, h
         <h3 className="font-bold text-white group-hover:text-primary transition-colors whitespace-normal break-words leading-tight">
           {product.name}
         </h3>
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
-          Ref: {product.id.split('-')[0]}
-        </p>
       </div>
     </div>
 
@@ -252,7 +249,7 @@ export default function OrderForm({ store, onBack }) {
                 </div>
 
                 {category.products.map((product) => (
-                  <ProductRow 
+                  <ProductRow
                     key={product.id}
                     product={product}
                     categoryName={category.name}

@@ -83,7 +83,6 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }) {
               <div key={item.productId} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:bg-white/[0.08] transition-all">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-white group-hover:text-primary transition-colors">{item.name}</h4>
-                  <p className="text-[10px] text-muted-foreground font-mono uppercase">Ref: {item.productId.split('-')[0]}</p>
                 </div>
 
                 <div className="flex items-center gap-6">

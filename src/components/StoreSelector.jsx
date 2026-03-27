@@ -16,7 +16,7 @@ export default function StoreSelector({ onSelect, stores: assignedStores = [], r
   );
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 animate-slide-up">
+    <div className="w-full max-w-md md:max-w-xl mx-auto p-4 animate-slide-up">
       <div className="flex flex-col gap-6">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-white">Selecione sua Loja</h2>
