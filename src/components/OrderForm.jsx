@@ -86,6 +86,7 @@ export default function OrderForm({ store, onBack }) {
   const [cart, setCart] = useState({}); // { [id]: { quantity: 0, currentStock: 0 } }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -120,30 +121,35 @@ export default function OrderForm({ store, onBack }) {
   }, []);
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
     setError(null);
+    const orderItems = Object.entries(cart)
+      .filter(([_, data]) => (Number(data.quantity) || 0) > 0 || (Number(data.currentStock) || 0) > 0)
+      .map(([productId, data]) => ({
+        productId,
+        quantity: Number(data.quantity) || 0,
+        currentStock: Number(data.currentStock) || 0,
+      }));
+
+    if (orderItems.length === 0) {
+      setError('Escolha pelo menos um item para o pedido ou informe o estoque.');
+      return;
+    }
+
+    if (!isReviewing) {
+      setIsReviewing(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const orderItems = Object.entries(cart)
-        .filter(([_, data]) => (Number(data.quantity) || 0) > 0 || (Number(data.currentStock) || 0) > 0)
-        .map(([productId, data]) => ({
-          productId,
-          quantity: Number(data.quantity) || 0,
-          currentStock: Number(data.currentStock) || 0,
-        }));
-
-      if (orderItems.length === 0) {
-        throw new Error('Adicione pelo menos um item ao pedido ou informe o estoque.');
-      }
-
       const orderData = {
         storeId: store.id,
         items: orderItems,
       };
-
-      console.log('Enviando Pedido:', JSON.stringify(orderData, null, 2));
-
+      
+      console.log('Final Order Submitted:', JSON.stringify(orderData, null, 2));
       await api.createOrder(orderData);
-
       setIsSuccess(true);
     } catch (err) {
       console.error('Erro na submissão:', err);
@@ -216,7 +222,7 @@ export default function OrderForm({ store, onBack }) {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button
-            onClick={onBack}
+            onClick={isReviewing ? () => setIsReviewing(false) : onBack}
             variant="ghost"
             size="icon"
             className="h-10 w-10 rounded-full bg-secondary/50 text-white"
@@ -224,64 +230,108 @@ export default function OrderForm({ store, onBack }) {
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h2 className="text-xl font-bold text-white">{store.name}</h2>
-            <p className="text-xs text-muted-foreground">Novo Pedido de Compra</p>
+            <h2 className="text-xl font-bold text-white">{isReviewing ? "Revisar Pedido" : store.name}</h2>
+            <p className="text-xs text-muted-foreground">{isReviewing ? "Confirme os itens selecionados" : "Novo Pedido de Compra"}</p>
           </div>
         </div>
 
-        <div className="space-y-8 pb-32">
-          {categories.map((category) => (
-            <div key={category.id} className="space-y-4">
-              <div className="flex items-center gap-2 px-2">
-                {getIconForCategory(category.name)}
-                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  {category.name}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                {/* Header for Desktop */}
-                <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                  <span>Produto</span>
-                  <span className="text-center">Estoque CD</span>
-                  <span className="text-center">Estoque Atual</span>
-                  <span className="text-right pr-4">Quantidade</span>
-                </div>
-
-                {category.products.map((product) => (
-                  <ProductRow
-                    key={product.id}
-                    product={product}
-                    categoryName={category.name}
-                    cartItem={cart[product.id]}
-                    updateField={updateField}
-                    handleInputChange={handleInputChange}
-                    getProductIcon={getProductIcon}
-                  />
-                ))}
+        {isReviewing ? (
+          <div className="space-y-6 pb-32">
+            <div className="glass-card p-6 space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Resumo do Pedido
+              </h3>
+              
+              <div className="space-y-3">
+                {categories.flatMap(c => c.products).filter(p => (cart[p.id]?.quantity || 0) > 0 || (cart[p.id]?.currentStock || 0) > 0).map(product => {
+                  const item = cart[product.id];
+                  return (
+                    <div key={product.id} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 group">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">{product.name}</p>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        {item.currentStock > 0 && (
+                          <div className="text-right">
+                            <p className="text-[9px] uppercase font-bold text-muted-foreground">Estoque</p>
+                            <p className="text-sm font-mono text-white/60">{item.currentStock}</p>
+                          </div>
+                        )}
+                        <div className="text-right min-w-[60px]">
+                          <p className="text-[9px] uppercase font-bold text-primary">Pedido</p>
+                          <p className="text-sm font-mono text-white font-black">{item.quantity}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ))}
-        </div>
+
+            <Button
+              onClick={() => setIsReviewing(false)}
+              variant="outline"
+              className="w-full h-12 border-white/10 text-white hover:bg-white/5"
+            >
+              Voltar ao Catálogo
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-8 pb-32">
+            {categories.map((category) => (
+              <div key={category.id} className="space-y-4">
+                <div className="flex items-center gap-2 px-2">
+                  {getIconForCategory(category.name)}
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {category.name}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {/* Header for Desktop */}
+                  <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                    <span>Produto</span>
+                    <span className="text-center">Estoque CD</span>
+                    <span className="text-center">Estoque Atual</span>
+                    <span className="text-right pr-4">Quantidade</span>
+                  </div>
+
+                  {category.products.map((product) => (
+                    <ProductRow
+                      key={product.id}
+                      product={product}
+                      categoryName={category.name}
+                      cartItem={cart[product.id]}
+                      updateField={updateField}
+                      handleInputChange={handleInputChange}
+                      getProductIcon={getProductIcon}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {totalItems > 0 && (
           <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full max-w-sm glass h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all"
+              className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? 'bg-primary text-white' : 'glass'}`}
             >
               {isSubmitting ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <div className="flex items-center justify-between w-full px-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary text-white h-7 w-7 rounded-full flex items-center justify-center text-xs">
+                    <div className={`${isReviewing ? 'bg-white text-primary' : 'bg-primary text-white'} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}>
                       {totalItems}
                     </div>
-                    <span className="text-white">Enviar Pedido</span>
+                    <span className={isReviewing ? 'text-white' : 'text-white'}>{isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}</span>
                   </div>
-                  <Send className="h-5 w-5 text-primary" />
+                  {isReviewing ? <Send className="h-5 w-5 text-white" /> : <Send className="h-5 w-5 text-primary" />}
                 </div>
               )}
             </Button>
