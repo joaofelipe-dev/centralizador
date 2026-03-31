@@ -1,14 +1,12 @@
-import { ShoppingBag } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 export const HeaderLogo = () => {
     return (
         <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
-                <ShoppingBag className="h-5 w-5" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white whitespace-nowrap">
-                Centralizador <span className="text-primary">Pedidos</span>
-            </span>
+            <Link href="/">
+                <Image src="/logo.svg" width={0} height={0} sizes="100vw" alt="Logo" className="w-full max-w-40 md:max-w-60 h-auto drop-shadow-[0_2px_2px_rgba(255,50,50,1)] " />
+            </Link>
         </div>
     )
 }

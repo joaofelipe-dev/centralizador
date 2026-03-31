@@ -8,6 +8,7 @@ import OrderForm from "@/components/OrderForm";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Header } from "@/components/Header/Header";
 
 export default function PedidosFlowPage() {
   const [selectedStore, setSelectedStore] = useState(null);
@@ -36,49 +37,7 @@ export default function PedidosFlowPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
-                <ShoppingBag className="h-5 w-5" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white whitespace-nowrap">
-                Central <span className="text-primary">Pedidos</span>
-              </span>
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {user?.isAdmin && (
-              <Button
-                onClick={() => router.push('/admin')}
-                variant="ghost"
-                className="hidden md:flex items-center gap-2 rounded-full px-4 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-white transition-all"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Painel Admin
-              </Button>
-            )}
-
-            <div className="h-8 w-[1px] bg-white/10 mx-2 hidden md:block" />
-
-            <div className="text-right hidden sm:block">
-              <p className="text-xs font-medium text-white">{user.name}</p>
-              <p className="text-[10px] text-muted-foreground">{user.username}</p>
-            </div>
-
-            <Button
-              onClick={logout}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-1 flex flex-col py-8 pb-32">
         {!selectedStore ? (

@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ShoppingBag, Lock, Mail, Loader2, User, UserRound } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import Link from "next/link";
+import { Header } from "@/components/Header/Header";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -30,13 +31,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md space-y-8">
         {/* Logo/Header */}
-        <div className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white shadow-xl shadow-primary/20">
-            <ShoppingBag className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Centralizador de Pedidos</h1>
-          <p className="text-muted-foreground">Acesse sua conta</p>
-        </div>
+       <Header className="justify-center">
+          <Header.Logo className=""/>
+        </Header>
 
         {/* Login Card */}
         <div className="glass-card rounded-2xl p-8 shadow-2xl">
