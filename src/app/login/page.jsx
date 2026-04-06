@@ -28,16 +28,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-background">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-linear-to-br from-background to-emerald-500/30">
       <div className="w-full max-w-md space-y-8">
         {/* Logo/Header */}
-       <Header className="justify-center">
+       <Header className="justify-center bg-transparent border-none">
           <Header.Logo className=""/>
         </Header>
 
         {/* Login Card */}
-        <div className="glass-card rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="glass-card rounded-2xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6 ">
             {error && (
               <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
                 {error}

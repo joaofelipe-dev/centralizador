@@ -118,6 +118,10 @@ export default function AdminPage() {
     }
   };
 
+  const openDateModal = () => {
+    
+  }
+
   if (loading || isDataLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#050505]">
@@ -137,13 +141,14 @@ export default function AdminPage() {
             <Button onClick={() => router.push('/pedidos')} variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/10 transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-bold tracking-tight text-white drop-shadow-sm">Painel Gestão Central</h1>
+            <h1 className="text-lg font-bold tracking-tight text-white drop-shadow-sm">Painel Administrativo</h1>
           </div>
           
           <div className="flex items-center gap-4">
             <input 
               type="date" 
-              value={filterDate} 
+              value={filterDate}
+              onClick={openDateModal}
               onChange={(e) => setFilterDate(e.target.value)} 
               className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-medium"
             />
@@ -160,7 +165,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-[1600px] mx-auto w-full p-6 space-y-12 animate-slide-up">
+      <main className="flex-1 max-w-400 mx-auto w-full p-6 space-y-12 animate-slide-up">
         {/* Stats */}
         <StatsGallery stats={stats} />
 
