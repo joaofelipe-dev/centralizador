@@ -1,6 +1,7 @@
 import { OrderRepository } from './order.repository.js'
-import { CreateOrderInput } from './order.schema.js'
+import { CreateOrderInput, UpdateOrderInput } from './order.schema.js'
 import { UserRepository } from '../user/user.repository.js'
+import { UserRole } from '../../middlewares/auth.js'
 
 export class OrderService {
   constructor(
@@ -8,9 +9,8 @@ export class OrderService {
     private userRepository: UserRepository
   ) {}
 
-  async create(userId: string, isAdmin: boolean, data: CreateOrderInput) {
-    // RBAC: Standard users can only place orders for stores they are linked to
-    if (!isAdmin) {
+  async create(userId: string, role: UserRole, data: CreateOrderInput) {
+    if (role === 'DEFAULT') {
       const user = await this.userRepository.findById(userId)
       const hasAccess = user?.stores.some(s => s.id === data.storeId)
       
@@ -22,14 +22,13 @@ export class OrderService {
     return this.orderRepository.create(userId, data)
   }
 
-  async list(dateLabel?: string) {
-    return this.orderRepository.list(dateLabel)
+  async list(dateLabel?: string, statusFilter?: string) {
+    return this.orderRepository.list(dateLabel, statusFilter)
   }
 
   async getConsolidatedData(dateLabel?: string) {
     const rawItems = await this.orderRepository.getConsolidatedData(dateLabel)
     
-    // Grouping by Product and Store
     const products: Record<string, any> = {}
     const stores: Record<string, any> = {}
     const matrix: Record<string, Record<string, { quantity: number, currentStock: number }>> = {}
@@ -53,7 +52,6 @@ export class OrderService {
         matrix[productId][storeId] = { quantity: 0, currentStock: 0 }
       }
 
-      // We sum the quantities but for currentStock we take the latest reported
       matrix[productId][storeId].quantity += item.quantity
       matrix[productId][storeId].currentStock = item.currentStock
     })
@@ -65,7 +63,17 @@ export class OrderService {
     }
   }
 
-  async update(orderId: string, data: any) {
+  async update(orderId: string, data: UpdateOrderInput, role: UserRole) {
+    if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
+      throw new Error('Forbidden: Only supervisors and admins can modify orders')
+    }
     return this.orderRepository.update(orderId, data)
+  }
+
+  async updateStatus(orderId: string, status: string, role: UserRole) {
+    if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
+      throw new Error('Forbidden: Only supervisors and admins can change order status')
+    }
+    return this.orderRepository.update(orderId, { status })
   }
 }

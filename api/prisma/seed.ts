@@ -76,47 +76,49 @@ const productCategories = [
 async function main() {
   console.log('Seed started...')
 
-  const username = 'admin'
+  const adminUsername = 'admin'
+  const supervisorUsername = 'supervisor'
 
-  // 1. Clear existing data safely (order matters due to FKs)
   await prisma.product.deleteMany({})
   await prisma.category.deleteMany({})
-  await prisma.user.deleteMany({ where: { username } })
+  await prisma.user.deleteMany({ where: { OR: [{ username: adminUsername }, { username: supervisorUsername }] } })
   await prisma.store.deleteMany({})
 
-  // 2. Create Stores
   const createdStores = []
   for (const s of storesData) {
-    const store = await prisma.store.create({
-      data: s
-    })
+    const store = await prisma.store.create({ data: s })
     createdStores.push(store)
   }
   console.log(`Created ${createdStores.length} stores`)
 
   const hashedPassword = await bcrypt.hash('admin123', 10)
-  const user = await prisma.user.create({
+  const admin = await prisma.user.create({
     data: {
-      username,
+      username: adminUsername,
       name: 'Admin',
       email: 'admin@admin.com',
       password: hashedPassword,
-      isAdmin: true,
-      stores: {
-        connect: createdStores.map(s => ({ id: s.id }))
-      }
+      role: 'ADMIN',
+      stores: { connect: createdStores.map(s => ({ id: s.id })) }
     }
   })
-  console.log('Admin user created and linked to all stores')
+  console.log('Admin user created with role ADMIN')
 
-  // 3. Re-seed products & categories
-  // (No need to delete products/categories again here)
+  const hashedSupervisorPassword = await bcrypt.hash('supervisor123', 10)
+  const supervisor = await prisma.user.create({
+    data: {
+      username: supervisorUsername,
+      name: 'Supervisor',
+      email: 'supervisor@supervisor.com',
+      password: hashedSupervisorPassword,
+      role: 'SUPERVISOR',
+      stores: { connect: createdStores.map(s => ({ id: s.id })) }
+    }
+  })
+  console.log('Supervisor user created with role SUPERVISOR')
   
   for (const item of productCategories) {
-    const category = await prisma.category.create({
-      data: { name: item.category }
-    })
-
+    const category = await prisma.category.create({ data: { name: item.category } })
     console.log(`Category created: ${category.name}`)
 
     for (const productName of item.products) {
@@ -126,7 +128,7 @@ async function main() {
           price: 0,
           stock: 999,
           categoryId: category.id,
-          userId: user.id
+          userId: admin.id
         }
       })
     }

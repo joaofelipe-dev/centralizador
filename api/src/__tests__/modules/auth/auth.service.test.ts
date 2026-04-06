@@ -28,7 +28,7 @@ describe('AuthService', () => {
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/TVG.', // bcrypt hash of "password123"
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
       }
 
@@ -39,8 +39,8 @@ describe('AuthService', () => {
         password: 'password123',
       })
 
-      expect(result.id).toBe('user-123')
-      expect(result).not.toHaveProperty('password')
+      expect(result.user.id).toBe('user-123')
+      expect(result.user).not.toHaveProperty('password')
     })
 
     it('should throw error with incorrect password', async () => {
@@ -49,7 +49,7 @@ describe('AuthService', () => {
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
       }
 

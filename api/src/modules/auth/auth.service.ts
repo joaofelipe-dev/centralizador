@@ -24,7 +24,7 @@ export class AuthService {
         username: user.username,
         name: user.name,
         email: user.email,
-        isAdmin: user.isAdmin,
+        role: user.role,
         stores: user.stores,
       },
     }

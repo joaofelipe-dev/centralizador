@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { StoreService } from './store.service.js'
 import { createStoreSchema, updateStoreSchema } from './store.schema.js'
 import { z } from 'zod'
+import { UserRole } from '../../middlewares/auth.js'
 
 export class StoreController {
   constructor(private storeService: StoreService) {}
@@ -13,8 +14,8 @@ export class StoreController {
   }
 
   async list(request: FastifyRequest, reply: FastifyReply) {
-    const user = request.user as { sub: string, isAdmin: boolean }
-    const stores = await this.storeService.listStores(user.sub, user.isAdmin)
+    const user = request.user as { sub: string, role: UserRole }
+    const stores = await this.storeService.listStores(user.sub, user.role)
     return reply.status(200).send(stores)
   }
 

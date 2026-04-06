@@ -50,7 +50,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             {user ? (
               <div className="flex items-center gap-2">
-                {user.isAdmin && (
+                {(user.role === 'ADMIN' || user.role === 'SUPERVISOR') && (
                   <Link href="/admin">
                     <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10">
                       <ShieldCheck className="h-4 w-4" />

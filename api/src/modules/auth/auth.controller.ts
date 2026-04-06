@@ -4,6 +4,7 @@ import { AuthService } from './auth.service.js'
 import { loginSchema } from './auth.schema.js'
 import { createUserSchema } from '../user/user.schema.js'
 import { UserService } from '../user/user.service.js'
+import { UserRole } from '../../middlewares/auth.js'
 
 export class AuthController {
   constructor(
@@ -16,7 +17,7 @@ export class AuthController {
       const data = createUserSchema.parse(request.body)
       const user = await this.userService.createUser(data)
 
-      const token = await reply.jwtSign({ sub: user.id, isAdmin: user.isAdmin })
+      const token = await reply.jwtSign({ sub: user.id, role: user.role as UserRole })
       request.log.info({ userId: user.id }, 'Usuário registrado com sucesso')
 
       return reply.status(201).send({ user, token })
@@ -45,7 +46,7 @@ export class AuthController {
       const data = loginSchema.parse(request.body)
       const { user } = await this.authService.authenticate(data)
 
-      const token = await reply.jwtSign({ sub: user.id, isAdmin: user.isAdmin })
+      const token = await reply.jwtSign({ sub: user.id, role: user.role as UserRole })
       request.log.info({ userId: user.id }, 'Login bem-sucedido')
 
       return reply.status(200).send({ user, token })

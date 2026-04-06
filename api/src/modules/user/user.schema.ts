@@ -6,7 +6,7 @@ export const createUserSchema = z.object({
   email: z.string().email().optional(),
   password: z.string().min(6),
   storeIds: z.array(z.string()).min(1),
-  isAdmin: z.boolean().optional().default(false),
+  role: z.enum(['DEFAULT', 'SUPERVISOR', 'ADMIN']).optional().default('DEFAULT'),
 })
 
 export const updateUserSchema = z.object({
@@ -15,7 +15,7 @@ export const updateUserSchema = z.object({
   email: z.string().email().optional(),
   password: z.string().min(6).optional(),
   storeIds: z.array(z.string()).optional(),
-  isAdmin: z.boolean().optional(),
+  role: z.enum(['DEFAULT', 'SUPERVISOR', 'ADMIN']).optional(),
 })
 
 export type CreateUserInput = z.infer<typeof createUserSchema>

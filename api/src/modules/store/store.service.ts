@@ -1,5 +1,6 @@
 import { StoreRepository } from './store.repository.js'
 import { CreateStoreInput, UpdateStoreInput } from './store.schema.js'
+import { UserRole } from '../../middlewares/auth.js'
 
 export class StoreService {
   constructor(private storeRepository: StoreRepository) {}
@@ -14,8 +15,8 @@ export class StoreService {
     return store
   }
 
-  async listStores(userId: string, isAdmin: boolean) {
-    if (isAdmin) {
+  async listStores(userId: string, role: UserRole) {
+    if (role === 'SUPERVISOR' || role === 'ADMIN') {
       return this.storeRepository.listAll()
     }
     return this.storeRepository.findByUserId(userId)

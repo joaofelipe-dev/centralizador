@@ -78,7 +78,7 @@ export const UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password: 'password',
-  isAdmin: 'isAdmin',
+  role: 'role',
   createdAt: 'createdAt'
 } as const
 
@@ -122,6 +122,7 @@ export const OrderScalarFieldEnum = {
   storeId: 'storeId',
   userId: 'userId',
   status: 'status',
+  orderDate: 'orderDate',
   createdAt: 'createdAt'
 } as const
 

@@ -12,6 +12,7 @@ import {
   Apple,
   LeafyGreen,
   Loader2,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import { api } from "@/lib/api";
@@ -37,18 +38,16 @@ const ProductRow = React.memo(
         </div>
       </div>
 
-      {/* Estoque CD Info */}
       <div className="flex items-center justify-between lg:justify-center w-full lg:w-[120px] px-3 py-2 lg:py-0 rounded-lg bg-white/5 lg:bg-transparent">
         <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
           Estoque CD
         </span>
-        <div className="flex items-center gap-1.5 min-w-[60px] justify-center">
+        <div className="flex items-center gap-1 min-w-[60px] justify-center">
           <Package className="h-3.5 w-3.5 text-primary/50" />
-          <span className="text-sm font-bold text-white">--</span>
+          <span className="text-sm font-bold text-primary">{product.stock ?? 0}</span>
         </div>
       </div>
 
-      {/* Estoque Atual Selector */}
       <div className="flex items-center justify-between lg:justify-center w-full lg:w-[160px]">
         <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
           Estoque Atual
@@ -77,7 +76,6 @@ const ProductRow = React.memo(
         </div>
       </div>
 
-      {/* Quantity Selector */}
       <div className="flex items-center justify-between lg:justify-end w-full lg:w-[160px]">
         <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
           Pedir Agora
@@ -111,9 +109,16 @@ const ProductRow = React.memo(
 
 ProductRow.displayName = "ProductRow";
 
+function getTomorrowDate() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split("T")[0];
+}
+
 export default function OrderForm({ store, onBack }) {
   const [categories, setCategories] = useState([]);
-  const [cart, setCart] = useState({}); // { [id]: { quantity: 0, currentStock: 0 } }
+  const [cart, setCart] = useState({});
+  const [orderDate, setOrderDate] = useState(getTomorrowDate());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isReviewing, setIsReviewing] = useState(false);
@@ -182,6 +187,7 @@ export default function OrderForm({ store, onBack }) {
       const orderData = {
         storeId: store.id,
         items: orderItems,
+        orderDate: orderDate,
       };
 
       console.log("Final Order Submitted:", JSON.stringify(orderData, null, 2));
@@ -264,19 +270,17 @@ export default function OrderForm({ store, onBack }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 animate-slide-up">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h2 className="w-full text-2xl font-bold text-white">
           Pedido de compras
         </h2>
-        <p className="text-sm text-muted-foreground mb-12 px-4">
+        <p className="text-sm text-muted-foreground mb-6 px-4">
           Selecione os produtos e as quantidades desejadas para criar um novo
           pedido de compra para a <strong>{store.name}</strong>. Você poderá
           revisar seu pedido antes de enviar.
         </p>
-        <span className="text-sm text-muted-foreground bg-red-500 mb-0 px-4">
-        <strong>Lembre-se de conferir o estoque atual!</strong>
-        </span>
       </div>
+
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button
@@ -299,13 +303,37 @@ export default function OrderForm({ store, onBack }) {
           </div>
         </div>
 
+        {!isReviewing && (
+          <div className="glass-card p-4 rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-primary" />
+              <span className="text-sm text-white font-medium">
+                Data do Pedido:
+              </span>
+            </div>
+            <input
+              type="date"
+              value={orderDate}
+              min={getTomorrowDate()}
+              onChange={(e) => setOrderDate(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary [&::-webkit-calendar-picker-indicator]:invert"
+            />
+          </div>
+        )}
+
         {isReviewing ? (
           <div className="space-y-6 pb-32">
             <div className="glass-card p-6 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" />
-                Resumo do Pedido
-              </h3>
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Resumo do Pedido
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>{new Date(orderDate).toLocaleDateString("pt-BR")}</span>
+                </div>
+              </div>
 
               <div className="space-y-3">
                 {categories
@@ -373,7 +401,6 @@ export default function OrderForm({ store, onBack }) {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
-                  {/* Header for Desktop */}
                   <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                     <span>Produto</span>
                     <span className="text-center">Estoque CD</span>

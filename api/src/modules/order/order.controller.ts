@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { OrderService } from './order.service.js'
-import { createOrderSchema, updateOrderSchema } from './order.schema.js'
+import { createOrderSchema, updateOrderSchema, updateOrderStatusSchema } from './order.schema.js'
+import { UserRole } from '../../middlewares/auth.js'
 
 export class OrderController {
   constructor(private orderService: OrderService) {}
@@ -8,9 +9,9 @@ export class OrderController {
   async create(request: FastifyRequest, reply: FastifyReply) {
     try {
       const data = createOrderSchema.parse(request.body)
-      const user = request.user as { sub: string, isAdmin: boolean }
+      const user = request.user as { sub: string, role: UserRole }
 
-      const order = await this.orderService.create(user.sub, user.isAdmin, data)
+      const order = await this.orderService.create(user.sub, user.role, data)
       return reply.status(201).send(order)
     } catch (err) {
       if (err instanceof Error && err.message.includes('Forbidden')) {
@@ -21,8 +22,8 @@ export class OrderController {
   }
 
   async list(request: FastifyRequest, reply: FastifyReply) {
-    const { date } = request.query as { date?: string }
-    const orders = await this.orderService.list(date)
+    const { date, status } = request.query as { date?: string, status?: string }
+    const orders = await this.orderService.list(date, status)
     return reply.send(orders)
   }
 
@@ -35,7 +36,18 @@ export class OrderController {
   async update(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as { id: string }
     const data = updateOrderSchema.parse(request.body)
-    const order = await this.orderService.update(id, data)
+    const user = request.user as { sub: string, role: UserRole }
+    
+    const order = await this.orderService.update(id, data, user.role)
+    return reply.send(order)
+  }
+
+  async updateStatus(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: string }
+    const data = updateOrderStatusSchema.parse(request.body)
+    const user = request.user as { sub: string, role: UserRole }
+    
+    const order = await this.orderService.updateStatus(id, data.status, user.role)
     return reply.send(order)
   }
 }

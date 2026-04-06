@@ -91,7 +91,13 @@ export const api = {
   }),
   getStores: () => apiRequest('/stores'),
   getCategories: () => apiRequest('/categories'),
-  getOrders: (date) => apiRequest(`/orders${date ? `?date=${date}` : ''}`),
+  getOrders: (date, status) => {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (status) params.append('status', status);
+    const query = params.toString();
+    return apiRequest(`/orders${query ? `?${query}` : ''}`);
+  },
   createOrder: (orderData) => apiRequest('/orders', {
     method: 'POST',
     body: JSON.stringify(orderData),
@@ -100,6 +106,10 @@ export const api = {
   updateOrder: (id, data) => apiRequest(`/orders/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+  }),
+  updateOrderStatus: (id, status) => apiRequest(`/orders/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
   }),
   apiRequest: apiRequest,
 };

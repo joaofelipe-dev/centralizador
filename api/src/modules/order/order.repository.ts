@@ -3,10 +3,15 @@ import { CreateOrderInput } from './order.schema.js'
 
 export class OrderRepository {
   async create(userId: string, data: CreateOrderInput) {
+    const orderDate = data.orderDate 
+      ? new Date(data.orderDate)
+      : new Date(Date.now() + 24 * 60 * 60 * 1000)
+
     return prisma.order.create({
       data: {
         userId,
         storeId: data.storeId,
+        orderDate,
         items: {
           create: data.items.map((item) => ({
             productId: item.productId,
@@ -26,13 +31,19 @@ export class OrderRepository {
     })
   }
 
-  async list(dateLabel?: string) {
-    const where = dateLabel ? {
-      createdAt: {
+  async list(dateLabel?: string, statusFilter?: string) {
+    const where: any = {}
+
+    if (dateLabel) {
+      where.createdAt = {
         gte: new Date(`${dateLabel}T00:00:00Z`),
         lte: new Date(`${dateLabel}T23:59:59Z`),
       }
-    } : {}
+    }
+
+    if (statusFilter) {
+      where.status = statusFilter
+    }
 
     return prisma.order.findMany({
       where,
@@ -81,25 +92,34 @@ export class OrderRepository {
     return items
   }
 
-  async update(id: string, data: { items: { productId: string, quantity: number, currentStock: number }[] }) {
+  async update(id: string, data: { 
+    items?: { productId: string, quantity: number, currentStock: number }[], 
+    status?: string 
+  }) {
     return prisma.$transaction(async (tx) => {
-      // Delete existing items
-      await tx.orderItem.deleteMany({
-        where: { orderId: id }
-      })
+      const updateData: any = {}
 
-      // Create new items
+      if (data.status) {
+        updateData.status = data.status
+      }
+
+      if (data.items) {
+        await tx.orderItem.deleteMany({
+          where: { orderId: id }
+        })
+        
+        updateData.items = {
+          create: data.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            currentStock: item.currentStock,
+          })),
+        }
+      }
+
       return tx.order.update({
         where: { id },
-        data: {
-          items: {
-            create: data.items.map((item) => ({
-              productId: item.productId,
-              quantity: item.quantity,
-              currentStock: item.currentStock,
-            })),
-          },
-        },
+        data: updateData,
         include: {
           items: {
             include: {
@@ -107,6 +127,12 @@ export class OrderRepository {
             },
           },
           store: true,
+          user: {
+            select: {
+              name: true,
+              username: true,
+            },
+          },
         },
       })
     })
