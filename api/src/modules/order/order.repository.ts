@@ -67,20 +67,41 @@ export class OrderRepository {
     })
   }
 
-  async getConsolidatedData(dateLabel?: string) {
-    const where = dateLabel ? {
-      createdAt: {
-        gte: new Date(`${dateLabel}T00:00:00Z`),
-        lte: new Date(`${dateLabel}T23:59:59Z`),
+  async getConsolidatedData(dateLabel?: string, startDate?: string, endDate?: string) {
+    let where = {}
+    
+    if (dateLabel) {
+      where = {
+        orderDate: {
+          gte: new Date(`${dateLabel}T00:00:00Z`),
+          lte: new Date(`${dateLabel}T23:59:59Z`),
+        }
       }
-    } : {}
+    } else if (startDate && endDate) {
+      where = {
+        orderDate: {
+          gte: new Date(`${startDate}T00:00:00Z`),
+          lte: new Date(`${endDate}T23:59:59Z`),
+        }
+      }
+    } else if (startDate) {
+      where = {
+        orderDate: {
+          gte: new Date(`${startDate}T00:00:00Z`),
+        }
+      }
+    }
 
     const items = await prisma.orderItem.findMany({
       where: {
         order: where
       },
       include: {
-        product: true,
+        product: {
+          include: {
+            category: true,
+          },
+        },
         order: {
           include: {
             store: true,

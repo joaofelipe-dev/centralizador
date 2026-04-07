@@ -26,13 +26,16 @@ Header.Logo = ({ children, className = "" }) => (
         {children ?? <HeaderLogo />}
     </>
 )
+Header.Logo.displayName = 'Header.Logo'
 
 Header.Nav = ({ children, className = "" }) => (
     <>
         {children ?? <HeaderNav />}
     </>
 )
+Header.Nav.displayName = 'Header.Nav'
 
 Header.Extras = ({ children, className = "" }) => (
     <div className={`ml-auto flex items-center gap-2 ${className}`}>{children}</div>
 )
+Header.Extras.displayName = 'Header.Extras'

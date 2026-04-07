@@ -3,12 +3,14 @@ import { OrderController } from './order.controller.js'
 import { OrderService } from './order.service.js'
 import { OrderRepository } from './order.repository.js'
 import { UserRepository } from '../user/user.repository.js'
+import { ProductRepository } from '../product/product.repository.js'
 import { authMiddleware, supervisorMiddleware, supervisorOnlyMiddleware } from '../../middlewares/auth.js'
 
 export async function orderRoutes(app: FastifyInstance) {
   const repository = new OrderRepository()
   const userRepository = new UserRepository()
-  const service = new OrderService(repository, userRepository)
+  const productRepository = new ProductRepository()
+  const service = new OrderService(repository, userRepository, productRepository)
   const controller = new OrderController(service)
 
   app.post('/', { preHandler: [authMiddleware] }, controller.create.bind(controller))

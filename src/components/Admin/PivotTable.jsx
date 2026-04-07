@@ -1,6 +1,7 @@
 import React, { memo } from "react";
-import { Package, BarChart3, Filter, Download } from "lucide-react";
+import { Package, BarChart3, Filter, Download, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/Button/Button";
+import * as XLSX from "xlsx";
 
 const TableRow = memo(({ product, stores, matrix }) => (
   <tr className="group hover:bg-white/[0.03] transition-colors">
@@ -37,6 +38,67 @@ TableRow.displayName = "TableRow";
 
 export function PivotTable({ consolidated }) {
   const { stores, products, matrix } = consolidated;
+
+  const handleExportStoreXLSX = async () => {
+    if (!consolidated.products.length || !consolidated.stores.length) return;
+
+    const response = await fetch('/Default.xlsx');
+    const arrayBuffer = await response.arrayBuffer();
+
+    consolidated.stores.forEach((store) => {
+      const wb = XLSX.read(arrayBuffer);
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+      const storeDate = store.orderDate || new Date().toISOString().split('T')[0];
+
+      data[0] = [storeDate, store.name];
+
+      const productMap = {};
+      consolidated.products.forEach((product) => {
+        const cell = matrix?.[product.id]?.[store.id] || { quantity: 0, currentStock: 0 };
+        productMap[product.name] = {
+          quantity: cell.quantity || 0,
+          currentStock: cell.currentStock || 0,
+          categoryName: product.categoryName || "Outros",
+        };
+      });
+
+      for (let i = 2; i < data.length; i++) {
+        const row = data[i];
+        if (!row) continue;
+
+        const productName = String(row[7] || row[1] || "").trim();
+        const productData = productMap[productName];
+
+        if (productData) {
+          const isLegumes = productData.categoryName === "Legumes";
+          const isFrutas = productData.categoryName === "Frutas";
+          const isVerduras = productData.categoryName === "Verduras";
+
+          if (isLegumes) {
+            row[0] = productData.quantity;
+            row[2] = productData.currentStock;
+          } else if (isFrutas) {
+            row[3] = productData.quantity;
+            row[5] = productData.currentStock;
+          } else if (isVerduras) {
+            row[6] = productData.quantity;
+            row[8] = productData.currentStock;
+          }
+        }
+      }
+
+      const newWs = XLSX.utils.aoa_to_sheet(data);
+      const newWb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(newWb, newWs, "Plan1");
+
+      const storeCode = store.code || store.name.replace(/[^a-zA-Z0-9]/g, "_").substring(0, 2).toUpperCase();
+      const [year, month, day] = storeDate.split("-");
+      const dateStr = `${day}${month}${year}`;
+      XLSX.writeFile(newWb, `${storeCode}_${dateStr}.xlsx`);
+    });
+  };
 
   const handleExport = () => {
     if (!consolidated.products.length) return;
@@ -86,6 +148,9 @@ export function PivotTable({ consolidated }) {
           </Button>
           <Button onClick={handleExport} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/5">
             <Download className="h-4 w-4" /> Exportar
+          </Button>
+          <Button onClick={handleExportStoreXLSX} variant="primary" className="gap-2">
+            <FileSpreadsheet className="h-4 w-4" /> Exportar por Loja
           </Button>
         </div>
       </div>

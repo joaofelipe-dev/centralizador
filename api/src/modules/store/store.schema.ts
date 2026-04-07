@@ -8,6 +8,7 @@ export const createStoreSchema = z.object({
 export const updateStoreSchema = z.object({
   name: z.string().min(2).optional(),
   address: z.string().min(5).optional(),
+  code: z.string().min(2).optional(),
 })
 
 export type CreateStoreInput = z.infer<typeof createStoreSchema>

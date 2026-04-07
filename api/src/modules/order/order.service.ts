@@ -1,4 +1,5 @@
 import { OrderRepository } from './order.repository.js'
+import { ProductRepository } from '../product/product.repository.js'
 import { CreateOrderInput, UpdateOrderInput } from './order.schema.js'
 import { UserRepository } from '../user/user.repository.js'
 import { UserRole } from '../../middlewares/auth.js'
@@ -6,7 +7,8 @@ import { UserRole } from '../../middlewares/auth.js'
 export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private productRepository: ProductRepository
   ) {}
 
   async create(userId: string, role: UserRole, data: CreateOrderInput) {
@@ -26,22 +28,32 @@ export class OrderService {
     return this.orderRepository.list(dateLabel, statusFilter)
   }
 
-  async getConsolidatedData(dateLabel?: string) {
-    const rawItems = await this.orderRepository.getConsolidatedData(dateLabel)
+  async getConsolidatedData(dateLabel?: string, startDate?: string, endDate?: string) {
+    const rawItems = await this.orderRepository.getConsolidatedData(dateLabel, startDate, endDate)
+    
+    const allProducts = await this.productRepository.listAll()
     
     const products: Record<string, any> = {}
     const stores: Record<string, any> = {}
     const matrix: Record<string, Record<string, { quantity: number, currentStock: number }>> = {}
 
+    allProducts.forEach((product: any) => {
+      products[product.id] = {
+        ...product,
+        categoryName: product.category?.name || 'Outros',
+      }
+    })
+
     rawItems.forEach((item: any) => {
       const productId = item.productId
       const storeId = item.order.storeId
+      const orderDate = item.order.orderDate
 
-      if (!products[productId]) {
-        products[productId] = item.product
-      }
       if (!stores[storeId]) {
-        stores[storeId] = item.order.store
+        stores[storeId] = {
+          ...item.order.store,
+          orderDate: orderDate ? new Date(orderDate).toISOString().split('T')[0] : '',
+        }
       }
 
       if (!matrix[productId]) {
@@ -53,7 +65,7 @@ export class OrderService {
       }
 
       matrix[productId][storeId].quantity += item.quantity
-      matrix[productId][storeId].currentStock = item.currentStock
+      matrix[productId][storeId].currentStock += item.currentStock
     })
 
     return {

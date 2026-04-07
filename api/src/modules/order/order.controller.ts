@@ -28,8 +28,8 @@ export class OrderController {
   }
 
   async consolidated(request: FastifyRequest, reply: FastifyReply) {
-    const { date } = request.query as { date?: string }
-    const data = await this.orderService.getConsolidatedData(date)
+    const { date, startDate, endDate } = request.query as { date?: string, startDate?: string, endDate?: string }
+    const data = await this.orderService.getConsolidatedData(date, startDate, endDate)
     return reply.send(data)
   }
 

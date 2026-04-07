@@ -26,6 +26,7 @@ model Store {
   id        String   @id @default(uuid())
   name      String   @unique
   address   String
+  code      String?  // Sigla da loja (PT, HD, TM, ST, NA, BT, SM, CAL, CD)
   users     User[]   @relation("UserStores")
   orders    Order[]
   createdAt DateTime @default(now())

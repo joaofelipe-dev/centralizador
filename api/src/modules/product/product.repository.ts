@@ -20,6 +20,13 @@ export class ProductRepository {
     })
   }
 
+  async listAll() {
+    return prisma.product.findMany({
+      include: { category: true },
+      orderBy: { name: 'asc' }
+    })
+  }
+
   async update(id: string, data: UpdateProductInput) {
     return prisma.product.update({
       where: { id },

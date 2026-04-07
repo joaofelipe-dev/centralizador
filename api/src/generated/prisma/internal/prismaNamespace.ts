@@ -906,6 +906,7 @@ export const StoreScalarFieldEnum = {
   id: 'id',
   name: 'name',
   address: 'address',
+  code: 'code',
   createdAt: 'createdAt'
 } as const
 
