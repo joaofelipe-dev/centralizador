@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.0.129:3333';
+const API_URL = 'http://192.168.0.245:3333';
 
 export async function apiRequest(endpoint, options = {}) {
   let token = null;
