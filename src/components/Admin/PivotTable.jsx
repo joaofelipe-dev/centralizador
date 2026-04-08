@@ -97,7 +97,6 @@ export function PivotTable({ consolidated }) {
       XLSX.utils.book_append_sheet(newWb, newWs, "Ceasa");
 
       const storeCode = store.code || store.name.replace(/[^a-zA-Z0-9]/g, "_").substring(0, 2).toUpperCase();
-      const [year, month, day] = storeDate.split("-");
       const dateStr = `${day}${month}${year}`;
       XLSX.writeFile(newWb, `${storeCode}_${dateStr}.xlsx`);
     });
