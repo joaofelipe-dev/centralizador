@@ -30,6 +30,14 @@ export class UserService {
     return user
   }
 
+  async getUserByUsername(username: string) {
+    return this.userRepository.findByUsername(username)
+  }
+
+  async getUserByEmail(email: string) {
+    return this.userRepository.findByEmail(email)
+  }
+
   async listUsers() {
     return this.userRepository.list()
   }

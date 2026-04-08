@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { UserService } from '@/modules/user/user.service'
 import { UserRepository } from '@/modules/user/user.repository'
+import bcrypt from 'bcryptjs'
+
+vi.mock('bcryptjs', () => ({
+  default: {
+    hash: vi.fn(() => Promise.resolve('$2a$10$hashed')),
+  },
+}))
 
 describe('UserService', () => {
   let userService: UserService
@@ -21,98 +28,102 @@ describe('UserService', () => {
     userService = new UserService(mockRepository)
   })
 
-  describe('create', () => {
+  describe('createUser', () => {
     it('should create a new user with hashed password', async () => {
       const mockUser = {
         id: 'user-123',
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
+        stores: [],
       }
 
-      vi.mocked(mockRepository.create).mockResolvedValueOnce(mockUser as any)
+      mockRepository.create = vi.fn().mockResolvedValue(mockUser)
 
-      const result = await userService.create({
+      const result = await userService.createUser({
         username: 'testuser',
+        name: 'Test User',
         email: 'test@example.com',
         password: 'plainpassword',
-        storeId: 'store-1',
+        storeIds: ['store-1'],
+        role: 'DEFAULT',
       })
 
       expect(result.id).toBe('user-123')
-      expect(vi.mocked(mockRepository.create)).toHaveBeenCalled()
+      expect(mockRepository.create).toHaveBeenCalled()
     })
   })
 
-  describe('findById', () => {
+  describe('getUserById', () => {
     it('should find user by ID', async () => {
       const mockUser = {
         id: 'user-123',
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
+        stores: [],
       }
 
-      vi.mocked(mockRepository.findById).mockResolvedValueOnce(mockUser as any)
+      mockRepository.findById = vi.fn().mockResolvedValue(mockUser)
 
-      const result = await userService.findById('user-123')
+      const result = await userService.getUserById('user-123')
 
       expect(result.id).toBe('user-123')
       expect(result.username).toBe('testuser')
     })
 
-    it('should return null if user not found', async () => {
-      vi.mocked(mockRepository.findById).mockResolvedValueOnce(null)
+    it('should throw error if user not found', async () => {
+      mockRepository.findById = vi.fn().mockResolvedValue(null)
 
-      const result = await userService.findById('nonexistent')
-
-      expect(result).toBeNull()
+      await expect(userService.getUserById('nonexistent')).rejects.toThrow('User not found')
     })
   })
 
-  describe('findByUsername', () => {
+  describe('getUserByUsername', () => {
     it('should find user by username', async () => {
       const mockUser = {
         id: 'user-123',
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
+        stores: [],
       }
 
-      vi.mocked(mockRepository.findByUsername).mockResolvedValueOnce(mockUser as any)
+      mockRepository.findByUsername = vi.fn().mockResolvedValue(mockUser)
 
-      const result = await userService.findByUsername('testuser')
+      const result = await userService.getUserByUsername('testuser')
 
       expect(result?.username).toBe('testuser')
     })
   })
 
-  describe('findByEmail', () => {
+  describe('getUserByEmail', () => {
     it('should find user by email', async () => {
       const mockUser = {
         id: 'user-123',
         username: 'testuser',
         email: 'test@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
+        stores: [],
       }
 
-      vi.mocked(mockRepository.findByEmail).mockResolvedValueOnce(mockUser as any)
+      mockRepository.findByEmail = vi.fn().mockResolvedValue(mockUser)
 
-      const result = await userService.findByEmail('test@example.com')
+      const result = await userService.getUserByEmail('test@example.com')
 
       expect(result?.email).toBe('test@example.com')
     })
   })
 
-  describe('list', () => {
+  describe('listUsers', () => {
     it('should return list of all users', async () => {
       const mockUsers = [
         {
@@ -120,34 +131,37 @@ describe('UserService', () => {
           username: 'testuser',
           email: 'test@example.com',
           password: '$2a$10$hashed',
-          isAdmin: false,
+          role: 'DEFAULT',
           storeId: 'store-1',
+          stores: [],
         },
       ]
 
-      vi.mocked(mockRepository.list).mockResolvedValueOnce(mockUsers as any)
+      mockRepository.list = vi.fn().mockResolvedValue(mockUsers)
 
-      const result = await userService.list()
+      const result = await userService.listUsers()
 
       expect(Array.isArray(result)).toBe(true)
       expect(result[0].username).toBe('testuser')
     })
   })
 
-  describe('update', () => {
+  describe('updateUser', () => {
     it('should update user data', async () => {
       const mockUpdatedUser = {
         id: 'user-123',
         username: 'updateduser',
         email: 'updated@example.com',
         password: '$2a$10$hashed',
-        isAdmin: false,
+        role: 'DEFAULT',
         storeId: 'store-1',
+        stores: [],
       }
 
-      vi.mocked(mockRepository.update).mockResolvedValueOnce(mockUpdatedUser as any)
+      mockRepository.findById = vi.fn().mockResolvedValue(mockUpdatedUser)
+      mockRepository.update = vi.fn().mockResolvedValue(mockUpdatedUser)
 
-      const result = await userService.update('user-123', {
+      const result = await userService.updateUser('user-123', {
         username: 'updateduser',
         email: 'updated@example.com',
       })
@@ -157,13 +171,24 @@ describe('UserService', () => {
     })
   })
 
-  describe('delete', () => {
+  describe('deleteUser', () => {
     it('should delete user by ID', async () => {
-      vi.mocked(mockRepository.delete).mockResolvedValueOnce(undefined)
+      const mockUser = {
+        id: 'user-123',
+        username: 'testuser',
+        email: 'test@example.com',
+        password: '$2a$10$hashed',
+        role: 'DEFAULT',
+        storeId: 'store-1',
+        stores: [],
+      }
 
-      await userService.delete('user-123')
+      mockRepository.findById = vi.fn().mockResolvedValue(mockUser)
+      mockRepository.delete = vi.fn().mockResolvedValue(undefined)
 
-      expect(vi.mocked(mockRepository.delete)).toHaveBeenCalledWith('user-123')
+      await userService.deleteUser('user-123')
+
+      expect(mockRepository.delete).toHaveBeenCalledWith('user-123')
     })
   })
 })

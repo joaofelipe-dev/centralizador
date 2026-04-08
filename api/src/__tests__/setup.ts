@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi, beforeEach, afterEach } from 'vitest'
 import { prisma } from '@/lib/prisma'
 
 // Mock Prisma globally
