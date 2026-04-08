@@ -53,7 +53,7 @@ export function PivotTable({ consolidated }) {
       const storeDate = store.orderDate || new Date().toISOString().split('T')[0];
       
       const [year, month, day] = storeDate.split("-");
-      const formattedDate = `${day}${month}${year}`;
+      const formattedDate = `${day}/${month}/${year}`;
       
       data[0] = [formattedDate];
 
@@ -97,7 +97,7 @@ export function PivotTable({ consolidated }) {
       XLSX.utils.book_append_sheet(newWb, newWs, "Ceasa");
 
       const storeCode = store.code || store.name.replace(/[^a-zA-Z0-9]/g, "_").substring(0, 2).toUpperCase();
-      const dateStr = `${day}${month}${year}`;
+      const dateStr = `${day}/${month}/${year}`;
       XLSX.writeFile(newWb, `${storeCode}_${dateStr}.xlsx`);
     });
   };
