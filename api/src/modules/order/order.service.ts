@@ -3,6 +3,7 @@ import { ProductRepository } from '../product/product.repository.js'
 import { CreateOrderInput, UpdateOrderInput } from './order.schema.js'
 import { UserRepository } from '../user/user.repository.js'
 import { UserRole } from '../../middlewares/auth.js'
+import { exportOrderToNetwork } from '../../lib/order-export.js'
 
 export class OrderService {
   constructor(
@@ -21,7 +22,13 @@ export class OrderService {
       }
     }
 
-    return this.orderRepository.create(userId, data)
+    const order = await this.orderRepository.create(userId, data)
+    
+    if (order && order.store) {
+      exportOrderToNetwork(order, order.store.name || 'Loja').catch(console.error)
+    }
+    
+    return order
   }
 
   async list(dateLabel?: string, statusFilter?: string) {

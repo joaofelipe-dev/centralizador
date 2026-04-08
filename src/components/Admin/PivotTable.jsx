@@ -52,10 +52,10 @@ export function PivotTable({ consolidated }) {
 
       const storeDate = store.orderDate || new Date().toISOString().split('T')[0];
       
-      const [year, month, day] = storeDate.split("-");
-      const formattedDate = `${day}/${month}/${year}`;
+      const [year, month, day] = storeDate.split("-").map(Number);
+      const formattedDate = `${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}`;
       
-      data[0] = [formattedDate];
+      data[0] = [formattedDate, store.name];
 
       const productMap = {};
       consolidated.products.forEach((product) => {
@@ -94,7 +94,7 @@ export function PivotTable({ consolidated }) {
 
       const newWs = XLSX.utils.aoa_to_sheet(data);
       const newWb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(newWb, newWs, "Ceasa");
+      XLSX.utils.book_append_sheet(newWb, newWs, "CEASA");
 
       const storeCode = store.code || store.name.replace(/[^a-zA-Z0-9]/g, "_").substring(0, 2).toUpperCase();
       const dateStr = `${day}${month}${year}`;
