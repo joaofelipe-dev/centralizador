@@ -2,11 +2,15 @@ import * as XLSX from 'xlsx'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.230\\Ti\\Diversos'
+const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.247\\onedrive\\Enviados'
 const DEFAULT_TEMPLATE_PATH = process.env.DEFAULT_TEMPLATE_PATH || path.join(process.cwd(), '..', 'public', 'Default.xlsx')
 
 export async function exportOrderToNetwork(order: any, storeName: string, storeCode?: string): Promise<{ success: boolean; filepath?: string; error?: string }> {
   try {
+    console.log(`[ORDER-EXPORT] Starting export for order: ${order.id}, storeName: ${storeName}, storeCode: ${storeCode}`)
+    console.log(`[ORDER-EXPORT] orderDate: ${order.orderDate}`)
+    console.log(`[ORDER-EXPORT] items count: ${order.items?.length}`)
+    
     const orderDate = order.orderDate 
       ? new Date(order.orderDate)
       : new Date()

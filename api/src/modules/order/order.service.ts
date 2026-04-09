@@ -24,15 +24,22 @@ export class OrderService {
 
     const order = await this.orderRepository.create(userId, data)
     
+    console.log(`[ORDER-SERVICE] Order created: ${order?.id}, store: ${order?.store?.name} (${order?.store?.code})`)
+    console.log(`[ORDER-SERVICE] Order items count: ${order?.items?.length}`)
+    
     if (order && order.store) {
+      console.log(`[ORDER-SERVICE] Starting export for store: ${order.store.name}`)
       const exportResult = await exportOrderToNetwork(
         order, 
         order.store.name || 'Loja', 
         order.store.code || undefined
       )
+      console.log(`[ORDER-SERVICE] Export result:`, exportResult)
       if (!exportResult.success) {
         console.error(`[ORDER-SERVICE] Failed to export order ${order.id}: ${exportResult.error}`)
       }
+    } else {
+      console.warn(`[ORDER-SERVICE] Order or store is null, skipping export`)
     }
     
     return order
