@@ -1,0 +1,168 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { DayPicker } from "react-day-picker";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { format, parse } from "date-fns";
+import { ptBR } from "date-fns/locale/pt-BR";
+import "react-day-picker/style.css";
+
+function parseDateString(dateStr) {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function DateInput({
+  value,
+  onChange,
+  min,
+  placeholder = "DD/MM/AAAA",
+  className = "",
+  disabled = false
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [position, setPosition] = useState({ top: true, left: true });
+  const containerRef = useRef(null);
+  const popupRef = useRef(null);
+  const selectedDate = value ? parseDateString(value) : undefined;
+  const minDate = min ? parseDateString(min) : undefined;
+
+  useEffect(() => {
+    if (value) {
+      const date = parseDateString(value);
+      if (!isNaN(date.getTime())) {
+        setInputValue(format(date, "dd/MM/yyyy"));
+      }
+    }
+  }, [value]);
+
+  useEffect(() => {
+    if (isOpen && containerRef.current && popupRef.current) {
+      const container = containerRef.current.getBoundingClientRect();
+      const popup = popupRef.current.getBoundingClientRect();
+      
+      const wouldOverflowRight = container.right + popup.width > window.innerWidth;
+      const wouldOverflowBottom = container.bottom + popup.height > window.innerHeight;
+      
+      setPosition({
+        top: !wouldOverflowBottom,
+        left: !wouldOverflowRight
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
+
+  const handleInputChange = (e) => {
+    let val = e.target.value.replace(/\D/g, "");
+    if (val.length > 8) val = val.slice(0, 8);
+    
+    if (val.length <= 2) {
+      setInputValue(val);
+    } else if (val.length <= 4) {
+      setInputValue(`${val.slice(0, 2)}/${val.slice(2)}`);
+    } else {
+      setInputValue(`${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      try {
+        const parsed = parse(inputValue, "dd/MM/yyyy", new Date());
+        if (!isNaN(parsed.getTime())) {
+          if (minDate && parsed < minDate) {
+            setInputValue(format(minDate, "dd/MM/yyyy"));
+            onChange(format(minDate, "yyyy-MM-dd"));
+          } else {
+            setInputValue(format(parsed, "dd/MM/yyyy"));
+            onChange(format(parsed, "yyyy-MM-dd"));
+          }
+        } else if (value) {
+          setInputValue(format(parseDateString(value), "dd/MM/yyyy"));
+        } else {
+          setInputValue("");
+        }
+      } catch {
+        if (value) {
+          setInputValue(format(parseDateString(value), "dd/MM/yyyy"));
+        } else {
+          setInputValue("");
+        }
+      }
+    }, 150);
+  };
+
+  const handleDaySelect = (date) => {
+    if (date) {
+      if (minDate && date < minDate) {
+        date = minDate;
+      }
+      setInputValue(format(date, "dd/MM/yyyy"));
+      onChange(format(date, "yyyy-MM-dd"));
+      setIsOpen(false);
+    }
+  };
+
+  const toggleCalendar = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  };
+
+  const popupClasses = [
+    "absolute z-50 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl p-2",
+    position.top ? "top-full mt-2" : "bottom-full mb-2",
+    position.left ? "left-0" : "right-0"
+  ].join(" ");
+
+  return (
+    <div ref={containerRef} className={`relative ${className}`}>
+      <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder={placeholder}
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => !disabled && setIsOpen(true)}
+          onBlur={handleInputBlur}
+          disabled={disabled}
+          className={`bg-transparent px-4 py-2 text-white focus:outline-none ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          style={{ width: "100px", textAlign: "center" }}
+        />
+        <button
+          type="button"
+          onClick={toggleCalendar}
+          disabled={disabled}
+          className="px-2 text-muted-foreground hover:text-white disabled:opacity-50"
+        >
+          <CalendarIcon className="h-4 w-4" />
+        </button>
+      </div>
+      {isOpen && !disabled && (
+        <div ref={popupRef} className={popupClasses}>
+          <DayPicker
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDaySelect}
+            fromDate={minDate}
+            locale={ptBR}
+            className="text-white"
+          />
+        </div>
+      )}
+    </div>
+  );
+}

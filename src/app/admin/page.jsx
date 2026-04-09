@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 
 import { StatsGallery } from "@/components/Admin/StatsGallery";
 import { PivotTable } from "@/components/Admin/PivotTable";
+import { DateInput } from "@/components/DateInput/DateInput";
 import { TeamManagement } from "@/components/Admin/TeamManagement";
 
 export default function AdminPage() {
@@ -159,11 +160,11 @@ export default function AdminPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <input
-              type="date"
-              value={filterDate || ""}
-              onChange={(e) => setFilterDate(e.target.value)}
-              className="text-lg bg-transparent rounded-md px-3 py-1 text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent  [&::-webkit-calendar-picker-indicator]:invert"            />
+            <DateInput
+              value={filterDate || ''}
+              onChange={setFilterDate}
+              className="text-lg focus:border-transparent"
+            />
             {feedback ? (
               <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full font-bold animate-in fade-in slide-in-from-right-2 duration-300">
                 {feedback}

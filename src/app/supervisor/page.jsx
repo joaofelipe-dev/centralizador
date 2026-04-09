@@ -19,6 +19,7 @@ import { Button } from "@/components/Button/Button";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { DateInput } from "@/components/DateInput/DateInput";
 
 const STATUS_CONFIG = {
   PENDING: { label: "Pendente", icon: Clock, color: "text-yellow-500", bg: "bg-yellow-500/10" },
@@ -174,11 +175,10 @@ export default function SupervisorOrdersPage() {
         <div className={`px-4 pb-3 space-y-3 md:hidden ${showFilters ? 'block' : 'hidden'}`}>
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="date"
-              value={filterDate || ""}
-              onChange={(e) => setFilterDate(e.target.value)}
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary [&::-webkit-calendar-picker-indicator]:invert"
+            <DateInput
+              value={filterDate || ''}
+              onChange={setFilterDate}
+              className="flex-1"
             />
           </div>
           <select
@@ -198,11 +198,9 @@ export default function SupervisorOrdersPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <input
-                type="date"
-                value={filterDate || ""}
-                onChange={(e) => setFilterDate(e.target.value)}
-                className="bg-transparent rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary [&::-webkit-calendar-picker-indicator]:invert"
+              <DateInput
+                value={filterDate || ''}
+                onChange={setFilterDate}
               />
             </div>
             <select

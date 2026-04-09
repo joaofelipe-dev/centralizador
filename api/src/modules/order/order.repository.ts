@@ -23,7 +23,11 @@ export class OrderRepository {
       include: {
         items: {
           include: {
-            product: true,
+            product: {
+              include: {
+                category: true,
+              },
+            },
           },
         },
         store: true,

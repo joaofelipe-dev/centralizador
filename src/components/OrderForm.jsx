@@ -13,9 +13,11 @@ import {
   LeafyGreen,
   Loader2,
   Calendar,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import { api } from "@/lib/api";
+import { DateInput } from "@/components/DateInput/DateInput";
 
 const ProductRow = React.memo(
   ({
@@ -26,8 +28,19 @@ const ProductRow = React.memo(
     handleInputChange,
     getProductIcon,
   }) => (
-    <div className="glass-card p-4 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-white/10 group">
+    <div className={`glass-card p-4 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-white/10 group ${cartItem?.needsReview ? 'border-red-500/50 bg-red-500/5' : ''}`}>
       <div className="flex items-center gap-4 flex-1">
+        <button
+          type="button"
+          onClick={() => updateField(product.id, "needsReview", !cartItem?.needsReview)}
+          className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${
+            cartItem?.needsReview 
+              ? 'border-red-500 bg-red-500 text-white' 
+              : 'border-white/20 hover:border-red-500/50'
+          }`}
+        >
+          {cartItem?.needsReview && <AlertCircle className="h-4 w-4" />}
+        </button>
         <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
           {getProductIcon(categoryName)}
         </div>
@@ -55,23 +68,25 @@ const ProductRow = React.memo(
         <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner">
           <button
             onClick={() => updateField(product.id, "currentStock", -1)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
           >
-            <Minus className="h-3.5 w-3.5" />
+            <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
           </button>
           <input
-            type="number"
-            value={cartItem?.currentStock || 0}
+            type="text"
+            inputMode="numeric"
+            value={cartItem?.currentStockRaw ?? cartItem?.currentStock ?? ''}
             onChange={(e) =>
               handleInputChange(product.id, "currentStock", e.target.value)
             }
-            className="w-12 bg-transparent text-center text-sm font-bold text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            placeholder="0"
+            className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
           />
           <button
             onClick={() => updateField(product.id, "currentStock", 1)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
           </button>
         </div>
       </div>
@@ -83,23 +98,25 @@ const ProductRow = React.memo(
         <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-xl border border-primary/20 shadow-inner">
           <button
             onClick={() => updateField(product.id, "quantity", -1)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-primary"
+            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-primary"
           >
-            <Minus className="h-3.5 w-3.5" />
+            <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
           </button>
           <input
-            type="number"
-            value={cartItem?.quantity || 0}
+            type="text"
+            inputMode="numeric"
+            value={cartItem?.quantityRaw ?? cartItem?.quantity ?? ''}
             onChange={(e) =>
               handleInputChange(product.id, "quantity", e.target.value)
             }
-            className="w-12 bg-transparent text-center text-sm font-bold text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            placeholder="0"
+            className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
           />
           <button
             onClick={() => updateField(product.id, "quantity", 1)}
-            className="h-8 w-8 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
+            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
           </button>
         </div>
       </div>
@@ -139,19 +156,23 @@ export default function OrderForm({ store, onBack }) {
     fetchProducts();
   }, []);
 
-  const updateField = React.useCallback((id, field, delta) => {
+  const updateField = React.useCallback((id, field, value) => {
     setCart((prev) => {
       const current = prev[id] || { quantity: 0, currentStock: 0 };
-      const nextValue = Math.max(0, (current[field] || 0) + delta);
+      if (typeof value === 'boolean') {
+        return { ...prev, [id]: { ...current, [field]: value } };
+      }
+      const nextValue = Math.max(0, (current[field] || 0) + value);
       return { ...prev, [id]: { ...current, [field]: nextValue } };
     });
   }, []);
 
   const handleInputChange = React.useCallback((id, field, value) => {
-    const nextValue = value === "" ? 0 : Math.max(0, parseInt(value) || 0);
+    const cleaned = value.replace(/^0+(?!$)/, '');
+    const nextValue = cleaned === "" ? 0 : Math.max(0, parseInt(cleaned) || 0);
     setCart((prev) => {
       const current = prev[id] || { quantity: 0, currentStock: 0 };
-      return { ...prev, [id]: { ...current, [field]: nextValue } };
+      return { ...prev, [id]: { ...current, [field]: nextValue, [`${field}Raw`]: cleaned } };
     });
   }, []);
 
@@ -311,12 +332,10 @@ export default function OrderForm({ store, onBack }) {
                 Data do Pedido:
               </span>
             </div>
-            <input
-              type="date"
+            <DateInput
               value={orderDate}
+              onChange={setOrderDate}
               min={getTomorrowDate()}
-              onChange={(e) => setOrderDate(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
         )}
