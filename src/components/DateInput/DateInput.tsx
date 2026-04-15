@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format, parse } from "date-fns";
@@ -21,20 +21,26 @@ export function DateInput({
   disabled = false
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
   const [position, setPosition] = useState({ top: true, left: true });
   const containerRef = useRef(null);
   const popupRef = useRef(null);
   const selectedDate = value ? parseDateString(value) : undefined;
   const minDate = min ? parseDateString(min) : undefined;
 
-  useEffect(() => {
+  const inputValue = React.useMemo(() => {
     if (value) {
       const date = parseDateString(value);
       if (!isNaN(date.getTime())) {
-        setInputValue(format(date, "dd/MM/yyyy"));
+        return format(date, "dd/MM/yyyy");
       }
     }
+    return "";
+  }, [value]);
+
+  const [userInput, setUserInput] = useState("");
+
+  useEffect(() => {
+    setUserInput("");
   }, [value]);
 
   useEffect(() => {
@@ -69,36 +75,31 @@ export function DateInput({
     if (val.length > 8) val = val.slice(0, 8);
     
     if (val.length <= 2) {
-      setInputValue(val);
+      setUserInput(val);
     } else if (val.length <= 4) {
-      setInputValue(`${val.slice(0, 2)}/${val.slice(2)}`);
+      setUserInput(`${val.slice(0, 2)}/${val.slice(2)}`);
     } else {
-      setInputValue(`${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`);
+      setUserInput(`${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`);
     }
   };
 
   const handleInputBlur = () => {
+    const input = userInput || inputValue;
     setTimeout(() => {
       try {
-        const parsed = parse(inputValue, "dd/MM/yyyy", new Date());
+        const parsed = parse(input, "dd/MM/yyyy", new Date());
         if (!isNaN(parsed.getTime())) {
           if (minDate && parsed < minDate) {
-            setInputValue(format(minDate, "dd/MM/yyyy"));
             onChange(format(minDate, "yyyy-MM-dd"));
           } else {
-            setInputValue(format(parsed, "dd/MM/yyyy"));
             onChange(format(parsed, "yyyy-MM-dd"));
           }
         } else if (value) {
-          setInputValue(format(parseDateString(value), "dd/MM/yyyy"));
-        } else {
-          setInputValue("");
+          onChange(value);
         }
       } catch {
         if (value) {
-          setInputValue(format(parseDateString(value), "dd/MM/yyyy"));
-        } else {
-          setInputValue("");
+          onChange(value);
         }
       }
     }, 150);
@@ -109,7 +110,6 @@ export function DateInput({
       if (minDate && date < minDate) {
         date = minDate;
       }
-      setInputValue(format(date, "dd/MM/yyyy"));
       onChange(format(date, "yyyy-MM-dd"));
       setIsOpen(false);
     }
@@ -134,12 +134,12 @@ export function DateInput({
           type="text"
           inputMode="numeric"
           placeholder={placeholder}
-          value={inputValue}
+          value={userInput || inputValue}
           onChange={handleInputChange}
           onFocus={() => !disabled && setIsOpen(true)}
           onBlur={handleInputBlur}
           disabled={disabled}
-          className={`bg-transparent px-4 py-2 text-white focus:outline-none ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-transparent py-2 text-white focus:outline-none ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           style={{ width: "100px", textAlign: "center" }}
         />
         <button

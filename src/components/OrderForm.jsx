@@ -33,13 +33,13 @@ const ProductRow = React.memo(
         <button
           type="button"
           onClick={() => updateField(product.id, "needsReview", !cartItem?.needsReview)}
-          className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${
+          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${
             cartItem?.needsReview 
-              ? 'border-red-500 bg-red-500 text-white' 
-              : 'border-white/20 hover:border-red-500/50'
+              ? 'border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30' 
+              : 'border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
           }`}
         >
-          {cartItem?.needsReview && <AlertCircle className="h-4 w-4" />}
+          <AlertCircle className="h-4 w-4" />
         </button>
         <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
           {getProductIcon(categoryName)}
@@ -75,7 +75,7 @@ const ProductRow = React.memo(
           <input
             type="text"
             inputMode="numeric"
-            value={cartItem?.currentStockRaw ?? cartItem?.currentStock ?? ''}
+            value={cartItem?.currentStock > 0 ? cartItem?.currentStock : ''}
             onChange={(e) =>
               handleInputChange(product.id, "currentStock", e.target.value)
             }
@@ -105,7 +105,7 @@ const ProductRow = React.memo(
           <input
             type="text"
             inputMode="numeric"
-            value={cartItem?.quantityRaw ?? cartItem?.quantity ?? ''}
+            value={cartItem?.quantity > 0 ? cartItem?.quantity : ''}
             onChange={(e) =>
               handleInputChange(product.id, "quantity", e.target.value)
             }
@@ -141,6 +141,7 @@ export default function OrderForm({ store, onBack }) {
   const [isReviewing, setIsReviewing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [attentionAcknowledged, setAttentionAcknowledged] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -160,6 +161,9 @@ export default function OrderForm({ store, onBack }) {
     setCart((prev) => {
       const current = prev[id] || { quantity: 0, currentStock: 0 };
       if (typeof value === 'boolean') {
+        if (value === true) {
+          setAttentionAcknowledged(false);
+        }
         return { ...prev, [id]: { ...current, [field]: value } };
       }
       const nextValue = Math.max(0, (current[field] || 0) + value);
@@ -178,6 +182,26 @@ export default function OrderForm({ store, onBack }) {
 
   const handleSubmit = async () => {
     setError(null);
+    
+    const itemsWithReview = Object.entries(cart)
+      .filter(([_, data]) => data.needsReview === true)
+      .map(([productId]) => productId);
+
+    if (itemsWithReview.length > 0 && !attentionAcknowledged) {
+      const productNames = itemsWithReview
+        .map(id => {
+          for (const cat of categories) {
+            const product = cat.products?.find(p => p.id === id);
+            if (product) return product.name;
+          }
+          return id;
+        })
+        .join(", ");
+      setError(`Produto(s) em atenção precisam ser revisados: ${productNames}`);
+      setAttentionAcknowledged(false);
+      return;
+    }
+
     const orderItems = Object.entries(cart)
       .filter(
         ([_, data]) =>
@@ -226,6 +250,10 @@ export default function OrderForm({ store, onBack }) {
     0,
   );
 
+  const hasItems = Object.values(cart).some(
+    (item) => (item.quantity || 0) > 0 || (item.currentStock || 0) > 0
+  );
+
   const getIconForCategory = (name) => {
     const lowerName = name.toLowerCase();
     if (lowerName.includes("legume"))
@@ -257,20 +285,6 @@ export default function OrderForm({ store, onBack }) {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[40vh] text-center p-6 bg-red-500/5 rounded-2xl border border-red-500/10">
-        <h2 className="text-lg font-bold text-red-500 mb-2">
-          Ops! Algo deu errado
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">{error}</p>
-        <Button onClick={() => window.location.reload()}>
-          Tentar Novamente
-        </Button>
-      </div>
-    );
-  }
-
   if (isSuccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 animate-slide-up">
@@ -291,6 +305,25 @@ export default function OrderForm({ store, onBack }) {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 animate-slide-up">
+      {error && (
+        <div className="fixed bottom-24 left-4 right-4 z-[110] animate-in slide-in-from-bottom-4 duration-300">
+          <div className="glass-card p-4 rounded-xl border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20">
+            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+            <span className="text-sm text-red-200 flex-1">{error}</span>
+            <Button
+              onClick={() => {
+                setAttentionAcknowledged(true);
+                setError(null);
+              }}
+              variant="ghost"
+              size="sm"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/30 text-xs shrink-0"
+            >
+              OK
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="text-center mb-8">
         <h2 className="w-full text-2xl font-bold text-white">
           Pedido de compras
@@ -335,8 +368,7 @@ export default function OrderForm({ store, onBack }) {
             <DateInput
               value={orderDate}
               onChange={setOrderDate}
-              min={getTomorrowDate()}
-            />
+              min={getTomorrowDate()}/>
           </div>
         )}
 
@@ -418,7 +450,6 @@ export default function OrderForm({ store, onBack }) {
                     {category.name}
                   </h3>
                 </div>
-
                 <div className="grid grid-cols-1 gap-3">
                   <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                     <span>Produto</span>
@@ -444,7 +475,7 @@ export default function OrderForm({ store, onBack }) {
           </div>
         )}
 
-        {totalItems > 0 && (
+        {hasItems && (
           <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
             <Button
               onClick={handleSubmit}
