@@ -142,6 +142,37 @@ export default function OrderForm({ store, onBack }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [attentionAcknowledged, setAttentionAcknowledged] = useState(false);
+  const [showStickyButton, setShowStickyButton] = useState(false);
+  const productsContainerRef = React.useRef(null);
+
+  useEffect(() => {
+    if (!productsContainerRef.current) return;
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const viewportHeight = window.innerHeight;
+          const containerTop = productsContainerRef.current?.getBoundingClientRect().top || 0;
+          
+          const shouldShow = currentScrollY > 100 || containerTop < -50;
+          setShowStickyButton(shouldShow);
+          
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -450,7 +481,7 @@ export default function OrderForm({ store, onBack }) {
             </Button>
           </div>
         ) : (
-          <div className="space-y-8 pb-32">
+          <div className="space-y-8 pb-32" ref={productsContainerRef}>
             {categories.map((category) => (
               <div key={category.id} className="space-y-4">
                 <div className="flex items-center gap-2 px-2">
@@ -484,8 +515,8 @@ export default function OrderForm({ store, onBack }) {
           </div>
         )}
 
-        {hasItems && (
-          <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
+        {hasItems && showStickyButton && !isReviewing && (
+          <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-[100] animate-in slide-in-from-bottom-4 duration-300">
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
