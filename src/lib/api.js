@@ -1,4 +1,6 @@
-const API_URL = 'http://192.168.0.245:3333';
+const isLocalhost = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_URL = isLocalhost ? 'http://localhost:3333' : 'http://192.168.0.245:3333';
 
 export async function apiRequest(endpoint, options = {}) {
   let token = null;

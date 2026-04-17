@@ -57,7 +57,7 @@ const ProductRow = React.memo(
         </span>
         <div className="flex items-center gap-1 min-w-[60px] justify-center">
           <Package className="h-3.5 w-3.5 text-primary/50" />
-          <span className="text-sm font-bold text-primary">{product.stock ?? 0}</span>
+          <span className="text-sm font-bold text-primary">{product.stockCD ?? 0}</span>
         </div>
       </div>
 
@@ -147,7 +147,16 @@ export default function OrderForm({ store, onBack }) {
     async function fetchProducts() {
       try {
         const categoriesData = await api.getCategories();
-        setCategories(categoriesData || []);
+        const order = ['Legumes', 'Frutas', 'Verduras'];
+        const sorted = [...(categoriesData || [])].sort((a, b) => {
+          const idxA = order.indexOf(a.name);
+          const idxB = order.indexOf(b.name);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        setCategories(sorted);
       } catch (err) {
         setError(err.message);
       } finally {
