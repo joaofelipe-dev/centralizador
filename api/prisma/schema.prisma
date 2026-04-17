@@ -48,6 +48,7 @@ model Product {
   name       String
   price      Float
   stock      Int         @default(0)
+  stockCD    Int?        // Estoque do Centro de Distribuição (sincronizado do Excel)
   categoryId String
   category   Category    @relation(fields: [categoryId], references: [id])
   userId     String
