@@ -485,7 +485,7 @@ export default function OrderForm({ store, onBack }) {
         )}
 
         {hasItems && (
-          <div className="fixed bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
+          <div className="sticky bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
