@@ -79,19 +79,32 @@ export class FileFinderService {
     try {
       const dirPathEscaped = dirPath.replace(/'/g, "''");
       const ps = `powershell -Command "Get-ChildItem -Path '${dirPathEscaped}\\*.xlsm' | Select-Object Name, LastWriteTime | ConvertTo-Json"`;
-      
+
       console.log(`[FileFinder] Executando PowerShell...`);
-      const output = execSync(ps, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
-      
+      console.log(`[FileFinder] Comando: ${ps}`);
+
+      const output = execSync(ps, {
+        encoding: 'utf8',
+        maxBuffer: 10 * 1024 * 1024,
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+
+      console.log(`[FileFinder] Output bruto: "${output}"`);
+      console.log(`[FileFinder] Output trimado: "${output.trim()}"`);
+      console.log(`[FileFinder] Output length: ${output.trim().length}`);
+
       if (!output.trim()) {
+        console.log(`[FileFinder] Output vazio - nenhum arquivo encontrado`);
         return files;
       }
-      
+
       let parsed = JSON.parse(output);
       if (!Array.isArray(parsed)) {
         parsed = [parsed];
       }
-      
+
+      console.log(`[FileFinder] Parsed: ${JSON.stringify(parsed, null, 2)}`);
+
       for (const item of parsed) {
         const fileName = item.Name;
         if (fileName && fileName.endsWith('.xlsm')) {
@@ -119,7 +132,15 @@ export class FileFinderService {
         }
       }
     } catch (error) {
-      console.error(`[FileFinder] Erro ao listar diretório ${dirPath}:`, error);
+      console.error(`[FileFinder] Erro ao listar diretório ${dirPath}:`);
+      console.error(`[FileFinder] Error message: ${error instanceof Error ? error.message : String(error)}`);
+      if (error instanceof Error && 'stderr' in error) {
+        console.error(`[FileFinder] Stderr: ${(error as any).stderr}`);
+      }
+      if (error instanceof Error && 'stdout' in error) {
+        console.error(`[FileFinder] Stdout: ${(error as any).stdout}`);
+      }
+      console.error(error);
     }
 
     return files;
