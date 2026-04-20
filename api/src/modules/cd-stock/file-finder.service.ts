@@ -77,24 +77,48 @@ export class FileFinderService {
     const files: FileInfo[] = [];
 
     try {
+      // Verificar se o diretório existe
+      console.log(`[FileFinder] Verificando se diretório existe: ${dirPath}`);
+      if (!fs.existsSync(dirPath)) {
+        console.error(`[FileFinder] ❌ Diretório NÃO existe: ${dirPath}`);
+        return files;
+      }
+      console.log(`[FileFinder] ✓ Diretório existe`);
+
       const dirPathEscaped = dirPath.replace(/'/g, "''");
       const ps = `powershell -Command "Get-ChildItem -Path '${dirPathEscaped}\\*.xlsm' | Select-Object Name, LastWriteTime | ConvertTo-Json"`;
 
       console.log(`[FileFinder] Executando PowerShell...`);
       console.log(`[FileFinder] Comando: ${ps}`);
 
-      const output = execSync(ps, {
-        encoding: 'utf8',
-        maxBuffer: 10 * 1024 * 1024,
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
+      let output = '';
+      let stderr = '';
+      try {
+        output = execSync(ps, {
+          encoding: 'utf8',
+          maxBuffer: 10 * 1024 * 1024,
+          stdio: ['pipe', 'pipe', 'pipe']
+        });
+      } catch (execError: any) {
+        output = execError.stdout || '';
+        stderr = execError.stderr || '';
+        console.error(`[FileFinder] Erro ao executar PowerShell: ${execError.message}`);
+        if (stderr) {
+          console.error(`[FileFinder] Stderr: ${stderr}`);
+        }
+      }
 
-      console.log(`[FileFinder] Output bruto: "${output}"`);
+      console.log(`[FileFinder] Output bruto (${output.length} chars): "${output.substring(0, 100)}..."`);
       console.log(`[FileFinder] Output trimado: "${output.trim()}"`);
       console.log(`[FileFinder] Output length: ${output.trim().length}`);
 
       if (!output.trim()) {
-        console.log(`[FileFinder] Output vazio - nenhum arquivo encontrado`);
+        console.log(`[FileFinder] ❌ Output vazio - PowerShell retornou vazio`);
+        console.log(`[FileFinder] Possíveis causas:`);
+        console.log(`[FileFinder]   - Pasta vazia`);
+        console.log(`[FileFinder]   - Sem permissão de acesso`);
+        console.log(`[FileFinder]   - Caminho incorreto`);
+        console.log(`[FileFinder]   - Unidade não mapeada`);
         return files;
       }
 
@@ -103,7 +127,8 @@ export class FileFinderService {
         parsed = [parsed];
       }
 
-      console.log(`[FileFinder] Parsed: ${JSON.stringify(parsed, null, 2)}`);
+      console.log(`[FileFinder] ✓ JSON parseado com sucesso (${parsed.length} itens)`);
+      console.log(`[FileFinder] Items: ${JSON.stringify(parsed, null, 2)}`);
 
       for (const item of parsed) {
         const fileName = item.Name;
@@ -132,7 +157,7 @@ export class FileFinderService {
         }
       }
     } catch (error) {
-      console.error(`[FileFinder] Erro ao listar diretório ${dirPath}:`);
+      console.error(`[FileFinder] ❌ ERRO ao listar diretório ${dirPath}:`);
       console.error(`[FileFinder] Error message: ${error instanceof Error ? error.message : String(error)}`);
       if (error instanceof Error && 'stderr' in error) {
         console.error(`[FileFinder] Stderr: ${(error as any).stderr}`);
@@ -169,12 +194,14 @@ export class FileFinderService {
         const regex = this.patternToRegex(padrao);
         const matches = files.filter(f => regex.test(f.name));
 
+        console.log(`[FileFinder] Testando padrão: "${padrao}" - ${matches.length} match(es)`);
+
         if (matches.length > 0) {
-          console.log(`[FileFinder] Pattern "${padrao}" matched: ${matches[0].name}`);
+          console.log(`[FileFinder] ✓ Pattern "${padrao}" matched: ${matches[0].name}`);
           matches.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
           const maisRecente = matches[0];
 
-          console.log(`[FileFinder] Arquivo encontrado: ${maisRecente.name}`);
+          console.log(`[FileFinder] ✓ Arquivo encontrado: ${maisRecente.name}`);
           console.log(`[FileFinder] Modificado em: ${maisRecente.mtime}`);
 
           return {
@@ -184,6 +211,7 @@ export class FileFinderService {
         }
       }
 
+      console.log(`[FileFinder] ❌ Nenhum padrão fez match. Total de padrões testados: ${padroes.length}`);
       return { success: false, error: 'Nenhum arquivo com padrão correspondente' };
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : 'Erro desconhecido';
