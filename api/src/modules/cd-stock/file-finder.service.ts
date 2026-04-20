@@ -29,9 +29,8 @@ export class FileFinderService {
   }
 
   private getSemanasAnteriores(): number[] {
-    const semanaAtual = this.getSemanaAtual();
     const semanas: number[] = [];
-    for (let i = semanaAtual; i >= 1; i--) {
+    for (let i = 5; i >= 1; i--) {
       semanas.push(i);
     }
     return semanas;
