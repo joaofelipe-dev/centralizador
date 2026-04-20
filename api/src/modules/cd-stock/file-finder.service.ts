@@ -77,29 +77,32 @@ export class FileFinderService {
     const files: FileInfo[] = [];
 
     try {
-      const escapedPath = dirPath.replace(/\\/g, '\\\\');
-      const cmd = `cmd /c dir "${escapedPath}\\*.xlsm" /b`;
+      const dirPathEscaped = dirPath.replace(/'/g, "''");
+      const ps = `powershell -Command "Get-ChildItem -Path '${dirPathEscaped}\\*.xlsm' | Select-Object Name, LastWriteTime | ConvertTo-Json"`;
       
-      const output = execSync(cmd, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
+      console.log(`[FileFinder] Executando PowerShell...`);
+      const output = execSync(ps, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
       
-      const lines = output.split('\n').map(l => l.trim()).filter(l => l && l.endsWith('.xlsm'));
+      if (!output.trim()) {
+        return files;
+      }
       
-      for (const fileName of lines) {
-        const fullPath = path.join(dirPath, fileName);
-        try {
-          const stats = fs.statSync(fullPath);
-          files.push({
-            name: fileName,
-            path: fullPath,
-            mtime: stats.mtime
-          });
-        } catch {
-          const cmdMtime = `cmd /c dir "${escapedPath}\\${fileName}" /tc`;
-          const mtimeOutput = execSync(cmdMtime, { encoding: 'utf8' });
-          const mtimeMatch = mtimeOutput.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+      let parsed = JSON.parse(output);
+      if (!Array.isArray(parsed)) {
+        parsed = [parsed];
+      }
+      
+      for (const item of parsed) {
+        const fileName = item.Name;
+        if (fileName && fileName.endsWith('.xlsm')) {
+          const fullPath = path.join(dirPath, fileName);
+          const mtimeStr = item.LastWriteTime;
           let mtime = new Date();
-          if (mtimeMatch) {
-            mtime = new Date(parseInt(mtimeMatch[3]), parseInt(mtimeMatch[2]) - 1, parseInt(mtimeMatch[1]), parseInt(mtimeMatch[4]), parseInt(mtimeMatch[5]));
+          if (mtimeStr) {
+            const parsed = new Date(mtimeStr);
+            if (!isNaN(parsed.getTime())) {
+              mtime = parsed;
+            }
           }
           files.push({
             name: fileName,
