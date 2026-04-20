@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 
 const DEFAULT_NETWORK_PATH = '\\\\192.168.0.247\\onedrive\\Consolidado';
 
@@ -76,20 +77,34 @@ export class FileFinderService {
     const files: FileInfo[] = [];
 
     try {
-      if (!fs.existsSync(dirPath)) {
-        return files;
-      }
-
-      const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-
-      for (const entry of entries) {
-        if (entry.isFile() && entry.name.endsWith('.xlsm')) {
-          const fullPath = path.join(dirPath, entry.name);
+      const escapedPath = dirPath.replace(/\\/g, '\\\\');
+      const cmd = `cmd /c dir "${escapedPath}\\*.xlsm" /b`;
+      
+      const output = execSync(cmd, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
+      
+      const lines = output.split('\n').map(l => l.trim()).filter(l => l && l.endsWith('.xlsm'));
+      
+      for (const fileName of lines) {
+        const fullPath = path.join(dirPath, fileName);
+        try {
           const stats = fs.statSync(fullPath);
           files.push({
-            name: entry.name,
+            name: fileName,
             path: fullPath,
             mtime: stats.mtime
+          });
+        } catch {
+          const cmdMtime = `cmd /c dir "${escapedPath}\\${fileName}" /tc`;
+          const mtimeOutput = execSync(cmdMtime, { encoding: 'utf8' });
+          const mtimeMatch = mtimeOutput.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+          let mtime = new Date();
+          if (mtimeMatch) {
+            mtime = new Date(parseInt(mtimeMatch[3]), parseInt(mtimeMatch[2]) - 1, parseInt(mtimeMatch[1]), parseInt(mtimeMatch[4]), parseInt(mtimeMatch[5]));
+          }
+          files.push({
+            name: fileName,
+            path: fullPath,
+            mtime
           });
         }
       }
