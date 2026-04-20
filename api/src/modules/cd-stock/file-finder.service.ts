@@ -110,6 +110,11 @@ export class FileFinderService {
     try {
       const files = this.listFilesInDirectory(this.networkPath);
 
+      console.log(`[FileFinder] Arquivos encontrados: ${files.length}`);
+      for (const f of files) {
+        console.log(`[FileFinder] - ${f.name}`);
+      }
+
       if (files.length === 0) {
         return { success: false, error: 'Nenhum arquivo encontrado na pasta' };
       }
@@ -119,6 +124,7 @@ export class FileFinderService {
         const matches = files.filter(f => regex.test(f.name));
 
         if (matches.length > 0) {
+          console.log(`[FileFinder] Pattern "${padrao}" matched: ${matches[0].name}`);
           matches.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
           const maisRecente = matches[0];
 
