@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
 
-const DEFAULT_NETWORK_PATH = '\\\\192.168.0.247\\onedrive\\Consolidado';
+const DEFAULT_NETWORK_PATH = 'Z:\\Consolidado';
 
 interface FileInfo {
   name: string;
