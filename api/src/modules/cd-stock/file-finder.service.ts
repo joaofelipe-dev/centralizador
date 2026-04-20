@@ -28,6 +28,15 @@ export class FileFinderService {
     return Math.ceil(dia / 7);
   }
 
+  private getSemanasAnteriores(): number[] {
+    const semanaAtual = this.getSemanaAtual();
+    const semanas: number[] = [];
+    for (let i = semanaAtual; i >= 1; i--) {
+      semanas.push(i);
+    }
+    return semanas;
+  }
+
   private getMesesPattern(): string[] {
     return [
       'Janeiro', 'Jan',
@@ -45,18 +54,20 @@ export class FileFinderService {
     ];
   }
 
-  private buildSearchPatterns(semana: number): string[] {
+  private buildSearchPatterns(semanas: number[]): string[] {
     const meses = this.getMesesPattern();
     const ano = new Date().getFullYear();
     const anoStr = String(ano);
 
     const padroes: string[] = [];
 
-    for (const mes of meses) {
-      padroes.push(`Centralizador ${semana} Sem ${mes}*${anoStr}*.xlsm`);
+    for (const semana of semanas) {
+      for (const mes of meses) {
+        padroes.push(`Centralizador ${semana} Sem ${mes}*${anoStr}*.xlsm`);
+      }
+      padroes.push(`Centralizador ${semana} Sem *.xlsm`);
     }
 
-    padroes.push(`Centralizador ${semana} Sem *.xlsm`);
     padroes.push(`Centralizador*.xlsm`);
 
     return padroes;
@@ -91,10 +102,10 @@ export class FileFinderService {
   }
 
   async findFile(): Promise<FindResult> {
-    const semana = this.getSemanaAtual();
-    const padroes = this.buildSearchPatterns(semana);
+    const semanas = this.getSemanasAnteriores();
+    const padroes = this.buildSearchPatterns(semanas);
 
-    console.log(`[FileFinder] Buscando arquivo para semana ${semana}`);
+    console.log(`[FileFinder] Buscando arquivo para semanas ${semanas.join(', ')}`);
     console.log(`[FileFinder] Path: ${this.networkPath}`);
 
     try {
