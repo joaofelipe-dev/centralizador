@@ -28,23 +28,18 @@ app.register(jwt, {
 
 // Swagger/OpenAPI
 app.register(swagger, {
-  swagger: {
+  openapi: {
     info: {
       title: 'Centralizador API',
       version: '1.0.0'
     },
-    servers: [
-      {
-        url: `http://${process.env.API_HOST || 'localhost'}:${process.env.PORT || 3333}`
-      }
-    ],
-    securityDefinitions: {
-      bearerAuth: {
-        type: 'apiKey',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Authorization',
-        in: 'header'
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
       }
     }
   }
