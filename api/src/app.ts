@@ -1,6 +1,8 @@
 import fastify from 'fastify'
 import jwt from '@fastify/jwt'
 import cors from '@fastify/cors'
+import swagger from '@fastify/swagger'
+import swaggerUi from '@fastify/swagger-ui'
 import { errorHandler } from './utils/error-handler.js'
 import { userRoutes } from './modules/user/user.routes.js'
 import { authRoutes } from './modules/auth/auth.routes.js'
@@ -22,6 +24,34 @@ app.register(cors, {
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET || 'supersecretkey',
+})
+
+// Swagger/OpenAPI
+app.register(swagger, {
+  swagger: {
+    info: {
+      title: 'Centralizador API',
+      version: '1.0.0'
+    },
+    servers: [
+      {
+        url: `http://${process.env.API_HOST || 'localhost'}:${process.env.PORT || 3333}`
+      }
+    ],
+    securityDefinitions: {
+      bearerAuth: {
+        type: 'apiKey',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header'
+      }
+    }
+  }
+})
+
+app.register(swaggerUi, {
+  routePrefix: '/docs'
 })
 
 // Error handler
