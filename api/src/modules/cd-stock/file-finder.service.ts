@@ -99,9 +99,16 @@ export class FileFinderService {
           const mtimeStr = item.LastWriteTime;
           let mtime = new Date();
           if (mtimeStr) {
-            const parsed = new Date(mtimeStr);
-            if (!isNaN(parsed.getTime())) {
-              mtime = parsed;
+            // PowerShell retorna em formato /Date(timestamp)/
+            const match = mtimeStr.match(/\/Date\((\d+)\)\//);
+            if (match && match[1]) {
+              mtime = new Date(parseInt(match[1], 10));
+            } else {
+              // Fallback para ISO string
+              const parsed = new Date(mtimeStr);
+              if (!isNaN(parsed.getTime())) {
+                mtime = parsed;
+              }
             }
           }
           files.push({
