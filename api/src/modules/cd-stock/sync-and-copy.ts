@@ -61,7 +61,10 @@ export class SyncAndCopyService {
       };
 
       console.log('[SyncAndCopy] Executando sync...');
-      const syncResult = await this.stockService.syncFromExcel();
+      const syncResult = await this.stockService.syncFromExcel({
+        fileName: sourceFile.name,
+        fileMtime: stats.mtime
+      });
 
       return {
         success: true,

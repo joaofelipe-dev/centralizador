@@ -16,6 +16,12 @@ interface SyncResult {
   errors: string[];
 }
 
+interface SyncLogData {
+  fileName?: string;
+  fileMtime?: Date;
+  columnUsed?: string;
+}
+
 export class CDStockService {
   private normalizeName(name: string): string {
     return String(name || '').trim().toLowerCase();
@@ -56,7 +62,7 @@ export class CDStockService {
     return null;
   }
 
-  async syncFromExcel(): Promise<SyncResult> {
+  async syncFromExcel(logData?: SyncLogData): Promise<SyncResult> {
     const workbook = excel.readFile(EXCEL_FILE_PATH);
 
     if (!workbook.SheetNames.includes(SHEET_NAME)) {
@@ -128,6 +134,18 @@ export class CDStockService {
     await Promise.all(updatePromises);
 
     const today = new Date().toISOString().split('T')[0];
+
+    await prisma.syncLog.create({
+      data: {
+        syncedAt: new Date(),
+        syncedCount: synced.length,
+        fileName: logData?.fileName,
+        fileMtime: logData?.fileMtime,
+        columnUsed: logData?.columnUsed || columnInfo.header,
+        notFound: JSON.stringify(notFound),
+        errors: JSON.stringify(errors)
+      }
+    });
 
     return {
       success: errors.length === 0,

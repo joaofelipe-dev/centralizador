@@ -77,10 +77,23 @@ model OrderItem {
   id           String  @id @default(uuid())
   orderId      String
   order        Order   @relation(fields: [orderId], references: [id])
-  productId    String
-  product      Product @relation(fields: [productId], references: [id])
-  quantity     Int
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
   currentStock Int     @default(0)
 
   @@map("order_items")
+}
+
+model SyncLog {
+  id          String   @id @default(uuid())
+  syncedAt    DateTime @default(now())
+  syncedCount Int
+  fileName    String?
+  fileMtime   DateTime?
+  columnUsed  String?
+  notFound   String   @default("[]")
+  errors      String   @default("[]")
+
+  @@map("sync_logs")
 }

@@ -2,10 +2,83 @@ import { FastifyInstance } from 'fastify';
 import { CDStockService } from './cd-stock.service.js';
 import { SyncAndCopyService } from './sync-and-copy.js';
 import { adminMiddleware } from '../../middlewares/auth.js';
+import { prisma } from '../../lib/prisma.js';
 
 export async function cdStockRoutes(app: FastifyInstance) {
   const cdStockService = new CDStockService();
   const syncAndCopyService = new SyncAndCopyService();
+
+  app.get('/status', {
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            lastSync: { type: 'string', nullable: true },
+            syncedCount: { type: 'number' },
+            fileName: { type: 'string', nullable: true }
+          }
+        }
+      }
+    }
+  }, async () => {
+    const lastLog = await prisma.syncLog.findFirst({
+      orderBy: { syncedAt: 'desc' }
+    });
+
+    if (!lastLog) {
+      return {
+        lastSync: null,
+        syncedCount: 0,
+        fileName: null
+      };
+    }
+
+    return {
+      lastSync: lastLog.syncedAt.toISOString(),
+      syncedCount: lastLog.syncedCount,
+      fileName: lastLog.fileName
+    };
+  });
+
+  app.get('/history', {
+    preHandler: adminMiddleware,
+    schema: {
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              syncedAt: { type: 'string' },
+              syncedCount: { type: 'number' },
+              fileName: { type: 'string', nullable: true },
+              columnUsed: { type: 'string', nullable: true }
+            }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { limit } = request.query as { limit?: number };
+    const logs = await prisma.syncLog.findMany({
+      orderBy: { syncedAt: 'desc' },
+      take: limit || 5,
+      select: {
+        id: true,
+        syncedAt: true,
+        syncedCount: true,
+        fileName: true,
+        columnUsed: true
+      }
+    });
+
+    return logs.map(log => ({
+      ...log,
+      syncedAt: log.syncedAt.toISOString()
+    }));
+  });
 
   app.post('/sync', {
     preHandler: adminMiddleware,
