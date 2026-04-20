@@ -61,10 +61,11 @@ export async function cdStockRoutes(app: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { limit } = request.query as { limit?: number };
+    const { limit } = request.query as { limit?: string };
+    const limitNum = limit ? parseInt(limit, 10) : 5;
     const logs = await prisma.syncLog.findMany({
       orderBy: { syncedAt: 'desc' },
-      take: limit || 5,
+      take: limitNum,
       select: {
         id: true,
         syncedAt: true,
