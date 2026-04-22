@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.247\\onedrive\\Enviados'
+const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.247\\onedrive\\Enviado'
 const DEFAULT_TEMPLATE_PATH = process.env.DEFAULT_TEMPLATE_PATH || path.join(process.cwd(), '..', 'public', 'Default.xlsx')
 
 export async function exportOrderToNetwork(order: any, storeName: string, storeCode?: string): Promise<{ success: boolean; filepath?: string; error?: string }> {
@@ -17,7 +17,7 @@ export async function exportOrderToNetwork(order: any, storeName: string, storeC
     
     const year = orderDate.getFullYear()
     const month = String(orderDate.getMonth() + 1).padStart(2, '0')
-    const day = String(orderDate.getDate()).padStart(2, '0')
+    const day = String(orderDate.getDate() + 1 ).padStart(2, '0')
     const formattedDate = `${day}/${month}/${year}`
     
     const storeCodeParam = storeCode || storeName.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 2)
