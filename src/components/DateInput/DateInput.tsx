@@ -38,10 +38,12 @@ export function DateInput({
   }, [value]);
 
   const [userInput, setUserInput] = useState("");
+  const [prevValue, setPrevValue] = useState(value);
 
-  useEffect(() => {
+  if (value !== prevValue) {
     setUserInput("");
-  }, [value]);
+    setPrevValue(value);
+  }
 
   useEffect(() => {
     if (isOpen && containerRef.current && popupRef.current) {

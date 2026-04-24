@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Centralizador CD-Stock API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://192.168.0.245:3333"
+    }
+  ],
+  "paths": {
+    "/cd-stock/status": {
+      "get": {
+        "summary": "Ver última sincronização (público)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lastSync": { "type": "string", "nullable": true },
+                    "syncedCount": { "type": "integer" },
+                    "fileName": { "type": "string", "nullable": true }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cd-stock/history": {
+      "get": {
+        "summary": "Ver histórico de sincronizações (admin)",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 5 }
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "syncedAt": { "type": "string" },
+                      "syncedCount": { "type": "integer" },
+                      "fileName": { "type": "string", "nullable": true },
+                      "columnUsed": { "type": "string", "nullable": true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cd-stock/sync": {
+      "post": {
+        "summary": "Sincronizar com arquivo existente (admin)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "date": { "type": "string" },
+                    "column": { "type": "string" },
+                    "synced": { "type": "integer" },
+                    "notFound": { "type": "array", "items": { "type": "string" } },
+                    "errors": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cd-stock/sync-and-copy": {
+      "post": {
+        "summary": "Copiar da rede + sincronizar (admin)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "file": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "copiedTo": { "type": "string" },
+                        "mtime": { "type": "string" }
+                      }
+                    },
+                    "sync": {
+                      "type": "object",
+                      "properties": {
+                        "synced": { "type": "integer" },
+                        "notFound": { "type": "array", "items": { "type": "string" } },
+                        "errors": { "type": "array", "items": { "type": "string" } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login para obter token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

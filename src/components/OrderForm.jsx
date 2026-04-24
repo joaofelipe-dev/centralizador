@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { FixedSizeList } from "react-window";
 import {
   Package,
   Plus,
@@ -18,6 +19,7 @@ import {
 import { Button } from "@/components/Button/Button";
 import { api } from "@/lib/api";
 import { DateInput } from "@/components/DateInput/DateInput";
+import { ProductFilter } from "@/components/ProductFilter";
 
 const ProductRow = React.memo(
   ({
@@ -33,11 +35,10 @@ const ProductRow = React.memo(
         <button
           type="button"
           onClick={() => updateField(product.id, "needsReview", !cartItem?.needsReview)}
-          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${
-            cartItem?.needsReview 
-              ? 'border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30' 
+          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${cartItem?.needsReview
+              ? 'border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30'
               : 'border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-          }`}
+            }`}
         >
           <AlertCircle className="h-4 w-4" />
         </button>
@@ -142,6 +143,7 @@ export default function OrderForm({ store, onBack }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [attentionAcknowledged, setAttentionAcknowledged] = useState(false);
+  const [filter, setFilter] = useState({ search: '', categoryId: null });
 
   useEffect(() => {
     async function fetchProducts() {
@@ -191,7 +193,7 @@ export default function OrderForm({ store, onBack }) {
 
   const handleSubmit = async () => {
     setError(null);
-    
+
     const itemsWithReview = Object.entries(cart)
       .filter(([_, data]) => data.needsReview === true)
       .map(([productId]) => productId);
@@ -280,6 +282,32 @@ export default function OrderForm({ store, onBack }) {
     if (lowerName.includes("fruta")) return <Apple className="h-6 w-6" />;
     return <LeafyGreen className="h-6 w-6" />;
   }, []);
+
+  const filteredProducts = useMemo(() => {
+    let result = [];
+    for (const cat of categories) {
+      if (filter.categoryId && cat.id !== filter.categoryId) continue;
+
+      const filtered = cat.products.filter(p =>
+        p.name.toLowerCase().includes(filter.search.toLowerCase())
+      );
+      result.push(...filtered);
+    }
+    return result;
+  }, [categories, filter]);
+
+  const totalProductCount = useMemo(() => {
+    return categories.reduce((sum, cat) => sum + (cat.products?.length || 0), 0);
+  }, [categories]);
+
+  const getCategoryName = React.useCallback((productId) => {
+    for (const cat of categories) {
+      if (cat.products?.find(p => p.id === productId)) {
+        return cat.name;
+      }
+    }
+    return '';
+  }, [categories]);
 
   if (isLoading) {
     return (
@@ -377,7 +405,7 @@ export default function OrderForm({ store, onBack }) {
             <DateInput
               value={orderDate}
               onChange={setOrderDate}
-              min={getTomorrowDate()}/>
+              min={getTomorrowDate()} />
           </div>
         )}
 
@@ -450,37 +478,61 @@ export default function OrderForm({ store, onBack }) {
             </Button>
           </div>
         ) : (
-          <div className="space-y-8 pb-32">
-            {categories.map((category) => (
-              <div key={category.id} className="space-y-4">
-                <div className="flex items-center gap-2 px-2">
-                  {getIconForCategory(category.name)}
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {category.name}
-                  </h3>
+          <div className="space-y-4 pb-32">
+            <ProductFilter
+              categories={categories}
+              selectedCategory={filter.categoryId}
+              searchTerm={filter.search}
+              filteredCount={filteredProducts.length}
+              totalCount={totalProductCount}
+              onCategoryChange={(categoryId) => setFilter({ ...filter, categoryId })}
+              onSearchChange={(search) => setFilter({ ...filter, search })}
+              onClear={() => setFilter({ search: '', categoryId: null })}
+            />
+
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setCart({})}
+                  disabled={Object.keys(cart).length === 0}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                >
+                  Limpar Pedido Completo
+                </Button>
+              </div>
+
+              {filteredProducts.length === 0 ? (
+                <div className="glass-card p-8 rounded-xl text-center">
+                  <p className="text-muted-foreground text-sm">
+                    Nenhum produto encontrado com os filtros selecionados.
+                  </p>
                 </div>
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+              ) : (
+                <div className="glass-card p-4 rounded-xl">
+                  <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-3 pb-3 border-b border-white/5">
                     <span>Produto</span>
                     <span className="text-center">Estoque CD</span>
                     <span className="text-center">Estoque Atual</span>
                     <span className="text-right pr-4">Quantidade</span>
                   </div>
-
-                  {category.products.map((product) => (
-                    <ProductRow
-                      key={product.id}
-                      product={product}
-                      categoryName={category.name}
-                      cartItem={cart[product.id]}
-                      updateField={updateField}
-                      handleInputChange={handleInputChange}
-                      getProductIcon={getProductIcon}
-                    />
-                  ))}
+                  <div className="space-y-3">
+                    {filteredProducts.map((product) => (
+                      <ProductRow
+                        key={product.id}
+                        product={product}
+                        categoryName={getCategoryName(product.id)}
+                        cartItem={cart[product.id]}
+                        updateField={updateField}
+                        handleInputChange={handleInputChange}
+                        getProductIcon={getProductIcon}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
         )}
 

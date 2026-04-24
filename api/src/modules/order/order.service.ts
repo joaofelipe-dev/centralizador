@@ -10,28 +10,28 @@ export class OrderService {
     private orderRepository: OrderRepository,
     private userRepository: UserRepository,
     private productRepository: ProductRepository
-  ) {}
+  ) { }
 
   async create(userId: string, role: UserRole, data: CreateOrderInput) {
     if (role === 'DEFAULT') {
       const user = await this.userRepository.findById(userId)
       const hasAccess = user?.stores.some(s => s.id === data.storeId)
-      
+
       if (!hasAccess) {
         throw new Error('Forbidden: User does not have access to this store')
       }
     }
 
     const order = await this.orderRepository.create(userId, data)
-    
+
     console.log(`[ORDER-SERVICE] Order created: ${order?.id}, store: ${order?.store?.name} (${order?.store?.code})`)
     console.log(`[ORDER-SERVICE] Order items count: ${order?.items?.length}`)
-    
+
     if (order && order.store) {
       console.log(`[ORDER-SERVICE] Starting export for store: ${order.store.name}`)
       const exportResult = await exportOrderToNetwork(
-        order, 
-        order.store.name || 'Loja', 
+        order,
+        order.store.name || 'Loja',
         order.store.code || undefined
       )
       console.log(`[ORDER-SERVICE] Export result:`, exportResult)
@@ -41,19 +41,60 @@ export class OrderService {
     } else {
       console.warn(`[ORDER-SERVICE] Order or store is null, skipping export`)
     }
-    
+
     return order
   }
 
-  async list(dateLabel?: string, statusFilter?: string) {
-    return this.orderRepository.list(dateLabel, statusFilter)
+  async list(
+    dateLabel?: string,
+    statusFilter?: string,
+    limit: number = 50,
+    offset: number = 0,
+    storeId?: string,
+    startDate?: string,
+    endDate?: string,
+    userId?: string,
+    userRole?: string
+  ) {
+    let allowedStoreIds: string | string[] | undefined = storeId
+
+    // Aplicar segurança baseada no role
+    if (userRole === 'DEFAULT') {
+      const user = await this.userRepository.findById(userId!)
+      const userStoreIds = user?.stores.map(s => s.id) || []
+
+      if (userStoreIds.length === 0) {
+        return { total: 0, limit, offset, data: [] }
+      }
+
+      if (storeId) {
+        // Se pediu uma loja específica, verifica se tem acesso
+        if (!userStoreIds.includes(storeId)) {
+          return { total: 0, limit, offset, data: [] }
+        }
+        allowedStoreIds = storeId
+      } else {
+        // Se não pediu, mostra todas as suas lojas
+        allowedStoreIds = userStoreIds
+      }
+    }
+
+    return this.orderRepository.list(
+      dateLabel,
+      statusFilter,
+      limit,
+      offset,
+      allowedStoreIds,
+      startDate,
+      endDate
+    )
   }
 
   async getConsolidatedData(dateLabel?: string, startDate?: string, endDate?: string) {
     const rawItems = await this.orderRepository.getConsolidatedData(dateLabel, startDate, endDate)
-    
+
     const allProducts = await this.productRepository.listAll()
-    
+
     const products: Record<string, any> = {}
     const stores: Record<string, any> = {}
     const matrix: Record<string, Record<string, { quantity: number, currentStock: number }>> = {}
@@ -108,5 +149,30 @@ export class OrderService {
       throw new Error('Forbidden: Only supervisors and admins can change order status')
     }
     return this.orderRepository.update(orderId, { status })
+  }
+
+  async getDashboardData(params: {
+    storeId?: string
+    userId?: string
+    status?: string
+    startDate?: string
+    endDate?: string
+    sort?: string
+    order?: 'asc' | 'desc',
+    requestingUserId?: string,
+    requestingUserRole?: string
+  }) {
+    // Usamos a lógica de listagem que já tem segurança
+    return this.list(
+      undefined, // dateLabel
+      params.status,
+      50, // limit
+      0, // offset
+      params.storeId,
+      params.startDate,
+      params.endDate,
+      params.requestingUserId,
+      params.requestingUserRole
+    )
   }
 }

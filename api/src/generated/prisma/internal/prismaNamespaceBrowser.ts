@@ -56,7 +56,8 @@ export const ModelName = {
   Category: 'Category',
   Product: 'Product',
   Order: 'Order',
-  OrderItem: 'OrderItem'
+  OrderItem: 'OrderItem',
+  SyncLog: 'SyncLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -140,6 +141,20 @@ export const OrderItemScalarFieldEnum = {
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+export const SyncLogScalarFieldEnum = {
+  id: 'id',
+  syncedAt: 'syncedAt',
+  syncedCount: 'syncedCount',
+  fileName: 'fileName',
+  fileMtime: 'fileMtime',
+  columnUsed: 'columnUsed',
+  notFound: 'notFound',
+  errors: 'errors'
+} as const
+
+export type SyncLogScalarFieldEnum = (typeof SyncLogScalarFieldEnum)[keyof typeof SyncLogScalarFieldEnum]
 
 
 export const SortOrder = {

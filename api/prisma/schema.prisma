@@ -70,6 +70,11 @@ model Order {
   orderDate DateTime
   createdAt DateTime    @default(now())
 
+  @@index([storeId])
+  @@index([userId])
+  @@index([status])
+  @@index([orderDate])
+  @@index([createdAt])
   @@map("orders")
 }
 
@@ -82,6 +87,8 @@ model OrderItem {
   quantity    Int
   currentStock Int     @default(0)
 
+  @@index([orderId])
+  @@index([productId])
   @@map("order_items")
 }
 

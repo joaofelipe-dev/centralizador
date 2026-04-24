@@ -35,7 +35,15 @@ export class OrderRepository {
     })
   }
 
-  async list(dateLabel?: string, statusFilter?: string) {
+  async list(
+    dateLabel?: string,
+    statusFilter?: string,
+    limit: number = 50,
+    offset: number = 0,
+    storeIds?: string | string[],
+    startDate?: string,
+    endDate?: string
+  ) {
     const where: any = {}
 
     if (dateLabel) {
@@ -45,35 +53,63 @@ export class OrderRepository {
       }
     }
 
+    if (startDate && endDate) {
+      where.createdAt = {
+        gte: new Date(`${startDate}T00:00:00Z`),
+        lte: new Date(`${endDate}T23:59:59Z`),
+      }
+    }
+
     if (statusFilter) {
       where.status = statusFilter
     }
+    
+    if (storeIds) {
+      if (Array.isArray(storeIds)) {
+        where.storeId = { in: storeIds }
+      } else {
+        where.storeId = storeIds
+      }
+    }
 
-    return prisma.order.findMany({
-      where,
-      include: {
-        items: {
-          include: {
-            product: true,
+    const [data, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: {
+          store: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+            },
+          },
+          items: {
+            include: {
+              product: true,
+            },
           },
         },
-        store: true,
-        user: {
-          select: {
-            name: true,
-            username: true,
-          },
+        orderBy: {
+          createdAt: 'desc',
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+        take: limit,
+        skip: offset,
+      }),
+      prisma.order.count({ where }),
+    ])
+
+    return {
+      total,
+      limit,
+      offset,
+      data,
+    }
   }
 
   async getConsolidatedData(dateLabel?: string, startDate?: string, endDate?: string) {
     let where = {}
-    
+
     if (dateLabel) {
       where = {
         orderDate: {
@@ -96,21 +132,44 @@ export class OrderRepository {
       }
     }
 
+    // Usar agregação ao invés de findMany para cada OrderItem
     const items = await prisma.orderItem.findMany({
       where: {
         order: where
       },
-      include: {
+      select: {
+        orderId: true,
+        productId: true,
+        quantity: true,
+        currentStock: true,
         product: {
-          include: {
-            category: true,
-          },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            categoryId: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
         },
         order: {
-          include: {
-            store: true,
-          },
-        },
+          select: {
+            id: true,
+            storeId: true,
+            orderDate: true,
+            store: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              }
+            }
+          }
+        }
       },
     })
 

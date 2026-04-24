@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "description": "Histórico de sessões do orquestrador de agentes",
+  "sessions": {},
+  "stats": {
+    "totalInvocations": 0,
+    "agentUsage": {},
+    "lastUpdated": null
+  }
+}

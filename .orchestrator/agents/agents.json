@@ -1,0 +1,222 @@
+{
+  "orchestrator": {
+    "version": "1.0.0",
+    "description": "Central orchestration system for agent routing",
+    "threshold": 0.4,
+    "fallbackStrategy": "ask_user"
+  },
+  "agents": {
+    "frontend": {
+      "id": "frontend",
+      "name": "Frontend Specialist",
+      "description": "Especialista em React 19, Next.js, Tailwind CSS, componentes UI e experiência do usuário",
+      "triggers": {
+        "keywords": [
+          "frontend", "react", "next", "nextjs", "ui", "ux", "componente", "formulario", 
+          "formulario", "pagina", "página", "estilo", "css", "tailwind", "layout", 
+          "modal", "botao", "botão", "input", "header", "footer", "navegacao",
+          "navegação", "hooks", "useState", "useEffect", "useCallback", "useMemo",
+          "context", "auth", "login", "dashboard", "onboarding", "client", "browser",
+          "design", "interface", "tela", "feature", "funcionalidade", "table", "list",
+          "card", "widget", "icon", "menu", "sidebar", "loading", "error", "loading"
+        ],
+        "patterns": [
+          "cria.*",
+          "adiciona.*(estilo|design|interface|funcionalidade)",
+          "modifica.*(tela|pagina|componente)",
+          "implementa.*",
+          "melhora.*(design|ui|ux|estilo)",
+          ".*(componente|pagina|modal|botao|formulario|hook)"
+        ]
+      },
+      "paths": {
+        "include": ["src/**", "public/**"],
+        "exclude": ["api/**", "node_modules/**", ".next/**"]
+      },
+      "skills": [
+        "vercel-react-best-practices",
+        "vercel-composition-patterns",
+        "web-design-guidelines"
+      ],
+      "subagentType": "frontend",
+      "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"],
+      "conventions": ".planning/codebase/CONVENTIONS.md",
+      "priority": 1
+    },
+    "backend": {
+      "id": "backend",
+      "name": "Backend Specialist",
+      "description": "Especialista em Fastify, Prisma, TypeScript, lógica de negócio e APIs REST",
+      "triggers": {
+        "keywords": [
+          "backend", "api", "fastify", "server", "rota", "route", "service", "controller",
+          "repository", "endpoint", "rest", "http", "request", "response", "jwt", "auth",
+          "autenticacao", "autenticação", "validacao", "validação", "schema", "zod",
+          "middleware", "hook", "preHandler", "payload", "query", "params", "orders",
+          "produtos", "usuarios", "users", "logica", "regra", "negocio", "log"
+        ],
+        "patterns": [
+          "cria.*(rota|endpoint|api|service|controller)",
+          "adiciona.*(autenticacao|middleware|validacao)",
+          "modifica.*(logica|regra|negocio)",
+          "implementa.*(feature|funcionalidade).*(backend|api)",
+          ".*(service|controller|endpoint|rota|api)"
+        ]
+      },
+      "paths": {
+        "include": ["api/src/**"],
+        "exclude": ["api/src/generated/**", "node_modules/**"]
+      },
+      "skills": [],
+      "subagentType": "backend",
+      "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"],
+      "conventions": ".planning/codebase/ARCHITECTURE.md",
+      "priority": 1
+    },
+    "database": {
+      "id": "database",
+      "name": "Database Specialist",
+      "description": "Especialista em Prisma ORM, schemas, migrations e modelos de dados",
+      "triggers": {
+        "keywords": [
+          "database", "db", "prisma", "schema", "migration", "modelo", "banco", "sqlite",
+          "tabela", "relacao", "relação", "foreign", "primary", "index", "enum", "seed",
+          "migrate", "generate", "client", "query", "where", "include", "select", "do"
+        ],
+        "patterns": [
+          "cria.*(model|schema|tabela|migration)",
+          "adiciona.*(campo|relacao)",
+          "modifica.*(estrutura|modelo|schema)",
+          "executa.*(migration|migrate|seed)",
+          ".*(prisma|schema|migration|tabela)"
+        ]
+      },
+      "paths": {
+        "include": ["api/prisma/**", "api/src/generated/**"],
+        "exclude": []
+      },
+      "skills": [],
+      "subagentType": "database",
+      "tools": ["Read", "Write", "Glob", "Bash"],
+      "conventions": ".planning/codebase/ARCHITECTURE.md",
+      "priority": 1
+    },
+    "testing": {
+      "id": "testing",
+      "name": "Testing Specialist",
+      "description": "Especialista em testes unitários com Vitest, testes E2E com Playwright e coverage",
+      "triggers": {
+        "keywords": [
+          "test", "teste", "testes", "vitest", "playwright", "coverage", "spec", "expect", "assert",
+          "mock", "spy", "stub", "unit", "integration", "e2e", "end-to-end", "render",
+          "screen", "fireEvent", "userEvent", "describe", "it", "beforeEach",
+          "afterEach", "setup", "teardown", "msw", "handler", "escreve", "roda"
+        ],
+        "patterns": [
+          "escreve.*(test|teste|spec)",
+          "adiciona.*(test|teste|coverage)",
+          "roda.*(test|teste|coverage)",
+          "cria.*(mock|stub|handler)",
+          ".*(teste|test|mock)"
+        ]
+      },
+      "paths": {
+        "include": ["src/__tests__/**", "api/src/__tests__/**"],
+        "exclude": ["node_modules/**"]
+      },
+      "skills": [],
+      "subagentType": "testing",
+      "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"],
+      "conventions": ".planning/codebase/TESTING.md",
+      "priority": 2
+    },
+    "review": {
+      "id": "review",
+      "name": "Code Review Specialist",
+      "description": "Especialista em revisão de código, padrões, refatoração e boas práticas",
+      "triggers": {
+        "keywords": [
+          "review", "revisar", "code review", "refatorar", "refactoring", "padrao", "padrão",
+          "qualidade", "bug", "fix", "corrige", "melhora", "improve", "lint", "eslint",
+          "typescript", "tipagem", "type", "interface", "types"
+        ],
+        "patterns": [
+          "revis.*(codigo|código)",
+          "refatora.*(codigo|código)",
+          "corrige.*(bug|issue|problema)",
+          "melhora.*(performance|qualidade|codigo)"
+        ]
+      },
+      "paths": {
+        "include": ["src/**", "api/src/**"],
+        "exclude": ["node_modules/**", ".next/**"]
+      },
+      "skills": ["gsd-code-review"],
+      "subagentType": "reviewer",
+      "tools": ["Read", "Grep"],
+      "conventions": ".planning/codebase/CONVENTIONS.md",
+      "priority": 2
+    },
+    "explore": {
+      "id": "explore",
+      "name": "Codebase Explorer",
+      "description": "Especialista em análise de codebase, documentação e mapeamento de arquitetura",
+      "triggers": {
+        "keywords": [
+          "explore", "analyze", "analisar", "entender", "estrutura", "mapa", "documentar",
+          "documentacao", "arquitetura", "como funciona", "onde esta", "onde está", 
+          "quem chama", "quem usa", "dependencias", "dependências", "imports", "fluxo", 
+          "hierarquia", "onde", "como", "o que", "quem", "sistema", "projeto"
+        ],
+        "patterns": [
+          "como funciona",
+          "onde esta",
+          "onde está",
+          "o que faz",
+          "explora.*",
+          "mapeia.*",
+          "documenta.*",
+          ".*(funciona|estao|arquitetura)"
+        ]
+      },
+      "paths": {
+        "include": ["**/*"],
+        "exclude": ["node_modules/**", ".next/**", ".git/**", ".orchestrator/**"]
+      },
+      "skills": [],
+      "subagentType": "explore",
+      "tools": ["Read", "Glob", "Grep"],
+      "conventions": ".planning/codebase/ARCHITECTURE.md",
+      "priority": 3
+    },
+    "security": {
+      "id": "security",
+      "name": "Security Specialist",
+      "description": "Especialista em auditoria de segurança, vulnerabilidades e proteção",
+      "triggers": {
+        "keywords": [
+          "security", "seguranca", "segurança", "vulnerability", "vulnerabilidade",
+          "xss", "sql injection", "csrf", "auth", "authorization",
+          "token", "secret", "senha", "criptografia", "encryption", "sanitize",
+          "validate", "input", "output", "escape", "protect", "secure", "audit",
+          "audita", "verifica", "checa", "protecao", "proteção"
+        ],
+        "patterns": [
+          "audita.*",
+          "verifica.*(vulnerabilidade|seguranca|security)",
+          "checa.*",
+          "implementa.*(seguranca|security)"
+        ]
+      },
+      "paths": {
+        "include": ["src/**", "api/src/**"],
+        "exclude": ["node_modules/**", ".next/**"]
+      },
+      "skills": ["gsd-secure-phase"],
+      "subagentType": "security",
+      "tools": ["Read", "Grep"],
+      "conventions": null,
+      "priority": 1
+    }
+  }
+}

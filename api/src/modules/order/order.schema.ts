@@ -22,6 +22,18 @@ export const updateOrderStatusSchema = z.object({
   status: z.enum(ORDER_STATUS_VALUES),
 })
 
+export const listOrdersSchema = z.object({
+  limit: z.number().int().min(1).max(100).default(50),
+  offset: z.number().int().min(0).default(0),
+  status: z.enum(ORDER_STATUS_VALUES).optional(),
+  storeId: z.string().uuid().optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  date: z.string().optional(),
+})
+
 export type CreateOrderInput = z.infer<typeof createOrderSchema>
 export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>
+export type ListOrdersInput = z.infer<typeof listOrdersSchema>
+
