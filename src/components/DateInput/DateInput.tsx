@@ -7,9 +7,18 @@ import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import "react-day-picker/style.css";
 
-function parseDateString(dateStr) {
+function parseDateString(dateStr: string): Date {
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day);
+}
+
+interface DateInputProps {
+  value: string;
+  onChange: (date: string) => void;
+  min?: string;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
 }
 
 export function DateInput({
@@ -19,11 +28,11 @@ export function DateInput({
   placeholder = "DD/MM/AAAA",
   className = "",
   disabled = false
-}) {
+}: DateInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ top: true, left: true });
-  const containerRef = useRef(null);
-  const popupRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const selectedDate = value ? parseDateString(value) : undefined;
   const minDate = min ? parseDateString(min) : undefined;
 
@@ -40,10 +49,12 @@ export function DateInput({
   const [userInput, setUserInput] = useState("");
   const [prevValue, setPrevValue] = useState(value);
 
-  if (value !== prevValue) {
-    setUserInput("");
-    setPrevValue(value);
-  }
+  useEffect(() => {
+    if (value !== prevValue) {
+      setUserInput("");
+      setPrevValue(value);
+    }
+  }, [value, prevValue]);
 
   useEffect(() => {
     if (isOpen && containerRef.current && popupRef.current) {
@@ -61,8 +72,8 @@ export function DateInput({
   }, [isOpen]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
@@ -72,7 +83,7 @@ export function DateInput({
     }
   }, [isOpen]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
     if (val.length > 8) val = val.slice(0, 8);
     
@@ -107,12 +118,13 @@ export function DateInput({
     }, 150);
   };
 
-  const handleDaySelect = (date) => {
+  const handleDaySelect = (date: Date) => {
     if (date) {
+      let selectedDate = date;
       if (minDate && date < minDate) {
-        date = minDate;
+        selectedDate = minDate;
       }
-      onChange(format(date, "yyyy-MM-dd"));
+      onChange(format(selectedDate, "yyyy-MM-dd"));
       setIsOpen(false);
     }
   };
