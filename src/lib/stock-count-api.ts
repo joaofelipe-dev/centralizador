@@ -39,7 +39,8 @@ export const stockCountApi = {
     if (params?.limit) searchParams.append('limit', params.limit.toString())
     if (params?.offset) searchParams.append('offset', params.offset.toString())
     const query = searchParams.toString()
-    return apiRequest<StockCountListResponse>(`/stock-counts${query ? `?${query}` : ''}`)
+    const data = await apiRequest<StockCountListResponse>(`/stock-counts${query ? `?${query}` : ''}`)
+    return data && typeof data === 'object' && 'data' in data ? data : { data: [], total: 0, limit: 0, offset: 0 }
   },
 
   getStockCount: async (id: string): Promise<StockCount> => {

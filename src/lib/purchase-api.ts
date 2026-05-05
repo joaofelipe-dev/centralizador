@@ -13,7 +13,8 @@ export async function listPurchases(params?: { status?: string; supplierId?: str
   if (params?.status) searchParams.append('status', params.status);
   if (params?.supplierId) searchParams.append('supplierId', params.supplierId);
   const query = searchParams.toString();
-  return apiRequest<PurchaseOrder[]>(`/purchases${query ? `?${query}` : ''}`);
+  const data = await apiRequest<PurchaseOrder[]>(`/purchases${query ? `?${query}` : ''}`);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function getPurchase(id: string) {

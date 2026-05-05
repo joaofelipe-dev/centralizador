@@ -8,7 +8,8 @@ export async function listMovements(filters?: MovementFilters): Promise<StockMov
   if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
   if (filters?.dateTo) params.append('dateTo', filters.dateTo);
   const query = params.toString();
-  return apiRequest<StockMovement[]>(`/movements${query ? `?${query}` : ''}`);
+  const data = await apiRequest<StockMovement[]>(`/movements${query ? `?${query}` : ''}`);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function createAdjustment(data: CreateAdjustmentData): Promise<StockMovement> {

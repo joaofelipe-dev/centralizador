@@ -30,7 +30,8 @@ export async function createSale(data: CreateSaleData): Promise<Sale> {
 }
 
 export async function listSales(): Promise<Sale[]> {
-  return apiRequest<Sale[]>('/sales');
+  const data = await apiRequest<Sale[]>('/sales');
+  return Array.isArray(data) ? data : [];
 }
 
 export async function getSale(id: string): Promise<Sale> {
