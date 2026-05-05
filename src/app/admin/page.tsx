@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import type { FormEvent } from "react";
 import {
   ArrowLeft,
   LogOut,
@@ -16,6 +15,7 @@ import { Button } from "@/components/Button/Button";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { StatsGallery } from "@/components/Admin/StatsGallery";
 import { PivotTable } from "@/components/Admin/PivotTable";
@@ -71,7 +71,6 @@ export default function AdminPage() {
     role: "USER" as UserRole,
   });
   const [editUserId, setEditUserId] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<string>("");
   const [isDataLoading, setIsDataLoading] = useState<boolean>(true);
   const router = useRouter();
 
@@ -91,7 +90,7 @@ export default function AdminPage() {
           name: u.email?.split('@')[0] || u.username,
           email: u.email,
           role: u.role as UserRole,
-          stores: storesData.filter((s) => s.id === u.storeId),
+          stores: storesData.filter((s: Store) => s.id === u.storeId),
         }))
       );
       setAllStores(storesData || []);
@@ -102,7 +101,7 @@ export default function AdminPage() {
             });
     } catch (error) {
       console.error("Falha ao carregar dados:", error);
-      setFeedback("Erro ao carregar dados do sistema.");
+      toast.error("Erro ao carregar dados do sistema.");
     } finally {
       setIsDataLoading(false);
     }
@@ -124,63 +123,50 @@ export default function AdminPage() {
     }
   }, [user, loading, router, loadData, filterDate]);
 
-  const resetForm = useCallback(() => {
-    setForm({ username: "", name: "", email: "", password: "", storeIds: [], role: "USER" as UserRole });
-    setEditUserId(null);
-    setFeedback("");
-  }, []);
-
-  const handleUserSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (
-      !form.username.trim() ||
-      !form.name.trim() ||
-      form.storeIds.length === 0
-    ) {
-      setFeedback("Usuário, nome e lojas são obrigatórios.");
-      return;
-    }
-
+  const handleSave = async (data: {
+    id?: string;
+    username: string;
+    name: string;
+    email: string;
+    password?: string;
+    storeIds: string[];
+    role: UserRole;
+  }) => {
     try {
-      const submitData = {
-        ...form,
-        role: form.role === "DEFAULT" ? "USER" : form.role,
-      };
-      if (!submitData.password) delete submitData.password;
-      if (editUserId) {
-        const apiRole = submitData.role === "DEFAULT" ? "USER" : submitData.role as "ADMIN" | "SUPERVISOR" | "USER";
-      await api.updateUser(editUserId, {
-        username: submitData.username,
-        email: submitData.email,
-        role: apiRole,
-        storeId: submitData.storeIds[0],
-      });
-        setFeedback("Usuário atualizado!");
-      } else {
-        const apiRole = submitData.role === "DEFAULT" ? "USER" : submitData.role as "ADMIN" | "SUPERVISOR" | "USER";
-await api.createUser({
-          username: submitData.username,
-          email: submitData.email,
-          password: submitData.password || "changeme123",
-          role: apiRole,
-          storeId: submitData.storeIds[0],
+      if (data.id) {
+        await api.updateUser(data.id, {
+          username: data.username,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          storeIds: data.storeIds,
         });
-        setFeedback("Usuário criado!");
+        toast.success("Usuário atualizado com sucesso!");
+      } else {
+        await api.createUser({
+          username: data.username,
+          name: data.name,
+          email: data.email,
+          password: data.password || "changeme123",
+          role: data.role,
+          storeIds: data.storeIds,
+        });
+        toast.success("Usuário criado com sucesso!");
       }
-      resetForm();
       await loadData();
     } catch (error) {
-      setFeedback((error as Error)?.message || "Erro ao salvar.");
+      toast.error((error as Error)?.message || "Erro ao salvar.");
+      throw error;
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Excluir usuário?")) return;
     try {
       await api.deleteUser(id);
+      toast.success("Usuário excluído com sucesso!");
       await loadData();
     } catch (error) {
-      setFeedback("Erro ao excluir.");
+      toast.error("Erro ao excluir usuário.");
     }
   };
 
@@ -221,11 +207,6 @@ await api.createUser({
               onChange={setFilterDate}
               className="text-lg focus:border-transparent"
             />
-            {feedback ? (
-              <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full font-bold animate-in fade-in slide-in-from-right-2 duration-300">
-                {feedback}
-              </span>
-            ) : null}
             <Button
               onClick={logout}
               variant="ghost"
@@ -278,12 +259,9 @@ await api.createUser({
         <TeamManagement
           users={users}
           allStores={allStores}
-          form={form}
-          setForm={setForm}
-          handleUserSubmit={handleUserSubmit}
-          handleDelete={handleDelete}
-          editUserId={editUserId}
-          setEditUserId={setEditUserId}
+          isLoading={isDataLoading}
+          onSave={handleSave}
+          onDelete={handleDelete}
         />
       </main>
     </div>

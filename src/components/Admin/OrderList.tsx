@@ -1,6 +1,7 @@
 import React from "react";
 import { ShoppingBag, User, Calendar, Edit3, CheckCircle2, Clock } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import type { Order } from "@/types/order";
 
 interface OrderListProps {
@@ -38,7 +39,11 @@ export function OrderList({ orders, onEdit }: OrderListProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {orders.map((order) => (
-          <div key={order.id} className="glass-card rounded-xl p-5 space-y-4 hover:border-primary/30 transition-all group">
+          <Card
+            key={order.id}
+            padding="md"
+            className="rounded-xl space-y-4 hover:border-primary/30 transition-all group bg-white/5 border-white/10"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -74,7 +79,7 @@ export function OrderList({ orders, onEdit }: OrderListProps) {
               <Edit3 className="h-3.5 w-3.5" />
               Ajustar Mercadoria
             </Button>
-          </div>
+          </Card>
         ))}
 
         {orders.length === 0 && (

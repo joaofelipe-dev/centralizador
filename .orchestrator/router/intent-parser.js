@@ -270,7 +270,7 @@ function parseIntent(input, options = {}) {
 
   // Se há múltiplos candidatos com scores próximos
   const scoreGap = scores.length > 1 ? scores[0].score - scores[1].score : 1;
-  const multipleCandidates = scores.length > 1 && scoreGap < 0.2 && scores[1].score >= threshold;
+  const multipleCandidates = scores.length > 1 && scoreGap < 0.3 && scores[1].score >= threshold;
 
   if (multipleCandidates) {
     log(LOG_LEVELS.WARN, `Multiple candidates detected: ${scores[0].agentId} vs ${scores[1].agentId}`);

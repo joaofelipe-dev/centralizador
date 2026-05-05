@@ -28,7 +28,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-linear-to-br from-background to-emerald-500/30">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-linear-to-br from-[#3DE585]/50 to-[#138565]/50">
       <div className="w-full max-w-md space-y-8">
         <Header className="justify-center bg-transparent border-none">
           <Header.Logo className="" />

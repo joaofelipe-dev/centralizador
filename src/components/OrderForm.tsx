@@ -15,7 +15,9 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api";
 import { DateInput } from "@/components/DateInput/DateInput";
 import { ProductFilter } from "@/components/ProductFilter";
@@ -26,8 +28,16 @@ interface ProductRowProps {
   product: Product;
   categoryName: string;
   cartItem?: CartItem;
-  updateField: (id: number | string, field: keyof CartItem, value: number | boolean) => void;
-  handleInputChange: (id: number | string, field: 'quantity' | 'currentStock', value: string) => void;
+  updateField: (
+    id: number | string,
+    field: keyof CartItem,
+    value: number | boolean,
+  ) => void;
+  handleInputChange: (
+    id: number | string,
+    field: "quantity" | "currentStock",
+    value: string,
+  ) => void;
   getProductIcon: (categoryName: string) => React.ReactNode;
 }
 
@@ -40,18 +50,27 @@ const ProductRow = React.memo(
     handleInputChange,
     getProductIcon,
   }: ProductRowProps) => (
-    <div className={`glass-card p-4 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-white/10 group ${cartItem?.needsReview ? 'border-red-500/50 bg-red-500/5' : ''}`}>
+    <Card
+      variant="default"
+      padding="sm"
+      className={`bg-background rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-white/10 group ${cartItem?.needsReview ? "border-red-500/50 bg-red-500/5" : ""}`}
+    >
       <div className="flex items-center gap-4 flex-1">
-        <button
+        <Button
           type="button"
-          onClick={() => updateField(product.id, "needsReview", !cartItem?.needsReview)}
-          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${cartItem?.needsReview
-              ? 'border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30'
-              : 'border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-            }`}
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            updateField(product.id, "needsReview", !cartItem?.needsReview)
+          }
+          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${
+            cartItem?.needsReview
+              ? "border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30"
+              : "border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+          }`}
         >
           <AlertCircle className="h-4 w-4" />
-        </button>
+        </Button>
         <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
           {getProductIcon(categoryName)}
         </div>
@@ -68,7 +87,9 @@ const ProductRow = React.memo(
         </span>
         <div className="flex items-center gap-1 min-w-[60px] justify-center">
           <Package className="h-3.5 w-3.5 text-primary/50" />
-          <span className="text-sm font-bold text-primary">{product.stockCD ?? 0}</span>
+          <span className="text-sm font-bold text-primary">
+            {product.stockCD ?? 0}
+          </span>
         </div>
       </div>
 
@@ -77,28 +98,34 @@ const ProductRow = React.memo(
           Estoque Atual
         </span>
         <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner">
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => updateField(product.id, "currentStock", -1)}
             className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
           >
             <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </button>
-          <input
-            type="text"
+          </Button>
+          <Input
+            type="number"
             inputMode="numeric"
-            value={cartItem?.currentStock > 0 ? cartItem?.currentStock : ''}
+            value={cartItem?.currentStock > 0 ? cartItem?.currentStock : ""}
             onChange={(e) =>
               handleInputChange(product.id, "currentStock", e.target.value)
             }
             placeholder="0"
             className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
           />
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => updateField(product.id, "currentStock", 1)}
             className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
           >
             <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -107,31 +134,37 @@ const ProductRow = React.memo(
           Pedir Agora
         </span>
         <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-xl border border-primary/20 shadow-inner">
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => updateField(product.id, "quantity", -1)}
             className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-primary"
           >
             <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </button>
-          <input
-            type="text"
+          </Button>
+          <Input
+            type="number"
             inputMode="numeric"
-            value={cartItem?.quantity > 0 ? cartItem?.quantity : ''}
+            value={cartItem?.quantity > 0 ? cartItem?.quantity : ""}
             onChange={(e) =>
               handleInputChange(product.id, "quantity", e.target.value)
             }
             placeholder="0"
             className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
           />
-          <button
+          <Button
+            type="button"
+            variant="default"
+            size="icon"
             onClick={() => updateField(product.id, "quantity", 1)}
             className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
           >
             <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
   ),
 );
 
@@ -158,13 +191,16 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [attentionAcknowledged, setAttentionAcknowledged] = useState(false);
-  const [filter, setFilter] = useState<{ search: string; categoryId: string | null }>({ search: '', categoryId: null });
+  const [filter, setFilter] = useState<{
+    search: string;
+    categoryId: string | null;
+  }>({ search: "", categoryId: null });
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         const categoriesData = await api.getCategories();
-        const order = ['Legumes', 'Frutas', 'Verduras'];
+        const order = ["Legumes", "Frutas", "Verduras"];
         const sorted = [...(categoriesData || [])].sort((a, b) => {
           const idxA = order.indexOf(a.name);
           const idxB = order.indexOf(b.name);
@@ -175,7 +211,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         });
         setCategories(sorted);
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
       } finally {
         setIsLoading(false);
       }
@@ -183,28 +219,49 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     fetchProducts();
   }, []);
 
-  const updateField = React.useCallback((id: string, field: keyof CartItem, value: number | boolean) => {
-    setCart((prev) => {
-      const current = prev[id] || { productId: id, quantity: 0, currentStock: 0 };
-      if (typeof value === 'boolean') {
-        if (value === true) {
-          setAttentionAcknowledged(false);
+  const updateField = React.useCallback(
+    (id: string, field: keyof CartItem, value: number | boolean) => {
+      setCart((prev) => {
+        const current = prev[id] || {
+          productId: id,
+          quantity: 0,
+          currentStock: 0,
+        };
+        if (typeof value === "boolean") {
+          if (value === true) {
+            setAttentionAcknowledged(false);
+          }
+          return { ...prev, [id]: { ...current, [field]: value } };
         }
-        return { ...prev, [id]: { ...current, [field]: value } };
-      }
-      const nextValue = Math.max(0, (current[field] as number || 0) + value);
-      return { ...prev, [id]: { ...current, [field]: nextValue } };
-    });
-  }, []);
+        const nextValue = Math.max(
+          0,
+          ((current[field] as number) || 0) + value,
+        );
+        return { ...prev, [id]: { ...current, [field]: nextValue } };
+      });
+    },
+    [],
+  );
 
-  const handleInputChange = React.useCallback((id: string, field: 'quantity' | 'currentStock', value: string) => {
-    const cleaned = value.replace(/^0+(?!$)/, '');
-    const nextValue = cleaned === "" ? 0 : Math.max(0, parseInt(cleaned) || 0);
-    setCart((prev) => {
-      const current = prev[id] || { productId: id, quantity: 0, currentStock: 0 };
-      return { ...prev, [id]: { ...current, [field]: nextValue, [`${field}Raw`]: cleaned } };
-    });
-  }, []);
+  const handleInputChange = React.useCallback(
+    (id: string, field: "quantity" | "currentStock", value: string) => {
+      const cleaned = value.replace(/^0+(?!$)/, "");
+      const nextValue =
+        cleaned === "" ? 0 : Math.max(0, parseInt(cleaned) || 0);
+      setCart((prev) => {
+        const current = prev[id] || {
+          productId: id,
+          quantity: 0,
+          currentStock: 0,
+        };
+        return {
+          ...prev,
+          [id]: { ...current, [field]: nextValue, [`${field}Raw`]: cleaned },
+        };
+      });
+    },
+    [],
+  );
 
   const handleSubmit = async () => {
     setError(null);
@@ -215,9 +272,9 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
 
     if (itemsWithReview.length > 0 && !attentionAcknowledged) {
       const productNames = itemsWithReview
-        .map(id => {
+        .map((id) => {
           for (const cat of categories) {
-            const product = cat.products?.find(p => p.id === id);
+            const product = cat.products?.find((p) => p.id === id);
             if (product) return product.name;
           }
           return String(id);
@@ -266,7 +323,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       setIsSuccess(true);
     } catch (err: unknown) {
       console.error("Erro na submissão:", err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
       setIsSubmitting(false);
     }
   };
@@ -277,7 +334,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
   );
 
   const hasItems = Object.values(cart).some(
-    (item) => (item.quantity || 0) > 0 || (item.currentStock || 0) > 0
+    (item) => (item.quantity || 0) > 0 || (item.currentStock || 0) > 0,
   );
 
   const getIconForCategory = (name: string) => {
@@ -303,26 +360,33 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     for (const cat of categories) {
       if (filter.categoryId && cat.id !== filter.categoryId) continue;
 
-      const filtered = cat.products?.filter(p =>
-        p.name.toLowerCase().includes(filter.search.toLowerCase())
-      ) || [];
+      const filtered =
+        cat.products?.filter((p) =>
+          p.name.toLowerCase().includes(filter.search.toLowerCase()),
+        ) || [];
       result.push(...filtered);
     }
     return result;
   }, [categories, filter]);
 
   const totalProductCount = useMemo(() => {
-    return categories.reduce((sum, cat) => sum + (cat.products?.length || 0), 0);
+    return categories.reduce(
+      (sum, cat) => sum + (cat.products?.length || 0),
+      0,
+    );
   }, [categories]);
 
-  const getCategoryName = React.useCallback((productId: string) => {
-    for (const cat of categories) {
-      if (cat.products?.find(p => p.id === productId)) {
-        return cat.name;
+  const getCategoryName = React.useCallback(
+    (productId: string) => {
+      for (const cat of categories) {
+        if (cat.products?.find((p) => p.id === productId)) {
+          return cat.name;
+        }
       }
-    }
-    return '';
-  }, [categories]);
+      return "";
+    },
+    [categories],
+  );
 
   if (isLoading) {
     return (
@@ -359,7 +423,11 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     <div className="w-full max-w-4xl mx-auto p-4 animate-slide-up">
       {error && (
         <div className="fixed bottom-24 left-4 right-4 z-[110] animate-in slide-in-from-bottom-4 duration-300">
-          <div className="glass-card p-4 rounded-xl border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20">
+          <Card
+            variant="default"
+            padding="sm"
+            className="border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20 rounded-xl"
+          >
             <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
             <span className="text-sm text-red-200 flex-1">{error}</span>
             <Button
@@ -373,7 +441,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             >
               OK
             </Button>
-          </div>
+          </Card>
         </div>
       )}
       <div className="text-center mb-8">
@@ -410,7 +478,11 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         </div>
 
         {!isReviewing && (
-          <div className="glass-card p-4 rounded-xl flex items-center justify-between">
+          <Card
+            variant="default"
+            padding="sm"
+            className="glass-card rounded-xl flex items-center justify-between"
+          >
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-primary" />
               <span className="text-sm text-white font-medium">
@@ -420,13 +492,14 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             <DateInput
               value={orderDate}
               onChange={setOrderDate}
-              min={getTomorrowDate()} />
-          </div>
+              min={getTomorrowDate()}
+            />
+          </Card>
         )}
 
         {isReviewing ? (
           <div className="space-y-6 pb-32">
-            <div className="glass-card p-6 space-y-4">
+            <Card variant="default" padding="lg" className="space-y-4">
               <div className="flex items-center justify-between border-b border-white/5 pb-3">
                 <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4" />
@@ -482,7 +555,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                     );
                   })}
               </div>
-            </div>
+            </Card>
 
             <Button
               onClick={() => setIsReviewing(false)}
@@ -500,9 +573,11 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               searchTerm={filter.search}
               filteredCount={filteredProducts.length}
               totalCount={totalProductCount}
-              onCategoryChange={(categoryId) => setFilter({ ...filter, categoryId })}
+              onCategoryChange={(categoryId) =>
+                setFilter({ ...filter, categoryId })
+              }
               onSearchChange={(search) => setFilter({ ...filter, search })}
-              onClear={() => setFilter({ search: '', categoryId: null })}
+              onClear={() => setFilter({ search: "", categoryId: null })}
             />
 
             <div className="flex flex-col gap-3">
@@ -519,13 +594,21 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               </div>
 
               {filteredProducts.length === 0 ? (
-                <div className="glass-card p-8 rounded-xl text-center">
+                <Card
+                  variant="default"
+                  padding="lg"
+                  className="rounded-xl text-center"
+                >
                   <p className="text-muted-foreground text-sm">
                     Nenhum produto encontrado com os filtros selecionados.
                   </p>
-                </div>
+                </Card>
               ) : (
-                <div className="glass-card p-4 rounded-xl">
+                <Card
+                  variant="default"
+                  padding="sm"
+                  className="glass-card rounded-xl"
+                >
                   <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-3 pb-3 border-b border-white/5">
                     <span>Produto</span>
                     <span className="text-center">Estoque CD</span>
@@ -545,7 +628,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                       />
                     ))}
                   </div>
-                </div>
+                </Card>
               )}
             </div>
           </div>

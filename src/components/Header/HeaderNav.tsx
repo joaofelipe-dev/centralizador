@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, Shield, Users, Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -19,18 +19,18 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
       <div className="hidden md:flex justify-end gap-3 items-center">
         {user.role === "SUPERVISOR" || user.role === "ADMIN" ? (
           <Link href="/supervisor" className="flex items-center gap-2">
-            <Button className="primary drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
-              <Shield className="h-4 w-4" />
-              Gestão de Pedidos
-            </Button>
+          <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+               <Shield className="h-4 w-4" />
+               Gestão de Pedidos
+             </Button>
           </Link>
         ) : null}
         {user.role === "ADMIN" && (
           <Link href="/admin" className="flex items-center gap-2">
-            <Button className="primary drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
-              <Users className="h-4 w-4" />
-              Painel Administrativo
-            </Button>
+          <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+               <Users className="h-4 w-4" />
+               Painel Administrativo
+             </Button>
           </Link>
         )}
         <Button
@@ -78,16 +78,18 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
                   </span>
                 </Link>
               )}
-              <button
+              <Button
+                variant="ghost"
+                fullWidth
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                 onClick={() => {
                   setMenuOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="text-sm font-medium">Sair</span>
-              </button>
+              </Button>
             </div>
           </div>
         )}

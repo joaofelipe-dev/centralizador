@@ -8,7 +8,7 @@ import {
   ClipboardList,
   Send
 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import { Step, OnboardingProps } from "@/types/onboarding";
 
 const steps: Step[] = [
@@ -84,12 +84,14 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       </Button>
 
       {currentStep < steps.length - 1 && (
-        <button 
+        <Button 
           onClick={onComplete}
-          className="text-sm text-muted-foreground hover:text-white transition-colors"
+          variant="ghost"
+          size="sm"
+          className="text-sm text-muted-foreground hover:text-white"
         >
           Pular introdução
-        </button>
+        </Button>
       )}
     </div>
   );

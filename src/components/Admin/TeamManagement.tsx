@@ -1,9 +1,26 @@
-import React from "react";
-import { MoreVertical, LogOut, Shield, User, Eye } from "lucide-react";
+import React, { useState, useCallback } from "react";
+import { Plus, Loader2, Shield, Eye, User } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import type { Store } from "@/types/product";
+import { UserTable } from "./UserTable";
+import { UserDialog } from "./UserDialog";
+import { ConfirmDialog } from "./ConfirmDialog";
 
-export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'DEFAULT';
+export type { Store } from "@/types/product";
+
+interface RoleConfig {
+  label: string;
+  color: string;
+  icon: typeof Shield;
+}
+
+export const roleConfig: Record<string, RoleConfig> = {
+  ADMIN: { label: 'Admin', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: Shield },
+  SUPERVISOR: { label: 'Supervisor', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', icon: Eye },
+  DEFAULT: { label: 'Padrão', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: User },
+};
+
+export type UserRole = "ADMIN" | "SUPERVISOR" | "DEFAULT";
 
 export interface TeamUser {
   id: string;
@@ -23,180 +40,152 @@ interface UserForm {
   role: UserRole;
 }
 
-interface RoleConfig {
-  label: string;
-  color: string;
-  icon: typeof Shield;
-}
-
-const roleConfig: Record<string, RoleConfig> = {
-  ADMIN: { label: 'Admin', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: Shield },
-  SUPERVISOR: { label: 'Supervisor', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', icon: Eye },
-  DEFAULT: { label: 'Padrão', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: User },
+const emptyForm: UserForm = {
+  username: "",
+  name: "",
+  email: "",
+  password: "",
+  storeIds: [],
+  role: "DEFAULT",
 };
 
 interface TeamManagementProps {
   users: TeamUser[];
   allStores: Store[];
-  form: UserForm;
-  setForm: (form: UserForm) => void;
-  handleUserSubmit: (e: React.FormEvent) => void;
-  handleDelete: (userId: string) => void;
-  editUserId: string | null;
-  setEditUserId: (id: string | null) => void;
+  isLoading?: boolean;
+  onSave: (data: {
+    id?: string;
+    username: string;
+    name: string;
+    email: string;
+    password?: string;
+    storeIds: string[];
+    role: UserRole;
+  }) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
-export function TeamManagement({ 
-  users, 
-  allStores, 
-  form, 
-  setForm, 
-  handleUserSubmit, 
-  handleDelete, 
-  editUserId, 
-  setEditUserId 
+export function TeamManagement({
+  users,
+  allStores,
+  isLoading = false,
+  onSave,
+  onDelete,
 }: TeamManagementProps) {
-  const resetForm = () => {
-    setForm({ username: '', name: '', email: '', password: '', storeIds: [], role: 'DEFAULT' });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<TeamUser | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [form, setForm] = useState<UserForm>(emptyForm);
+
+  const handleOpenCreate = () => {
+    setEditingUser(null);
+    setForm(emptyForm);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (user: TeamUser) => {
+    setEditingUser(user);
+    setForm({
+      username: user.username,
+      name: user.name,
+      email: user.email || "",
+      password: "",
+      storeIds: (user.stores || []).map(s => String(s.id)),
+      role: user.role || "DEFAULT",
+    });
+    setDialogOpen(true);
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+    setEditingUser(null);
+    setForm(emptyForm);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await onSave({
+        ...(editingUser ? { id: editingUser.id } : {}),
+        username: form.username,
+        name: form.name,
+        email: form.email,
+        ...(form.password ? { password: form.password } : {}),
+        storeIds: form.storeIds,
+        role: form.role,
+      });
+      setDialogOpen(false);
+      setEditingUser(null);
+      setForm(emptyForm);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirm(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm) return;
+    await onDelete(deleteConfirm);
+    setDeleteConfirm(null);
   };
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-white">Gerenciar Equipe</h2>
-      <div className="glass-card p-6">
-        <form onSubmit={handleUserSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <input 
-            type="text" 
-            placeholder="Usuário" 
-            value={form.username} 
-            onChange={e => setForm({...form, username: e.target.value.toLowerCase()})} 
-            className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" 
-          />
-          <input 
-            type="text" 
-            placeholder="Nome completo" 
-            value={form.name} 
-            onChange={e => setForm({...form, name: e.target.value})} 
-            className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" 
-          />
-          <input 
-            type="email" 
-            placeholder="E-mail" 
-            value={form.email} 
-            onChange={e => setForm({...form, email: e.target.value})} 
-            className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" 
-          />
-          <select
-            value={form.role}
-            onChange={e => setForm({...form, role: e.target.value as UserRole})}
-            className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-          >
-            <option className="bg-black text-white" value="DEFAULT">Padrão</option>
-            <option className="bg-black text-white" value="SUPERVISOR">Supervisor</option>
-            <option className="bg-black text-white" value="ADMIN">Admin</option>
-          </select>
-          <input 
-            type="password" 
-            placeholder={editUserId ? "Nova Senha (opcional)" : "Senha"} 
-            value={form.password} 
-            onChange={e => setForm({...form, password: e.target.value})} 
-            className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" 
-          />
-          
-          <div className="md:col-span-5">
-            <label className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-2 block">Lojas com Acesso (Multiseleção)</label>
-            <select 
-              multiple 
-              value={form.storeIds} 
-              onChange={e => setForm({...form, storeIds: Array.from(e.target.selectedOptions, o => o.value)})} 
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white h-32 custom-scrollbar focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            >
-              {allStores.map(s => <option key={s.id} value={s.id} className="py-1">{s.name}</option>)}
-            </select>
-          </div>
-          <Button type="submit" className="md:col-span-1 h-12 font-bold shadow-lg shadow-primary/20">
-            {editUserId ? 'Salvar Alterações' : 'Adicionar Membro'}
-          </Button>
-          {editUserId && (
-            <Button variant="glass" onClick={() => {setEditUserId(null); resetForm();}} className="md:col-span-1 h-12">
-              Cancelar
-            </Button>
-          )}
-        </form>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white">Gerenciar Equipe</h2>
+        <Button
+          onClick={handleOpenCreate}
+          className="font-bold shadow-lg shadow-primary/20 gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Adicionar Membro
+        </Button>
       </div>
 
-      <div className="glass-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-white/5 text-muted-foreground text-xs uppercase font-bold">
-              <tr>
-                <th className="px-6 py-4">Nome / Usuário</th>
-                <th className="px-6 py-4">Função</th>
-                <th className="px-6 py-4">Acessos</th>
-                <th className="px-6 py-4 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {users.map(u => {
-                const RoleIcon = roleConfig[u.role]?.icon || User;
-                return (
-                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-white">{u.name}</p>
-                      <p className="text-xs text-primary font-mono">{u.username}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${roleConfig[u.role]?.color || roleConfig.DEFAULT.color}`}>
-                        <RoleIcon className="h-3 w-3" />
-                        {roleConfig[u.role]?.label || 'Padrão'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {(u.stores || []).map(s => (
-                          <span key={s.id} className="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[10px] text-muted-foreground">
-                            {s.name}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => {
-                            setEditUserId(u.id); 
-                            setForm({
-                              username: u.username, 
-                              name: u.name, 
-                              email: u.email || '', 
-                              password: '', 
-                              storeIds: u.stores.map(s => String(s.id)),
-                              role: u.role || 'DEFAULT'
-                            })
-                          }}
-                          className="rounded-full hover:bg-white/10"
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleDelete(u.id)} 
-                          className="text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-full"
-                        >
-                          <LogOut className="h-4 w-4 rotate-180" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <UserTable
+        users={users}
+        onEdit={handleEdit}
+        onDelete={handleDeleteClick}
+        loading={isLoading}
+        deleteLoadingId={deleteConfirm}
+      />
+
+      <UserDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editingUser={
+          editingUser
+            ? {
+                id: editingUser.id,
+                username: editingUser.username,
+                name: editingUser.name,
+                email: editingUser.email || "",
+                role: editingUser.role,
+                storeIds: (editingUser.stores || []).map(s => String(s.id)),
+              }
+            : null
+        }
+        allStores={allStores}
+        onSubmit={handleSubmit}
+        loading={isSubmitting}
+        form={form}
+        setForm={setForm}
+        onCancel={handleCancel}
+      />
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        onOpenChange={() => setDeleteConfirm(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Confirmar exclusão"
+        description="Esta ação não pode ser desfeita. O usuário será removido permanentemente."
+        loading={false}
+        confirmText="Excluir"
+      />
     </div>
   );
 }

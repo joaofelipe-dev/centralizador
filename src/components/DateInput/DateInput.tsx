@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import "react-day-picker/style.css";
@@ -47,46 +49,11 @@ export function DateInput({
   }, [value]);
 
   const [userInput, setUserInput] = useState("");
-  const [prevValue, setPrevValue] = useState(value);
-
-  useEffect(() => {
-    if (value !== prevValue) {
-      setUserInput("");
-      setPrevValue(value);
-    }
-  }, [value, prevValue]);
-
-  useEffect(() => {
-    if (isOpen && containerRef.current && popupRef.current) {
-      const container = containerRef.current.getBoundingClientRect();
-      const popup = popupRef.current.getBoundingClientRect();
-      
-      const wouldOverflowRight = container.right + popup.width > window.innerWidth;
-      const wouldOverflowBottom = container.bottom + popup.height > window.innerHeight;
-      
-      setPosition({
-        top: !wouldOverflowBottom,
-        left: !wouldOverflowRight
-      });
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [isOpen]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, "");
     if (val.length > 8) val = val.slice(0, 8);
-    
+
     if (val.length <= 2) {
       setUserInput(val);
     } else if (val.length <= 4) {
@@ -144,7 +111,7 @@ export function DateInput({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
-        <input
+        <Input
           type="text"
           inputMode="numeric"
           placeholder={placeholder}
@@ -153,17 +120,19 @@ export function DateInput({
           onFocus={() => !disabled && setIsOpen(true)}
           onBlur={handleInputBlur}
           disabled={disabled}
-          className={`bg-transparent py-2 text-white focus:outline-none ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`bg-transparent border-none focus:ring-0 ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           style={{ width: "100px", textAlign: "center" }}
         />
-        <button
+        <Button
           type="button"
           onClick={toggleCalendar}
           disabled={disabled}
+          variant="ghost"
+          size="icon"
           className="px-2 text-muted-foreground hover:text-white disabled:opacity-50"
         >
           <CalendarIcon className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
       {isOpen && !disabled && (
         <div ref={popupRef} className={popupClasses}>

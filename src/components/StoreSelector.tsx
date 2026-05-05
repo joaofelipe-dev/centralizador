@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Store, ChevronRight, Search } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { stores } from "@/constants/stores";
 import { Store as StoreType } from "@/types/product";
 
@@ -30,26 +32,27 @@ export default function StoreSelector({ onSelect, stores: assignedStores = [], r
         </div>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Buscar loja..."
-            className="w-full bg-secondary/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            leftIcon={<Search className="h-4 w-4" />}
+            className="w-full bg-secondary/50 border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/50"
           />
         </div>
 
         <div className="grid gap-3">
           {filteredStores.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
+            <Card padding="md" className="border-white/10 bg-white/5 text-center">
               <p className="text-sm text-muted-foreground">{requiresAuth ? 'Você não tem permissão para nenhuma loja. Contate o administrador.' : 'Nenhuma loja encontrada.'}</p>
-            </div>
+            </Card>
           ) : (
             filteredStores.map((store) => (
               <Button
                 key={store.id}
                 onClick={() => onSelect(store)}
+                variant="ghost"
                 className="group glass-card px-4 py-10 flex items-center justify-between transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4 text-left">

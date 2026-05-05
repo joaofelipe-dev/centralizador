@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { X, Save, Plus, Minus, Package, AlertCircle, Loader2 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 import { api } from "@/lib/api";
-import type { Order, OrderItem as OrderItemType } from "@/types/order";
+import type { Order } from "@/types/order";
 
 interface EditableItem {
   productId: string;
@@ -34,8 +35,6 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
     }
   }, [order]);
 
-  if (!isOpen || !order) return null;
-
   const updateItem = (productId: string, field: 'currentStock' | 'quantity', delta: number) => {
     setItems(prev => prev.map(item => {
       if (item.productId === productId) {
@@ -57,7 +56,7 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
           currentStock: it.currentStock
         }))
       };
-      await api.updateOrder(order.id, payload);
+      await api.updateOrder(order!.id, payload);
       onSave();
       onClose();
     } catch (err) {
@@ -67,9 +66,17 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
     }
   };
 
+  if (!isOpen || !order) return null;
+
   return (
-    <div className="sticky min-h-screen inset-0 z-[100] flex items-center justify-center p-4 bg-black/95">
-      <div className="glass-card w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border-white/10 overflow-hidden animate-in zoom-in-95 duration-200 rounded-xl">
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      size="xl"
+      closeOnOverlayClick={false}
+      className="glass-card !rounded-xl !p-0 !overflow-visible !max-w-2xl !max-h-[90vh] !flex !flex-col"
+    >
+      <div className="flex flex-col h-full">
         <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
@@ -142,6 +149,6 @@ export function OrderEditModal({ order, isOpen, onClose, onSave }: OrderEditModa
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

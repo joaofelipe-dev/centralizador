@@ -1,4 +1,5 @@
 import { SearchInput } from '@/components/ui/SearchInput';
+import { Button } from '@/components/ui/Button';
 import { Category } from '@/types/product';
 
 interface ProductFilterProps {
@@ -31,28 +32,24 @@ export function ProductFilter({
       />
 
       <div className="flex gap-2 overflow-x-auto pb-2">
-        <button
+        <Button
           onClick={() => onCategoryChange(null)}
-          className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all ${
-            selectedCategory === null
-              ? 'bg-primary text-white'
-              : 'bg-white/5 text-muted-foreground hover:bg-white/10'
-          }`}
+          variant={selectedCategory === null ? 'default' : 'ghost'}
+          size="sm"
+          className={selectedCategory === null ? '' : 'bg-white/5 text-muted-foreground hover:bg-white/10'}
         >
           Todos
-        </button>
+        </Button>
         {categories.map(cat => (
-          <button
+          <Button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all ${
-              selectedCategory === cat.id
-                ? 'bg-primary text-white'
-                : 'bg-white/5 text-muted-foreground hover:bg-white/10'
-            }`}
+            variant={selectedCategory === cat.id ? 'default' : 'ghost'}
+            size="sm"
+            className={selectedCategory === cat.id ? '' : 'bg-white/5 text-muted-foreground hover:bg-white/10'}
           >
             {cat.name}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -61,12 +58,14 @@ export function ProductFilter({
           {filteredCount} de {totalCount} produtos
         </span>
         {(searchTerm || selectedCategory) && (
-          <button
+          <Button
             onClick={onClear}
-            className="text-xs px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-muted-foreground hover:text-white transition-all"
+            variant="ghost"
+            size="sm"
+            className="text-xs px-3 py-1 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white"
           >
             Limpar filtros
-          </button>
+          </Button>
         )}
       </div>
     </div>

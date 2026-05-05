@@ -24,17 +24,20 @@ export interface ApiRequestOptions extends RequestInit {
 
 export interface CreateUserData {
   username: string;
+  name: string;
   email: string;
   password: string;
-  role?: 'ADMIN' | 'SUPERVISOR' | 'USER' | 'DEFAULT';
-  storeId?: string;
+  role?: 'ADMIN' | 'SUPERVISOR' | 'DEFAULT';
+  storeIds?: string[];
 }
 
 export interface UpdateUserData {
   username?: string;
+  name?: string;
   email?: string;
-  role?: 'ADMIN' | 'SUPERVISOR' | 'USER' | 'DEFAULT';
-  storeId?: string;
+  password?: string;
+  role?: 'ADMIN' | 'SUPERVISOR' | 'DEFAULT';
+  storeIds?: string[];
 }
 
 export interface CreateProductData {

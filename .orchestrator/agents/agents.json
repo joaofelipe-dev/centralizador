@@ -16,8 +16,8 @@
           "formulario", "pagina", "página", "estilo", "css", "tailwind", "layout", 
           "modal", "botao", "botão", "input", "header", "footer", "navegacao",
           "navegação", "hooks", "useState", "useEffect", "useCallback", "useMemo",
-          "context", "auth", "login", "dashboard", "onboarding", "client", "browser",
-          "design", "interface", "tela", "feature", "funcionalidade", "table", "list",
+          "context", "login", "dashboard", "onboarding", "client", "browser",
+          "design", "tela", "feature", "funcionalidade", "table", "list",
           "card", "widget", "icon", "menu", "sidebar", "loading", "error", "loading"
         ],
         "patterns": [
@@ -50,7 +50,7 @@
       "triggers": {
         "keywords": [
           "backend", "api", "fastify", "server", "rota", "route", "service", "controller",
-          "repository", "endpoint", "rest", "http", "request", "response", "jwt", "auth",
+          "repository", "endpoint", "rest", "http", "request", "response", "jwt",
           "autenticacao", "autenticação", "validacao", "validação", "schema", "zod",
           "middleware", "hook", "preHandler", "payload", "query", "params", "orders",
           "produtos", "usuarios", "users", "logica", "regra", "negocio", "log"

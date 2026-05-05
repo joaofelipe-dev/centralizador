@@ -61,15 +61,21 @@ describe('AuthContext', () => {
     expect(screen.getByText('Not logged in')).toBeInTheDocument()
   })
 
-  it('shows loading state initially', () => {
+  it('shows loading state initially', async () => {
+    // Set a token so loadUser calls getMe, and make getMe never resolve
+    localStorage.setItem('token', 'test-token')
+    vi.mocked(apiModule.api.getMe).mockImplementation(() => new Promise(() => {}))
+
     render(
       <AuthProvider>
         <TestComponent />
       </AuthProvider>
     )
-    
-    // Check that loading appears initially
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
+
+    // Wait for the initial loading state to appear
+    await waitFor(() => {
+      expect(screen.getByText('Loading...')).toBeInTheDocument()
+    })
   })
 
   it('handles login action', async () => {
