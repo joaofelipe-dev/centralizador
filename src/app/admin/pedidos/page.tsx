@@ -8,6 +8,7 @@ import {
   Search,
   Edit2,
   Trash2,
+  ArrowLeft,
   Loader2,
   Package,
   Tags
@@ -141,6 +142,12 @@ export default function PedidosAdminPage() {
       <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/60 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-6">
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/admin')}
+              className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-white" />
+            </button>
             <h1 className="text-lg font-bold tracking-tight text-white drop-shadow-sm">
               Gestão de Pedidos
             </h1>

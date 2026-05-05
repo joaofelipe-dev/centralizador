@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, Shield, Users, Menu, X, PackageSearch, Truck, Settings, ShoppingCart } from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
+import { ArrowLeft, LogOut, Shield, Users, Settings, ShoppingCart, PackageSearch, Truck } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 
 interface HeaderNavProps {
   className?: string;
@@ -36,55 +35,53 @@ const menuItems = (userRole: string) => {
 
 export const HeaderNav = ({ className }: HeaderNavProps) => {
   const { user, logout } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   if (!user) return null;
 
   const items = menuItems(user.role);
+  const isAdminHome = pathname === "/admin";
 
   return (
-    <nav className={`flex justify-end items-center ${className ?? ""}`}>
-      <div className="relative">
+    <nav className={`flex items-center justify-end gap-2 ${className ?? ""}`}>
+      {!isAdminHome && (
         <Button
           size="icon"
           variant="ghost"
           className="text-white hover:bg-white/10"
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => router.push("/admin")}
+          title="Voltar para o início"
         >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <ArrowLeft className="h-5 w-5" />
         </Button>
+      )}
 
-        {menuOpen && (
-          <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-black/95 backdrop-blur-xl border border-white/10 shadow-xl z-50 p-2">
-            <div className="space-y-1">
-              {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <item.icon className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              ))}
+      {items.map((item) => (
+        <Button
+          key={item.href}
+          variant={pathname === item.href ? "default" : "ghost"}
+          className={`gap-2 ${
+            pathname === item.href 
+              ? "bg-primary/20 text-primary" 
+              : "text-white hover:bg-white/10"
+          }`}
+          onClick={() => router.push(item.href)}
+        >
+          <item.icon className="h-4 w-4" />
+          <span className="hidden md:inline text-sm">{item.label}</span>
+        </Button>
+      ))}
 
-              <Button
-                variant="ghost"
-                fullWidth
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
-                onClick={() => {
-                  setMenuOpen(false);
-                  logout();
-                }}
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="text-sm font-medium">Sair</span>
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="text-red-500 hover:bg-red-500/10"
+        onClick={logout}
+        title="Sair"
+      >
+        <LogOut className="h-5 w-5" />
+      </Button>
     </nav>
   );
 };
