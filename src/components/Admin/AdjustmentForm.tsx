@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { createAdjustment } from '@/lib/movement-api';
 import type { CreateAdjustmentData } from '@/types/movement';

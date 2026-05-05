@@ -1,9 +1,12 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { createSale } from '@/lib/sale-api';
 import type { SaleItem, CreateSaleData } from '@/lib/sale-api';
 import { listSuppliers } from '@/lib/supplier-api';
 import { api } from '@/lib/api';
-import type { Supplier, Product } from '@/types/product';
+import type { Supplier } from '@/types/purchase';
+import type { Product } from '@/types/product';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
@@ -62,6 +65,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
       ...items,
       {
         productId: product.id,
+        quantity: 1,
         quantityToSell: 1,
         product: {
           id: product.id,

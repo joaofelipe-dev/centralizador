@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { listSales } from '@/lib/sale-api';
 import type { Sale } from '@/lib/sale-api';

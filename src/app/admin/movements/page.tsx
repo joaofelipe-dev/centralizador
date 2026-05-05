@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { MovementList } from '@/components/Admin/MovementList';
 import { AdjustmentForm } from '@/components/Admin/AdjustmentForm';

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { SaleList } from '@/components/Admin/SaleList';
 import { SaleForm } from '@/components/Admin/SaleForm';

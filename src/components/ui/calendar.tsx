@@ -5,7 +5,7 @@ import type { ClassNames, Formatters, Locale } from "react-day-picker";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react";
 
 type ButtonVariant = "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
@@ -59,13 +59,13 @@ function Calendar({
           defaultClassNames.nav
         ),
         button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
           "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          buttonVariant === "ghost" && "hover:bg-accent hover:text-accent-foreground",
           defaultClassNames.button_previous
         ),
         button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
           "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          buttonVariant === "ghost" && "hover:bg-accent hover:text-accent-foreground",
           defaultClassNames.button_next
         ),
         month_caption: cn(

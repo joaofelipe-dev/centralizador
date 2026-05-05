@@ -120,12 +120,10 @@ export class StockCountService {
       throw new Error('Cannot update items of a closed stock count')
     }
 
-    const item = await prisma.stockCountItem.findUnique({
+    const item = await prisma.stockCountItem.findFirst({
       where: {
-        stockCountId_productId: {
-          stockCountId,
-          productId
-        }
+        stockCountId,
+        productId
       }
     })
 
@@ -135,19 +133,24 @@ export class StockCountService {
 
     const divergence = physicalQty - item.systemQty
 
+    const existingItem = await prisma.stockCountItem.findFirst({
+      where: {
+        stockCountId,
+        productId
+      }
+    })
+
+    if (!existingItem) {
+      throw new Error('Stock count item not found')
+    }
+
     const updatedItem = await prisma.stockCountItem.update({
       where: {
-        stockCountId_productId: {
-          stockCountId,
-          productId
-        }
+        id: existingItem.id
       },
       data: {
         physicalQty,
         divergence
-      },
-      include: {
-        product: true
       }
     })
 

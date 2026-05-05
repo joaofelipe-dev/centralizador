@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { listMovements } from '@/lib/movement-api';
 import type { StockMovement, MovementFilters, MovementType } from '@/types/movement';

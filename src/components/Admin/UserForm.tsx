@@ -22,6 +22,7 @@ interface FormErrors {
   email?: string;
   password?: string;
   storeIds?: string;
+  role?: string;
 }
 
 interface UserFormProps {
