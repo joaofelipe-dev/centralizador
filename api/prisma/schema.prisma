@@ -117,6 +117,7 @@ model PurchaseOrder {
   supplier  Supplier          @relation(fields: [supplierId], references: [id])
   userId    String
   user      User              @relation(fields: [userId], references: [id])
+  type      String            @default("PURCHASE") // PURCHASE | SALE
   status    String            @default("DRAFT") // DRAFT | RECEIVED
   notes     String?
   items     PurchaseOrderItem[]

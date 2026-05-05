@@ -165,6 +165,7 @@ export const PurchaseOrderScalarFieldEnum = {
   id: 'id',
   supplierId: 'supplierId',
   userId: 'userId',
+  type: 'type',
   status: 'status',
   notes: 'notes',
   createdAt: 'createdAt'
