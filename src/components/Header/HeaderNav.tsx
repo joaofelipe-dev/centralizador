@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, Shield, Users, Menu, X } from "lucide-react";
+import { LogOut, Shield, Users, Menu, X, PackageSearch, Truck, Settings, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -26,13 +26,39 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
           </Link>
         ) : null}
         {user.role === "ADMIN" && (
-          <Link href="/admin" className="flex items-center gap-2">
-          <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
-               <Users className="h-4 w-4" />
-               Painel Administrativo
-             </Button>
-          </Link>
-        )}
+          <>
+            <Link href="/admin" className="flex items-center gap-2">
+              <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+                <Users className="h-4 w-4" />
+                Painel Administrativo
+              </Button>
+            </Link>
+            <Link href="/admin/movements" className="flex items-center gap-2">
+              <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+                <Settings className="h-4 w-4" />
+                Movimentações
+              </Button>
+            </Link>
+            <Link href="/admin/sales" className="flex items-center gap-2">
+               <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+                 <ShoppingCart className="h-4 w-4" />
+                 Vendas
+               </Button>
+             </Link>
+              <Link href="/admin/stock-counts" className="flex items-center gap-2">
+                <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+                  <PackageSearch className="h-4 w-4" />
+                  Contagem Física
+                </Button>
+              </Link>
+              <Link href="/admin/purchases" className="flex items-center gap-2">
+                <Button variant="default" className="drop-shadow-[0_0_10px_rgba(50,50,255,1)] text-sm cursor-pointer">
+                  <Truck className="h-4 w-4" />
+                  Compras
+                </Button>
+              </Link>
+            </>
+          )}
         <Button
           size="icon"
           variant="ghost"
@@ -67,17 +93,59 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
                 </Link>
               ) : null}
               {user.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">
-                    Painel Administrativo
-                  </span>
-                </Link>
-              )}
+                <>
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Users className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      Painel Administrativo
+                    </span>
+                  </Link>
+                  <Link
+                    href="/admin/movements"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Settings className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      Movimentações
+                    </span>
+                  </Link>
+                  <Link
+                     href="/admin/sales"
+                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                     onClick={() => setMenuOpen(false)}
+                   >
+                     <ShoppingCart className="h-4 w-4 text-primary" />
+                     <span className="text-sm font-medium">
+                       Vendas
+                     </span>
+                   </Link>
+                    <Link
+                      href="/admin/stock-counts"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <PackageSearch className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        Contagem Física
+                      </span>
+                    </Link>
+                    <Link
+                      href="/admin/purchases"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <Truck className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        Compras
+                      </span>
+                    </Link>
+                  </>
+                )}
               <Button
                 variant="ghost"
                 fullWidth

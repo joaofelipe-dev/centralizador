@@ -8,16 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  username  String    @unique
-  name      String
-  email     String?   @unique
-  password  String
-  role      String    @default("DEFAULT")
-  stores    Store[]   @relation("UserStores")
-  orders    Order[]
-  createdAt DateTime  @default(now())
-  products  Product[]
+  id              String          @id @default(uuid())
+  username        String          @unique
+  name            String
+  email           String?         @unique
+  password        String
+  role            String          @default("DEFAULT")
+  stores          Store[]         @relation("UserStores")
+  orders          Order[]
+  purchaseOrders  PurchaseOrder[]
+  stockMovements  StockMovement[]
+  stockCounts     StockCount[]
+  products        Product[]
+  createdAt       DateTime       @default(now())
 
   @@map("users")
 }
@@ -44,31 +47,35 @@ model Category {
 }
 
 model Product {
-  id         String      @id @default(uuid())
-  name       String
-  price      Float
-  stock      Int         @default(0)
-  stockCD    Int?        // Estoque do Centro de Distribuição (sincronizado do Excel)
-  categoryId String
-  category   Category    @relation(fields: [categoryId], references: [id])
-  userId     String
-  user       User        @relation(fields: [userId], references: [id])
-  orderItems OrderItem[]
-  createdAt  DateTime    @default(now())
+  id                String              @id @default(uuid())
+  name               String
+  price              Float
+  stock              Int                 @default(0)
+  stockCD            Int?                // Estoque do Centro de Distribuição (sincronizado do Excel)
+  categoryId         String
+  category           Category            @relation(fields: [categoryId], references: [id])
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  orderItems         OrderItem[]
+  purchaseOrderItems PurchaseOrderItem[]
+  stockMovements     StockMovement[]
+  stockCountItems    StockCountItem[]
+  createdAt          DateTime            @default(now())
 
   @@map("products")
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  storeId   String
-  store     Store       @relation(fields: [storeId], references: [id])
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  status    String      @default("PENDING")
-  orderDate DateTime
-  createdAt DateTime    @default(now())
+  id             String      @id @default(uuid())
+  storeId        String
+  store          Store       @relation(fields: [storeId], references: [id])
+  userId         String
+  user           User        @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  stockMovements StockMovement[]
+  status         String      @default("PENDING")
+  orderDate      DateTime
+  createdAt      DateTime    @default(now())
 
   @@index([storeId])
   @@index([userId])
@@ -92,6 +99,91 @@ model OrderItem {
   @@map("order_items")
 }
 
+model Supplier {
+  id        String        @id @default(uuid())
+  name      String
+  type      String        // CEASA | EXTERNAL
+  address   String?
+  contact   String?
+  purchases PurchaseOrder[]
+  createdAt DateTime      @default(now())
+
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id        String            @id @default(uuid())
+  supplierId String
+  supplier  Supplier          @relation(fields: [supplierId], references: [id])
+  userId    String
+  user      User              @relation(fields: [userId], references: [id])
+  status    String            @default("DRAFT") // DRAFT | RECEIVED
+  notes     String?
+  items     PurchaseOrderItem[]
+  movements StockMovement[]
+  createdAt DateTime          @default(now())
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String  @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  quantity        Int
+  unitCost        Float?
+
+  @@map("purchase_order_items")
+}
+
+model StockMovement {
+  id              String   @id @default(uuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  type            String   // ENTRY | EXIT | ADJUST
+  quantity        Int
+  reason          String?
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  orderId         String?
+  order           Order?   @relation(fields: [orderId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  createdAt       DateTime @default(now())
+
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+model StockCount {
+  id        String         @id @default(uuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  status    String         @default("OPEN") // OPEN | CLOSED
+  notes     String?
+  items     StockCountItem[]
+  createdAt DateTime       @default(now())
+
+  @@map("stock_counts")
+}
+
+model StockCountItem {
+  id            String  @id @default(uuid())
+  stockCountId  String
+  stockCount    StockCount @relation(fields: [stockCountId], references: [id])
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  physicalQty   Int
+  systemQty     Int
+  divergence    Int     // physicalQty - systemQty
+
+  @@map("stock_count_items")
+}
+
 model SyncLog {
   id          String   @id @default(uuid())
   syncedAt    DateTime @default(now())
@@ -99,7 +191,7 @@ model SyncLog {
   fileName    String?
   fileMtime   DateTime?
   columnUsed  String?
-  notFound   String   @default("[]")
+  notFound    String   @default("[]")
   errors      String   @default("[]")
 
   @@map("sync_logs")

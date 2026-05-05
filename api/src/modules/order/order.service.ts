@@ -148,7 +148,45 @@ export class OrderService {
     if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
       throw new Error('Forbidden: Only supervisors and admins can change order status')
     }
-    return this.orderRepository.update(orderId, { status })
+
+    const result = await this.orderRepository.update(orderId, { status })
+
+    if (status === 'APPROVED') {
+      const order = await this.orderRepository.findById(orderId)
+      if (order) {
+        await this.processOrderApproval(order)
+      }
+    }
+
+    return result
+  }
+
+  private async processOrderApproval(order: any) {
+    const { prisma } = await import('../../lib/prisma.js')
+
+    await prisma.$transaction(async (tx) => {
+      for (const item of order.items) {
+        await tx.stockMovement.create({
+          data: {
+            productId: item.productId,
+            type: 'EXIT',
+            quantity: item.quantity,
+            reason: `Order ${order.id} approved`,
+            userId: order.userId,
+            orderId: order.id
+          }
+        })
+
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stockCD: {
+              decrement: item.quantity
+            }
+          }
+        })
+      }
+    })
   }
 
   async getDashboardData(params: {

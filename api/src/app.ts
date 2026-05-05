@@ -10,7 +10,10 @@ import { productRoutes } from './modules/product/product.routes.js'
 import { categoryRoutes } from './modules/category/category.routes.js'
 import { storeRoutes } from './modules/store/store.routes.js'
 import { orderRoutes } from './modules/order/order.routes.js'
+import { purchaseRoutes } from './modules/purchases/purchase.routes.js'
+import { movementRoutes } from './modules/movements/movement.routes.js'
 import { cdStockRoutes } from './modules/cd-stock/cd-stock.routes.js'
+import { stockCountRoutes } from './modules/stock-counts/stock-count.routes.js'
 import 'dotenv/config'
 
 export const app = fastify({
@@ -63,4 +66,7 @@ app.register(productRoutes, { prefix: '/products' })
 app.register(categoryRoutes, { prefix: '/categories' })
 app.register(storeRoutes, { prefix: '/stores' })
 app.register(orderRoutes, { prefix: '/orders' })
+app.register(purchaseRoutes, { prefix: '/purchases' })
+app.register(movementRoutes, { prefix: '/movements' })
 app.register(cdStockRoutes, { prefix: '/cd-stock' })
+app.register(stockCountRoutes, { prefix: '/stock-counts' })

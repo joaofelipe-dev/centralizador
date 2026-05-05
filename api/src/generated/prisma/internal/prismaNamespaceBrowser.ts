@@ -57,6 +57,12 @@ export const ModelName = {
   Product: 'Product',
   Order: 'Order',
   OrderItem: 'OrderItem',
+  Supplier: 'Supplier',
+  PurchaseOrder: 'PurchaseOrder',
+  PurchaseOrderItem: 'PurchaseOrderItem',
+  StockMovement: 'StockMovement',
+  StockCount: 'StockCount',
+  StockCountItem: 'StockCountItem',
   SyncLog: 'SyncLog'
 } as const
 
@@ -141,6 +147,79 @@ export const OrderItemScalarFieldEnum = {
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+export const SupplierScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  address: 'address',
+  contact: 'contact',
+  createdAt: 'createdAt'
+} as const
+
+export type SupplierScalarFieldEnum = (typeof SupplierScalarFieldEnum)[keyof typeof SupplierScalarFieldEnum]
+
+
+export const PurchaseOrderScalarFieldEnum = {
+  id: 'id',
+  supplierId: 'supplierId',
+  userId: 'userId',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchaseOrderScalarFieldEnum = (typeof PurchaseOrderScalarFieldEnum)[keyof typeof PurchaseOrderScalarFieldEnum]
+
+
+export const PurchaseOrderItemScalarFieldEnum = {
+  id: 'id',
+  purchaseOrderId: 'purchaseOrderId',
+  productId: 'productId',
+  quantity: 'quantity',
+  unitCost: 'unitCost'
+} as const
+
+export type PurchaseOrderItemScalarFieldEnum = (typeof PurchaseOrderItemScalarFieldEnum)[keyof typeof PurchaseOrderItemScalarFieldEnum]
+
+
+export const StockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  type: 'type',
+  quantity: 'quantity',
+  reason: 'reason',
+  userId: 'userId',
+  orderId: 'orderId',
+  purchaseOrderId: 'purchaseOrderId',
+  createdAt: 'createdAt'
+} as const
+
+export type StockMovementScalarFieldEnum = (typeof StockMovementScalarFieldEnum)[keyof typeof StockMovementScalarFieldEnum]
+
+
+export const StockCountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type StockCountScalarFieldEnum = (typeof StockCountScalarFieldEnum)[keyof typeof StockCountScalarFieldEnum]
+
+
+export const StockCountItemScalarFieldEnum = {
+  id: 'id',
+  stockCountId: 'stockCountId',
+  productId: 'productId',
+  physicalQty: 'physicalQty',
+  systemQty: 'systemQty',
+  divergence: 'divergence'
+} as const
+
+export type StockCountItemScalarFieldEnum = (typeof StockCountItemScalarFieldEnum)[keyof typeof StockCountItemScalarFieldEnum]
 
 
 export const SyncLogScalarFieldEnum = {

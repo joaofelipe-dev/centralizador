@@ -72,6 +72,36 @@ export type Order = Prisma.OrderModel
  */
 export type OrderItem = Prisma.OrderItemModel
 /**
+ * Model Supplier
+ * 
+ */
+export type Supplier = Prisma.SupplierModel
+/**
+ * Model PurchaseOrder
+ * 
+ */
+export type PurchaseOrder = Prisma.PurchaseOrderModel
+/**
+ * Model PurchaseOrderItem
+ * 
+ */
+export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
+/**
+ * Model StockMovement
+ * 
+ */
+export type StockMovement = Prisma.StockMovementModel
+/**
+ * Model StockCount
+ * 
+ */
+export type StockCount = Prisma.StockCountModel
+/**
+ * Model StockCountItem
+ * 
+ */
+export type StockCountItem = Prisma.StockCountItemModel
+/**
  * Model SyncLog
  * 
  */

@@ -10,7 +10,7 @@ const storesData = [
   { id: "14", name: "Jardim Botânico", address: "Av. Carlos Eduardo de Gasperi Consoni, 1392" },
   { id: "8", name: "San Marco", address: "Estr. da Limeirinha, 1350" },
   { id: "21", name: "Jardim Califórnia", address: "Av. Califórnia, 747" },
-  { id: "19", name: "Centro de Distribuição", address: "Av. Celso Daniel, 505" }
+  { id: "19", name: "Centro de Distribuição", address: "Av. Celso Daniel, 505", code: "CD" }
 ]
 
 const productCategories = [
@@ -79,10 +79,30 @@ async function main() {
   const adminUsername = 'admin'
   const supervisorUsername = 'supervisor'
 
+  await prisma.stockCountItem.deleteMany({})
+  await prisma.stockCount.deleteMany({})
+  await prisma.stockMovement.deleteMany({})
+  await prisma.purchaseOrderItem.deleteMany({})
+  await prisma.purchaseOrder.deleteMany({})
+  await prisma.supplier.deleteMany({})
+  await prisma.orderItem.deleteMany({})
+  await prisma.order.deleteMany({})
   await prisma.product.deleteMany({})
   await prisma.category.deleteMany({})
   await prisma.user.deleteMany({ where: { OR: [{ username: adminUsername }, { username: supervisorUsername }] } })
   await prisma.store.deleteMany({})
+
+  const ceasas = [
+    { name: "CEASA I", type: "CEASA", address: "" },
+    { name: "CEASA II", type: "CEASA", address: "" },
+    { name: "CEASA III", type: "CEASA", address: "" },
+    { name: "CEASA IV", type: "CEASA", address: "" },
+    { name: "CEASA V", type: "CEASA", address: "" },
+  ]
+  for (const c of ceasas) {
+    await prisma.supplier.create({ data: c })
+  }
+  console.log(`Created ${ceasas.length} CEASA suppliers`)
 
   const createdStores = []
   for (const s of storesData) {

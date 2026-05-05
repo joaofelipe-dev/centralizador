@@ -176,6 +176,23 @@ export class OrderRepository {
     return items
   }
 
+  async findById(id: string) {
+    return prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        },
+        store: true,
+        user: {
+          select: { id: true, name: true, username: true }
+        }
+      }
+    })
+  }
+
   async update(id: string, data: { 
     items?: { productId: string, quantity: number, currentStock: number }[], 
     status?: string 
