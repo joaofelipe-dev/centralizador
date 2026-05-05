@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
+import { HeaderNav } from "@/components/Header/HeaderNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "sonner";
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} min-h-screen bg-background text-foreground selection:bg-primary/30`}>
         <AuthProvider>
           <div className="relative flex min-h-screen flex-col">
+            <HeaderNav className="sticky top-0 z-50" />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>

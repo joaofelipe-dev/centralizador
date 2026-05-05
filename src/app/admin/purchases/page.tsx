@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { PackageSearch } from 'lucide-react';
+import { PackageSearch, ArrowLeft } from 'lucide-react';
 import { PurchaseList } from '@/components/Admin/PurchaseList';
 import { PurchaseForm } from '@/components/Admin/PurchaseForm';
 import { PurchaseReceiveModal } from '@/components/Admin/PurchaseReceiveModal';
 import type { PurchaseOrder } from '@/types/purchase';
 import { listPurchases } from '@/lib/purchase-api';
+import { useRouter } from 'next/navigation';
 
 export default function PurchasesPage() {
+  const router = useRouter();
   const [purchases, setPurchases] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
@@ -40,9 +42,15 @@ export default function PurchasesPage() {
     setReceiveOpen(true);
   };
 
-  return (
+    return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-3">
+        <button
+          onClick={() => router.push('/admin')}
+          className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-white" />
+        </button>
         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
           <PackageSearch className="h-5 w-5 text-primary" />
         </div>
