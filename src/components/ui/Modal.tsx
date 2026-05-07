@@ -12,6 +12,7 @@ export interface ModalProps {
   description?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  overlayClassName?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -25,6 +26,7 @@ export const Modal: React.FC<ModalProps> = ({
   description,
   children,
   className,
+  overlayClassName,
 }) => {
   React.useEffect(() => {
     if (!closeOnEsc) return;
@@ -44,14 +46,15 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
-        variant === 'centered' ? 'flex items-center justify-center' : 'p-4'
+        "fixed inset-0 z-[120] bg-black/50 backdrop-blur-sm",
+        variant === 'centered' ? 'flex items-center justify-center' : 'p-4',
+        overlayClassName
       )}
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
         className={cn(
-          "bg-white rounded-lg shadow-lg overflow-hidden",
+          "bg-card rounded-lg shadow-lg overflow-hidden border border-border",
           {
             'w-full max-w-sm': size === 'sm',
             'w-full max-w-md': size === 'md',
@@ -67,9 +70,9 @@ export const Modal: React.FC<ModalProps> = ({
         aria-modal="true"
       >
         {(title || description) && (
-          <div className="px-6 py-4 border-b">
+          <div className="px-6 py-4 border-b border-border">
             {title && <h2 className="text-lg font-semibold">{title}</h2>}
-            {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
+            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
           </div>
         )}
         <div className="px-6 py-4">

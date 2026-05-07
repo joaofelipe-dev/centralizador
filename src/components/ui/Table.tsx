@@ -21,7 +21,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
               // Variant
               'border-collapse': variant === 'simple',
               '[&_tbody_tr:nth-child(even)]:bg-muted': variant === 'striped',
-              'border border-gray-200 [&_th]:border [&_td]:border': variant === 'bordered',
+              'border border-border [&_th]:border [&_td]:border': variant === 'bordered',
               
               // Size
               '[&_th]:p-2 [&_td]:p-2': size === 'sm',
@@ -39,8 +39,8 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps>(
           {children}
         </table>
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/50">
-            <span className="text-gray-500 font-medium">Loading...</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+            <span className="text-muted-foreground font-medium">Carregando...</span>
           </div>
         )}
       </div>

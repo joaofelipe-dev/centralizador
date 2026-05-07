@@ -17,9 +17,9 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           "rounded-lg bg-card text-card-foreground",
           {
             // Variants
-            'border bg-white shadow-sm': variant === 'default',
-            'border-2 border-gray-200': variant === 'outlined',
-            'shadow-lg bg-white': variant === 'elevated',
+            'border shadow-sm': variant === 'default',
+            'border-2 border-border': variant === 'outlined',
+            'shadow-lg': variant === 'elevated',
             
             // Paddings
             'p-0': padding === 'none',

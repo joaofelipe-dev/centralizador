@@ -33,10 +33,10 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
             'border border-red-600 text-red-600': variant === 'outline' && color === 'danger',
             
             // Soft Variants
-            'bg-blue-100 text-blue-800': variant === 'soft' && color === 'primary',
-            'bg-green-100 text-green-800': variant === 'soft' && color === 'success',
-            'bg-yellow-100 text-yellow-800': variant === 'soft' && color === 'warning',
-            'bg-red-100 text-red-800': variant === 'soft' && color === 'danger',
+            'bg-blue-950/70 text-blue-300': variant === 'soft' && color === 'primary',
+            'bg-green-950/70 text-green-300': variant === 'soft' && color === 'success',
+            'bg-yellow-950/70 text-yellow-300': variant === 'soft' && color === 'warning',
+            'bg-red-950/70 text-red-300': variant === 'soft' && color === 'danger',
           },
           className
         )}

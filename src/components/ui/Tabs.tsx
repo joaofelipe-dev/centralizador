@@ -38,8 +38,8 @@ export const Tabs: React.FC<TabsProps> = ({
       <div
         className={cn(
           "flex",
-          orientation === 'vertical' ? 'flex-col space-y-1' : 'flex-row space-x-1 border-b border-gray-200',
-          variant === 'solid' && orientation === 'horizontal' && 'border-none p-1 bg-gray-100 rounded-md',
+          orientation === 'vertical' ? 'flex-col space-y-1' : 'flex-row space-x-1 border-b border-border',
+          variant === 'solid' && orientation === 'horizontal' && 'border-none p-1 bg-muted rounded-md',
         )}
       >
         {tabs.map((tab) => {
@@ -56,15 +56,15 @@ export const Tabs: React.FC<TabsProps> = ({
                   'px-6 py-3 text-base': size === 'lg',
                   
                   // Variants
-                  'border-b-2 border-transparent hover:text-gray-700': variant === 'line' && !isActive && orientation === 'horizontal',
+                  'border-b-2 border-transparent hover:text-foreground/70': variant === 'line' && !isActive && orientation === 'horizontal',
                   'border-b-2 border-primary text-primary': variant === 'line' && isActive && orientation === 'horizontal',
-                  'border-l-2 border-transparent hover:text-gray-700 pl-4': variant === 'line' && !isActive && orientation === 'vertical',
+                  'border-l-2 border-transparent hover:text-foreground/70 pl-4': variant === 'line' && !isActive && orientation === 'vertical',
                   'border-l-2 border-primary text-primary pl-4': variant === 'line' && isActive && orientation === 'vertical',
                   
-                  'rounded-sm hover:bg-gray-200': variant === 'solid' && !isActive,
-                  'rounded-sm bg-white text-gray-900 shadow-sm': variant === 'solid' && isActive,
-                  
-                  'rounded-full hover:bg-gray-100': variant === 'pills' && !isActive,
+                  'rounded-sm hover:bg-accent': variant === 'solid' && !isActive,
+                  'rounded-sm bg-card text-card-foreground shadow-sm': variant === 'solid' && isActive,
+
+                  'rounded-full hover:bg-accent': variant === 'pills' && !isActive,
                   'rounded-full bg-primary text-white': variant === 'pills' && isActive,
                   
                   'flex-1 text-center': fullWidth && orientation === 'horizontal',
