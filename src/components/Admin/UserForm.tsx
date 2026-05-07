@@ -5,6 +5,7 @@ import type { UserRole } from "./TeamManagement";
 import { StoresCombobox } from "./StoresCombobox";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Spinner } from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/Button";
 
 interface UserFormData {
@@ -107,15 +108,15 @@ export function UserForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-border" />
           <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
             Dados da Conta
           </span>
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         <div>
-          <label className="text-xs text-white/70 mb-1 flex items-center gap-1">
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
             Usuário <span className="text-red-400">*</span>
           </label>
           <Input
@@ -136,7 +137,7 @@ export function UserForm({
         </div>
 
         <div>
-          <label className="text-xs text-white/70 mb-1 flex items-center gap-1">
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
             Nome Completo <span className="text-red-400">*</span>
           </label>
           <Input
@@ -157,7 +158,7 @@ export function UserForm({
         </div>
 
         <div>
-          <label className="text-xs text-white/70 mb-1">E-mail</label>
+          <label className="text-xs text-muted-foreground mb-1">E-mail</label>
           <Input
             type="email"
             placeholder="email@exemplo.com"
@@ -176,7 +177,7 @@ export function UserForm({
         </div>
 
         <div>
-          <label className="text-xs text-white/70 mb-1 flex items-center gap-1">
+          <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
             {isEditing ? "Nova Senha (opcional)" : "Senha"}
             {!isEditing && <span className="text-red-400">*</span>}
           </label>
@@ -208,24 +209,24 @@ export function UserForm({
 
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-border" />
           <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
             Permissões
           </span>
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         <div>
-          <label className="text-xs text-white/70 mb-1">Função</label>
+          <label className="text-xs text-muted-foreground mb-1">Função</label>
           <Select
             value={form.role}
             onChange={e => updateField("role", e.target.value as UserRole)}
             disabled={loading}
             status={errors.role && touched.role ? "error" : "default"}
           >
-            <option className="bg-black text-white" value="DEFAULT">Padrão</option>
-            <option className="bg-black text-white" value="SUPERVISOR">Supervisor</option>
-            <option className="bg-black text-white" value="ADMIN">Admin</option>
+            <option value="DEFAULT">Padrão</option>
+            <option value="SUPERVISOR">Supervisor</option>
+            <option value="ADMIN">Admin</option>
           </Select>
         </div>
 
@@ -261,7 +262,7 @@ export function UserForm({
           disabled={loading}
           fullWidth
         >
-          {loading && <span className="animate-spin">⟳</span>}
+          {loading && <Spinner size="sm" />}
           {isEditing ? "Salvar Alterações" : "Adicionar Membro"}
         </Button>
       </div>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { toast } from 'sonner';
 import type { PurchaseOrderItem, Supplier } from '@/types/purchase';
 import { createPurchase, listSuppliers } from '@/lib/purchase-api';
 
@@ -28,14 +29,13 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
   const [items, setItems] = useState<(PurchaseOrderItem & { productName?: string; stockCD?: number })[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const fetchSuppliers = useCallback(async () => {
     try {
       const data = await listSuppliers('CEASA');
       setSuppliers(data);
     } catch {
-      setError('Erro ao carregar fornecedores');
+      toast.error('Erro ao carregar fornecedores');
     }
   }, []);
 
@@ -61,7 +61,6 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
       setSelectedSupplier('');
       setItems([]);
       setSearch('');
-      setError('');
     }
   }, [open, fetchSuppliers, fetchProducts]);
 
@@ -93,16 +92,15 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
 
   const handleSubmit = async () => {
     if (!selectedSupplier) {
-      setError('Selecione um fornecedor');
+      toast.error('Selecione um fornecedor');
       return;
     }
     if (items.length === 0) {
-      setError('Adicione pelo menos um item');
+      toast.error('Adicione pelo menos um item');
       return;
     }
 
     setLoading(true);
-    setError('');
 
     try {
       await createPurchase({
@@ -116,7 +114,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar compra');
+      toast.error(err instanceof Error ? err.message : 'Erro ao criar compra');
     } finally {
       setLoading(false);
     }
@@ -125,11 +123,6 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
   return (
     <Modal open={open} onClose={onClose} title="Nova Compra" size="lg">
       <div className="space-y-4">
-        {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-            {error}
-          </div>
-        )}
 
         <div>
           <label className="block text-xs font-medium text-muted-foreground mb-1">
@@ -138,7 +131,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
           <Select
             value={selectedSupplier}
             onChange={e => setSelectedSupplier(e.target.value)}
-            className="w-full bg-white/5 border-white/10 text-white"
+            className="w-full"
           >
             <option value="">Selecione...</option>
             {suppliers.map(s => (
@@ -157,13 +150,13 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Digite para buscar..."
-              className="pl-10 bg-white/5 border-white/10"
+              variant="glass"
             />
           </div>
         </div>
 
         {search && filteredProducts.length > 0 && (
-          <div className="max-h-40 overflow-y-auto rounded-lg border border-white/10 bg-white/5">
+          <div className="max-h-40 overflow-y-auto rounded-lg border border-border bg-card">
             {filteredProducts.map(p => (
               <button
                 key={p.id}
@@ -184,7 +177,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
           </h4>
 
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-white/5">
+            <div key={index} className="grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-card border border-border">
               <div className="col-span-4 text-xs text-white truncate">
                 {item.productName}
               </div>
@@ -197,18 +190,20 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
                   value={item.quantity}
                   onChange={e => updateItem(index, 'quantity', Number(e.target.value))}
                   min={1}
-                  className="h-7 text-xs bg-white/5 border-white/10"
+                  className="h-7 text-xs"
+                  variant="glass"
                 />
               </div>
               <div className="col-span-3">
-                <Input
-                  type="number"
-                  value={item.unitCost || ''}
-                  onChange={e => updateItem(index, 'unitCost', Number(e.target.value))}
-                  placeholder="Custo"
-                  step="0.01"
-                  className="h-7 text-xs bg-white/5 border-white/10"
-                />
+                  <Input
+                    type="number"
+                    value={item.unitCost || ''}
+                    onChange={e => updateItem(index, 'unitCost', Number(e.target.value))}
+                    placeholder="Custo"
+                    step="0.01"
+                    className="h-7 text-xs"
+                    variant="glass"
+                  />
               </div>
               <div className="col-span-1">
                 <button
@@ -228,7 +223,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
           )}
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="ghost" onClick={onClose} disabled={loading}>
             Cancelar
           </Button>
