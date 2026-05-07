@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Package, BarChart3, Filter, Download, FileSpreadsheet } from "lucide-react";
+import { Package, BarChart3, Download, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import * as XLSX from "xlsx";
 import type { Product, Store } from "@/types/product";
@@ -172,9 +172,6 @@ export function PivotTable({ consolidated }: PivotTableProps) {
           <p className="text-sm text-muted-foreground">Visão geral de pedidos (Qtd) e estoque informado (Est) em todas as filiais.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="default" className="gap-2">
-            <Filter className="h-4 w-4" /> Filtrar
-          </Button>
           <Button onClick={handleExport} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/5">
             <Download className="h-4 w-4" /> Exportar
           </Button>

@@ -2,14 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import {
-  ArrowLeft,
-  LogOut,
   Loader2,
-  ShoppingBag,
   Clock,
   Users,
   Package,
   Shield,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import { useAuth } from "@/context/AuthContext";
@@ -23,6 +21,8 @@ import { DateInput } from "@/components/DateInput/DateInput";
 import { TeamManagement } from "@/components/Admin/TeamManagement";
 import type { TeamUser, UserRole } from "@/components/Admin/TeamManagement";
 import type { Store, Product } from "@/types/product";
+import type { ConsolidatedOrder } from "@/types/api";
+import { PageNav } from "@/components/PageNav";
 
 interface MatrixCell {
   quantity: number;
@@ -51,7 +51,7 @@ type ConsolidatedData = {
 };
 
 export default function AdminPage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const [users, setUsers] = useState<TeamUser[]>([]);
   const [allStores, setAllStores] = useState<Store[]>([]);
   const [consolidated, setConsolidated] = useState<ConsolidatedData>({
@@ -62,27 +62,20 @@ export default function AdminPage() {
   const [filterDate, setFilterDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
-  const [form, setForm] = useState<AdminForm>({
-    username: "",
-    name: "",
-    email: "",
-    password: "",
-    storeIds: [],
-    role: "USER" as UserRole,
-  });
-  const [editUserId, setEditUserId] = useState<string | null>(null);
   const [isDataLoading, setIsDataLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const loadData = useCallback(async () => {
     setIsDataLoading(true);
     try {
-      const [usersData, storesData, consolidatedData] =
+      const [usersData, storesData, productsData, consolidatedData] =
         await Promise.all([
           api.getUsers(),
           api.getStores(),
+          api.getProducts(),
           api.getConsolidatedOrders(filterDate),
         ]);
+
       setUsers(
         (usersData || []).map((u: import("@/types/auth").User) => ({
           id: u.id,
@@ -94,11 +87,38 @@ export default function AdminPage() {
         }))
       );
       setAllStores(storesData || []);
+
+      const orders = consolidatedData || [];
+      const productMap = new Map<string, Product & { categoryName?: string }>();
+      const matrix: PivotMatrix = {};
+
+      for (const order of orders) {
+        productMap.set(order.productId, {
+          id: order.productId,
+          name: order.productName,
+          categoryName: order.categoryName,
+          categoryId: "",
+          price: 0,
+          stock: 0,
+        });
+
+        if (!matrix[order.productId]) {
+          matrix[order.productId] = {};
+        }
+
+        for (const store of order.stores) {
+          matrix[order.productId][store.storeId] = {
+            quantity: store.quantity,
+            currentStock: 0,
+          };
+        }
+      }
+
       setConsolidated({
-              products: [],
-              stores: storesData || [],
-              matrix: {},
-            });
+        products: Array.from(productMap.values()),
+        stores: storesData || [],
+        matrix,
+      });
     } catch (error) {
       console.error("Falha ao carregar dados:", error);
       toast.error("Erro ao carregar dados do sistema.");
@@ -185,42 +205,21 @@ export default function AdminPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050505]">
-      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={() => router.push("/pedidos")}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-white hover:bg-white/10 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-lg font-bold tracking-tight text-white drop-shadow-sm">
-              Painel Administrativo
-            </h1>
-          </div>
+      <PageNav
+        title="Painel Administrativo"
+        description="Visão consolidada do sistema"
+        backHref="/pedidos"
+        icon={<ShieldCheck className="h-5 w-5 text-primary" />}
+        actions={
+          <DateInput
+            value={filterDate || ''}
+            onChange={setFilterDate}
+            className="text-lg focus:border-transparent"
+          />
+        }
+      />
 
-          <div className="flex items-center gap-4">
-            <DateInput
-              value={filterDate || ''}
-              onChange={setFilterDate}
-              className="text-lg focus:border-transparent"
-            />
-            <Button
-              onClick={logout}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-red-500 hover:bg-red-500/10 transition-all"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
-            <div className="h-8 w-8 rounded-full bg-linear-to-br from-primary to-primary/60 border border-white/10 shadow-lg shadow-primary/20" />
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 max-w- mx-auto w-full p-6 space-y-12 animate-slide-up">
+      <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-12 animate-slide-up">
         <div className="glass-card p-6 rounded-xl text-center">
           <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-2">Gestão de Pedidos</h2>
