@@ -5,7 +5,6 @@ import type { FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { ShoppingBag, Lock, Loader2, User, UserRound } from "lucide-react";
 import { Button } from "@/components/Button/Button";
-import { Header } from "@/components/Header/Header";
 
 export default function LoginPage() {
   const [username, setUsername] = useState<string>("");
@@ -27,12 +26,14 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-linear-to-br from-[#3DE585]/50 to-[#138565]/50">
+    return (
+    <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-[#3DE585]/50 to-[#138565]/50">
       <div className="w-full max-w-md space-y-8">
-        <Header className="justify-center bg-transparent border-none">
-          <Header.Logo className="" />
-        </Header>
+        <div className="flex justify-center">
+          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <ShoppingBag className="h-8 w-8 text-primary" />
+          </div>
+        </div>
 
         <div className="glass-card rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -54,7 +55,9 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="usuario"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  aria-label="Nome de usuário"
+                  autoComplete="username"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
               </div>
 
@@ -69,7 +72,9 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  aria-label="Senha"
+                  autoComplete="current-password"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
               </div>
             </div>

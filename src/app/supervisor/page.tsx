@@ -3,8 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import type { ChangeEvent } from "react";
 import {
-  ArrowLeft,
-  LogOut,
   Loader2,
   ShoppingBag,
   Package,
@@ -14,13 +12,17 @@ import {
   Filter,
   Pencil,
   ChevronDown,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { DateInput } from "@/components/DateInput/DateInput";
 import type { Order, OrderItem } from "@/types/order";
+import { PageNav } from "@/components/PageNav";
+import { Modal } from "@/components/ui/Modal";
 
 const STATUS_CONFIG: Record<string, {
   label: string;
@@ -35,7 +37,7 @@ const STATUS_CONFIG: Record<string, {
 };
 
 export default function SupervisorOrdersPage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -81,7 +83,7 @@ export default function SupervisorOrdersPage() {
       await loadOrders();
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
-      alert("Erro ao atualizar status: " + (error as Error).message);
+      toast.error("Erro ao atualizar status: " + (error as Error).message);
     } finally {
       setSavingOrder(false);
     }
@@ -95,7 +97,7 @@ export default function SupervisorOrdersPage() {
       await loadOrders();
     } catch (error) {
       console.error("Erro ao atualizar pedido:", error);
-      alert("Erro ao atualizar pedido: " + (error as Error).message);
+      toast.error("Erro ao atualizar pedido: " + (error as Error).message);
     } finally {
       setSavingOrder(false);
     }
@@ -142,42 +144,22 @@ export default function SupervisorOrdersPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050505]">
-      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 backdrop-blur-xl">
-        <div className="flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => router.push("/pedidos")}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-white hover:bg-white/10 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-base font-bold tracking-tight text-white">
-              Gestão de Pedidos
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-white hover:bg-white/10 md:hidden"
-            >
-              <Filter className="h-5 w-5" />
-            </Button>
-            <Button
-              onClick={logout}
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-red-500 hover:bg-red-500/10"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
+      <PageNav
+        title="Gestão de Pedidos"
+        description="Aprovação e edição de pedidos"
+        backHref="/pedidos"
+        icon={<Shield className="h-5 w-5 text-primary" />}
+        actions={
+          <Button
+            onClick={() => setShowFilters(!showFilters)}
+            variant="ghost"
+            size="icon"
+            className="rounded-full text-white hover:bg-white/10 md:hidden"
+          >
+            <Filter className="h-5 w-5" />
+          </Button>
+        }
+      >
         <div className={`px-4 pb-3 space-y-3 md:hidden ${showFilters ? 'block' : 'hidden'}`}>
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
@@ -226,7 +208,7 @@ export default function SupervisorOrdersPage() {
             {orders.length} pedido{orders.length !== 1 ? 's' : ''}
           </h2>
         </div>
-      </header>
+      </PageNav>
 
       <main className="flex-1 w-full p-4 md:p-6 space-y-4">
         <div className="md:hidden">
@@ -254,7 +236,7 @@ export default function SupervisorOrdersPage() {
                   key={order.id}
                   className="glass-card rounded-xl overflow-hidden"
                 >
-                  <div 
+                  <div
                     className="p-4 md:p-6 cursor-pointer"
                     onClick={() => toggleExpand(order.id)}
                   >
@@ -432,81 +414,85 @@ function OrderEditPanel({ order, onClose, onSave, isSaving }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/95">
-      <div className="glass-card w-full max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 rounded-t-2xl md:rounded-2xl">
-        <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
-          <h3 className="text-lg md:text-xl font-bold text-white">Editar Pedido</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-white p-2 -m-2">
-            ✕
-          </button>
-        </div>
+    <Modal
+      open
+      onClose={onClose}
+      variant="default"
+      overlayClassName="flex items-end md:items-center justify-center p-0 md:p-4 bg-black/95"
+      className="glass-card w-full max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 rounded-t-2xl md:rounded-2xl"
+    >
+      <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
+        <h3 className="text-lg md:text-xl font-bold text-white">Editar Pedido</h3>
+        <button onClick={onClose} className="text-muted-foreground hover:text-white p-2 -m-2">
+          ✕
+        </button>
+      </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
-          {items.map((item) => (
-            <div
-              key={item.productId}
-              className="bg-white/5 rounded-xl p-4"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-bold text-white text-sm md:text-base truncate pr-2">{item.name}</p>
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
+        {items.map((item) => (
+          <div
+            key={item.productId}
+            className="bg-white/5 rounded-xl p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-bold text-white text-sm md:text-base truncate pr-2">{item.name}</p>
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-[10px] uppercase text-muted-foreground">Estoque</span>
+                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg">
+                  <button
+                    onClick={() => updateItem(item.productId, "currentStock", -1)}
+                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
+                  >
+                    -
+                  </button>
+                  <span className="w-12 text-center font-bold text-white text-base">
+                    {item.currentStock}
+                  </span>
+                  <button
+                    onClick={() => updateItem(item.productId, "currentStock", 1)}
+                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-col items-center gap-1 flex-1">
-                  <span className="text-[10px] uppercase text-muted-foreground">Estoque</span>
-                  <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg">
-                    <button
-                      onClick={() => updateItem(item.productId, "currentStock", -1)}
-                      className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
-                    >
-                      -
-                    </button>
-                    <span className="w-12 text-center font-bold text-white text-base">
-                      {item.currentStock}
-                    </span>
-                    <button
-                      onClick={() => updateItem(item.productId, "currentStock", 1)}
-                      className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center gap-1 flex-1">
-                  <span className="text-[10px] uppercase text-primary">Quantidade</span>
-                  <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-lg border border-primary/20">
-                    <button
-                      onClick={() => updateItem(item.productId, "quantity", -1)}
-                      className="h-9 w-9 flex items-center justify-center rounded text-primary hover:bg-white/10 text-lg font-bold"
-                    >
-                      -
-                    </button>
-                    <span className="w-12 text-center font-bold text-white text-base">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateItem(item.productId, "quantity", 1)}
-                      className="h-9 w-9 flex items-center justify-center rounded bg-primary text-white text-lg font-bold"
-                    >
-                      +
-                    </button>
-                  </div>
+              <div className="flex flex-col items-center gap-1 flex-1">
+                <span className="text-[10px] uppercase text-primary">Quantidade</span>
+                <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-lg border border-primary/20">
+                  <button
+                    onClick={() => updateItem(item.productId, "quantity", -1)}
+                    className="h-9 w-9 flex items-center justify-center rounded text-primary hover:bg-white/10 text-lg font-bold"
+                  >
+                    -
+                  </button>
+                  <span className="w-12 text-center font-bold text-white text-base">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateItem(item.productId, "quantity", 1)}
+                    className="h-9 w-9 flex items-center justify-center rounded bg-primary text-white text-lg font-bold"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        <div className="p-4 md:p-6 border-t border-white/5 flex gap-3 shrink-0">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="flex-1">
-            {isSaving ? "Salvando..." : "Salvar"}
-          </Button>
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
+
+      <div className="p-4 md:p-6 border-t border-white/5 flex gap-3 shrink-0">
+        <Button variant="outline" onClick={onClose} className="flex-1">
+          Cancelar
+        </Button>
+        <Button onClick={handleSave} disabled={isSaving} className="flex-1">
+          {isSaving ? "Salvando..." : "Salvar"}
+        </Button>
+      </div>
+    </Modal>
   );
 }

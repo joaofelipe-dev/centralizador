@@ -63,11 +63,10 @@ const ProductRow = React.memo(
           onClick={() =>
             updateField(product.id, "needsReview", !cartItem?.needsReview)
           }
-          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${
-            cartItem?.needsReview
-              ? "border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30"
-              : "border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
-          }`}
+          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${cartItem?.needsReview
+            ? "border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30"
+            : "border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+            }`}
         >
           <AlertCircle className="h-4 w-4" />
         </Button>
@@ -318,7 +317,6 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         orderDate: orderDate,
       };
 
-      console.log("Final Order Submitted:", JSON.stringify(orderData, null, 2));
       await api.createOrder(orderData);
       setIsSuccess(true);
     } catch (err: unknown) {
@@ -420,9 +418,9 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 animate-slide-up">
+    <div className="w-full mx-auto p-4 animate-slide-up">
       {error && (
-        <div className="fixed bottom-24 left-4 right-4 z-[110] animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-24 left-4 right-4 z-[130] animate-in slide-in-from-bottom-4 duration-300">
           <Card
             variant="default"
             padding="sm"
@@ -444,7 +442,27 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           </Card>
         </div>
       )}
-      <div className="text-center mb-8">
+      <div className="flex items-center gap-4">
+        <Button
+          onClick={isReviewing ? () => setIsReviewing(false) : onBack}
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full bg-secondary/50 text-white"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h2 className="text-xl font-bold text-white">
+            {isReviewing ? "Revisar Pedido" : store.name}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            {isReviewing
+              ? "Confirme os itens selecionados"
+              : "Novo Pedido de Compra"}
+          </p>
+        </div>
+      </div>
+      <div className="text-center mt-8">
         <h2 className="w-full text-2xl font-bold text-white">
           Pedido de compras
         </h2>
@@ -456,26 +474,6 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={isReviewing ? () => setIsReviewing(false) : onBack}
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-full bg-secondary/50 text-white"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h2 className="text-xl font-bold text-white">
-              {isReviewing ? "Revisar Pedido" : store.name}
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              {isReviewing
-                ? "Confirme os itens selecionados"
-                : "Novo Pedido de Compra"}
-            </p>
-          </div>
-        </div>
 
         {!isReviewing && (
           <Card
@@ -634,37 +632,37 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           </div>
         )}
 
-        {hasItems && (
-          <div className="sticky bottom-6 left-0 right-0 px-4 flex justify-center z-[100]">
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-white" : "glass"}`}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <div className="flex items-center justify-between w-full px-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`${isReviewing ? "bg-white text-primary" : "bg-primary text-white"} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}
-                    >
-                      {totalItems}
-                    </div>
-                    <span className={isReviewing ? "text-white" : "text-white"}>
-                      {isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}
-                    </span>
+      {hasItems && (
+        <div className="absolute bottom-6 left-0 right-0 px-4 flex justify-center z-[80]">
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-white" : "glass"}`}
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <div className="flex items-center justify-between w-full px-4">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`${isReviewing ? "bg-white text-primary" : "bg-primary text-white"} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}
+                  >
+                    {totalItems}
                   </div>
-                  {isReviewing ? (
-                    <Send className="h-5 w-5 text-white" />
-                  ) : (
-                    <Send className="h-5 w-5 text-primary" />
-                  )}
+                  <span className={isReviewing ? "text-white" : "text-white"}>
+                    {isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}
+                  </span>
                 </div>
-              )}
-            </Button>
-          </div>
-        )}
+                {isReviewing ? (
+                  <Send className="h-5 w-5 text-white" />
+                ) : (
+                  <Send className="h-5 w-5 text-primary" />
+                )}
+              </div>
+            )}
+          </Button>
+        </div>
+      )}
       </div>
     </div>
   );

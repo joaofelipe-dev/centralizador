@@ -1,42 +1,32 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { SaleList } from '@/components/Admin/SaleList';
 import { SaleForm } from '@/components/Admin/SaleForm';
 import { Modal } from '@/components/ui/Modal';
-import { useRouter } from "next/navigation";
+import { PageNav } from '@/components/PageNav';
 
 export default function SalesPage() {
-  const router = useRouter();
   const [saleModalOpen, setSaleModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSaleSuccess = () => {
     setSaleModalOpen(false);
-    window.location.reload();
+    setRefreshKey(k => k + 1);
   };
 
     return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => router.push('/admin')}
-          className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5 text-white" />
-        </button>
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-          <ShoppingCart className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-white">Vendas</h1>
-          <p className="text-sm text-muted-foreground">
-            Registre vendas para fornecedores externos
-          </p>
-        </div>
-      </div>
+    <>
+      <PageNav
+        title="Vendas"
+        description="Registre vendas para fornecedores externos"
+        backHref="/admin"
+        icon={<ShoppingCart className="h-5 w-5 text-primary" />}
+      />
+      <div className="space-y-6 p-6">
 
-      <SaleList onSaleClick={() => setSaleModalOpen(true)} />
+      <SaleList key={refreshKey} onSaleClick={() => setSaleModalOpen(true)} />
 
       <Modal
         open={saleModalOpen}
@@ -51,5 +41,6 @@ export default function SalesPage() {
         />
       </Modal>
     </div>
+    </>
   );
 }
