@@ -33,7 +33,7 @@ export const Toast: React.FC<ToastProps> = ({
       timerRef.current = setTimeout(() => {
         handleClose();
       }, duration);
-      
+
       return () => {
         if (timerRef.current) clearTimeout(timerRef.current);
       };
@@ -44,7 +44,7 @@ export const Toast: React.FC<ToastProps> = ({
 
   return (
     <div className={cn(
-      "fixed z-50 flex items-center justify-between px-4 py-3 rounded shadow-lg min-w-[300px]",
+      "fixed z-[130] flex items-center justify-between px-4 py-3 rounded shadow-lg min-w-[300px]",
       {
         'bg-green-500 text-white': variant === 'success',
         'bg-red-500 text-white': variant === 'error',

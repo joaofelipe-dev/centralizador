@@ -25,7 +25,7 @@ function PopoverContent({
     <div
       data-slot="popover-content"
       className={cn(
-        "z-50 flex w-72 flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md",
+        "z-[110] flex w-72 flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md",
         className
       )}
       {...props}

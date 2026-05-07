@@ -46,32 +46,8 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
 
   return (
     <nav className={`flex items-center gap-2 ${className ?? ""}`}>
-      {/* Desktop - direct links */}
-      <div className="hidden md:flex items-center gap-2">
-        {items.map((item) => (
-          <Link key={item.href} href={item.href}>
-            <Button
-              variant={pathname === item.href ? "default" : "ghost"}
-              size="sm"
-              className={pathname === item.href ? "gap-2" : "gap-2 text-white hover:bg-white/10"}
-            >
-              <item.icon className="h-4 w-4" />
-              <span className="text-sm">{item.label}</span>
-            </Button>
-          </Link>
-        ))}
-        <Button
-          size="icon"
-          variant="ghost"
-          className="text-red-500 hover:bg-red-500/10"
-          onClick={logout}
-        >
-          <LogOut className="h-5 w-5" />
-        </Button>
-      </div>
-
-      {/* Mobile - compact menu */}
-      <div className="md:hidden relative">
+      {/* Compact menu */}
+      <div className="relative">
         <Button
           size="icon"
           variant="ghost"
@@ -82,7 +58,7 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
         </Button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-black/95 backdrop-blur-xl border border-white/10 shadow-xl z-50 p-2">
+          <div className="absolute right-0 z-[110] top-full mt-2 w-56 rounded-xl bg-background/95 backdrop-blur-xl border border-white/10 shadow-xl p-2">
             <div className="space-y-1">
               {items.map((item) => (
                 <Link

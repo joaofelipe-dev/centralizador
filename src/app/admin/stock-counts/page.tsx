@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Loader2, ArrowLeft, PackageSearch } from "lucide-react"
+import { Loader2, PackageSearch } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
@@ -11,6 +11,7 @@ import { StockCountSession } from "@/components/Admin/StockCountSession"
 import { StockCountDivergenceReport } from "@/components/Admin/StockCountDivergenceReport"
 import type { StockCount } from "@/types/stock-count"
 import { toast } from "sonner"
+import { PageNav } from "@/components/PageNav"
 
 type ViewState = "list" | "new" | "session" | "report"
 
@@ -58,42 +59,23 @@ export default function StockCountsPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-3 text-muted-foreground">Carregando contagens...</span>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050505]">
-      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/admin')}
-              className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5 text-white" />
-            </button>
-            <h1 className="text-lg font-bold tracking-tight text-white drop-shadow-sm">
-              Contagem Física de Estoque
-            </h1>
-          </div>
-        </div>
-      </header>
+      <PageNav
+        title="Contagem Física de Estoque"
+        description="Inicie uma contagem e ajuste divergências"
+        backHref="/admin"
+        icon={<PackageSearch className="h-5 w-5 text-primary" />}
+      />
 
       <main className="flex-1 max-w-[1600px] w-full mx-auto p-6 space-y-6">
         {view === "list" && (
           <>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <PackageSearch className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Contagem Física</h2>
-                <p className="text-sm text-muted-foreground">
-                  Inicie uma contagem e ajuste divergências
-                </p>
-              </div>
-            </div>
             <StockCountList
               key={refreshKey}
               onNewCount={handleNewCount}

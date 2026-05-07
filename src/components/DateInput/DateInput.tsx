@@ -103,7 +103,7 @@ export function DateInput({
   };
 
   const popupClasses = [
-    "absolute z-50 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl p-2",
+    "absolute z-[110] bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl p-2",
     position.top ? "top-full mt-2" : "bottom-full mb-2",
     position.left ? "left-0" : "right-0"
   ].join(" ");

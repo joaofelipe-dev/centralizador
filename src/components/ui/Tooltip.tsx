@@ -56,7 +56,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     >
       {children}
       {visible && (
-        <div className={cn("absolute z-50 px-2 py-1 text-sm rounded shadow-md whitespace-nowrap", {
+        <div className={cn("absolute z-[110] px-2 py-1 text-sm rounded shadow-md whitespace-nowrap", {
           'bg-gray-900 text-white': variant === 'dark',
           'bg-white text-gray-900 border border-gray-200': variant === 'light',
           'bottom-full left-1/2 -translate-x-1/2 mb-2': position === 'top',

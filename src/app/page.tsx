@@ -7,6 +7,7 @@ import Onboarding from "@/components/Onboarding";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/Navbar";
 
 const Home = () => {
   const { user, loading } = useAuth();
@@ -34,45 +35,43 @@ const Home = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
-              <ShoppingBag className="h-5 w-5" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white whitespace-nowrap">
-              Central <span className="text-primary">Pedidos</span>
-            </span>
+      <Navbar position="top" sticky className="z-[80]" maxWidth="max-w-7xl">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
+            <ShoppingBag className="h-5 w-5" />
           </div>
+          <span className="text-lg font-bold tracking-tight text-white whitespace-nowrap">
+            Central <span className="text-primary">Pedidos</span>
+          </span>
+        </div>
 
-          <div className="flex items-center gap-2">
-            {user ? (
-              <div className="flex items-center gap-2">
-                {(user.role === 'ADMIN' || user.role === 'SUPERVISOR') && (
-                  <Link href="/admin">
-                    <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10">
-                      <ShieldCheck className="h-4 w-4" />
-                      Painel Admin
-                    </Button>
-                  </Link>
-                )}
-                <Link href="/pedidos">
-                  <Button variant="ghost" className="rounded-full px-4 text-sm font-medium">
-                    Meus Pedidos
+        <div className="flex items-center gap-2">
+          {user ? (
+            <div className="flex items-center gap-2">
+              {(user.role === 'ADMIN' || user.role === 'SUPERVISOR') && (
+                <Link href="/admin">
+                  <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10">
+                    <ShieldCheck className="h-4 w-4" />
+                    Painel Admin
                   </Button>
                 </Link>
-              </div>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium">
-                  <LogIn className="h-4 w-4" />
-                  Entrar
+              )}
+              <Link href="/pedidos">
+                <Button variant="ghost" className="rounded-full px-4 text-sm font-medium">
+                  Meus Pedidos
                 </Button>
               </Link>
-            )}
-          </div>
+            </div>
+          ) : (
+            <Link href="/login">
+              <Button variant="ghost" className="flex items-center gap-2 rounded-full px-4 text-sm font-medium">
+                <LogIn className="h-4 w-4" />
+                Entrar
+              </Button>
+            </Link>
+          )}
         </div>
-      </header>
+      </Navbar>
 
       <main className="flex-1 flex flex-col items-center justify-center py-12">
         <Onboarding onComplete={handleOnboardingComplete} />

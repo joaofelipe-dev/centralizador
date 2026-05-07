@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../utils/cn';
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  variant?: 'default' | 'filled' | 'outline' | 'ghost';
+  variant?: 'default' | 'filled' | 'outline' | 'ghost' | 'glass';
   size?: 'sm' | 'md' | 'lg';
   status?: 'default' | 'error' | 'success' | 'warning';
   fullWidth?: boolean;
@@ -41,6 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'bg-secondary text-secondary-foreground border-transparent': variant === 'filled',
               'border-2 border-input bg-transparent': variant === 'outline',
               'border-transparent bg-transparent hover:bg-accent hover:text-accent-foreground': variant === 'ghost',
+              'bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground focus-visible:border-primary/50': variant === 'glass',
               
               // Sizes
               'h-8 px-2 text-xs': size === 'sm',

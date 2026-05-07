@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingBag, LogOut, Loader2 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { ShoppingBag, Loader2 } from "lucide-react";
 import StoreSelector from "@/components/StoreSelector";
 import OrderForm from "@/components/OrderForm";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Header } from "@/components/Header/Header";
 import type { Store } from "@/types/product";
 
 export default function PedidosFlowPage() {
@@ -36,8 +34,6 @@ export default function PedidosFlowPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
-
       <main className="flex-1 flex flex-col py-8 pb-32">
         {!selectedStore ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

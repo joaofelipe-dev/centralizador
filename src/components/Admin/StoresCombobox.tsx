@@ -64,9 +64,8 @@ export function StoresCombobox({
       </label>
 
       <div
-        className={`flex flex-wrap gap-1.5 p-3 bg-white/5 border border-white/10 rounded-xl min-h-[44px] cursor-pointer transition-all ${
-          disabled ? "opacity-50 cursor-not-allowed" : "focus-within:ring-2 focus-within:ring-primary/50"
-        }`}
+        className={`flex flex-wrap gap-1.5 p-3 bg-white/5 border border-white/10 rounded-xl min-h-[44px] cursor-pointer transition-all ${disabled ? "opacity-50 cursor-not-allowed" : "focus-within:ring-2 focus-within:ring-primary/50"
+          }`}
         onClick={() => !disabled && setOpen(!open)}
         role="combobox"
         aria-expanded={open}
@@ -97,8 +96,8 @@ export function StoresCombobox({
         <ChevronDown className={`h-4 w-4 ml-auto text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
 
-       {open && !disabled && (
-        <div id={listboxId} role="listbox" className="absolute z-50 w-full mt-1 bg-black/95 border border-white/10 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+      {open && !disabled && (
+        <div id={listboxId} role="listbox" className="absolute z-[110] w-full mt-1 bg-black/95 border border-white/10 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center gap-2 p-2 border-b border-white/5">
             <Search className="h-4 w-4 text-muted-foreground ml-2" />
             <input
@@ -119,15 +118,13 @@ export function StoresCombobox({
                   <div
                     key={s.id}
                     onClick={() => toggleStore(String(s.id))}
-                    className={`px-3 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-2 ${
-                      isSelected ? "bg-primary/20 text-primary" : "hover:bg-white/5 text-white"
-                    }`}
+                    className={`px-3 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-2 ${isSelected ? "bg-primary/20 text-primary" : "hover:bg-white/5 text-white"
+                      }`}
                     role="option"
                     aria-selected={isSelected}
                   >
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-                      isSelected ? "bg-primary border-primary" : "border-white/30"
-                    }`}>
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${isSelected ? "bg-primary border-primary" : "border-white/30"
+                      }`}>
                       {isSelected && <span className="text-[10px]">✓</span>}
                     </div>
                     {s.name}

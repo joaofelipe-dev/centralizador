@@ -1,67 +1,39 @@
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { LogOut, ShoppingBag, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { useRouter, usePathname } from "next/navigation";
 import { HeaderLogo } from "./HeaderLogo";
 import { HeaderNav } from "./HeaderNav";
 
-interface HeaderLogoComponentProps {
-  children?: React.ReactNode;
-  className?: string;
-}
+import { Navbar } from "@/components/Navbar";
 
-interface HeaderNavComponentProps {
-  children?: React.ReactNode;
-  className?: string;
-}
+export default function Header() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
-interface HeaderExtrasComponentProps {
-  children: React.ReactNode;
-  className?: string;
-}
+  if (!user) return null;
 
-interface HeaderProps {
-  className?: string;
-  children?: React.ReactNode;
-}
+  return (
+    <Navbar position="top" sticky>
+      <div className="flex items-center gap-4">
+        <HeaderLogo />
+      </div>
 
-interface HeaderComponent extends React.FC<HeaderProps> {
-    Logo: React.FC<HeaderLogoComponentProps>;
-    Nav: React.FC<HeaderNavComponentProps>;
-    Extras: React.FC<HeaderExtrasComponentProps>;
-}
-
-export const Header: HeaderComponent = ({ children, className = "" }: HeaderProps) => {
-    return (
-        <header
-            role="banner"
-            className={`flex sticky top-0 z-50 justify-between items-center p-5 md:px-8 bg-black/40 border-b border-white/20 text-center ${className}`}
+      <div className="flex items-center gap-2">
+        <HeaderNav />
+        <Button
+          size="icon"
+          variant="ghost"
+          className="text-red-500 hover:bg-red-500/10"
+          onClick={logout}
+          title="Sair"
         >
-            {children ? (
-                children
-            ) : (
-                <>
-                    <div className="flex justify-between w-full">
-                        <Header.Logo />
-                        <Header.Nav />
-                    </div>
-                </>
-            )}
-        </header>
-    )
+          <LogOut className="h-5 w-5" />
+        </Button>
+      </div>
+    </Navbar>
+  );
 }
-
-Header.Logo = ({ children, className = "" }: HeaderLogoComponentProps) => (
-    <>
-        {children ?? <HeaderLogo className={className} />}
-    </>
-)
-Header.Logo.displayName = 'Header.Logo'
-
-Header.Nav = ({ children, className = "" }: HeaderNavComponentProps) => (
-    <>
-        {children ?? <HeaderNav className={className} />}
-    </>
-)
-Header.Nav.displayName = 'Header.Nav'
-
-Header.Extras = ({ children, className = "" }: HeaderExtrasComponentProps) => (
-    <div className={`ml-auto flex items-center gap-2 ${className}`}>{children}</div>
-)
-Header.Extras.displayName = 'Header.Extras'
