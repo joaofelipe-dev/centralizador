@@ -192,7 +192,7 @@ export function UserForm({
             disabled={loading}
             status={errors.password && touched.password ? "error" : "default"}
             fullWidth
-            aria-required={String(!isEditing)}
+            aria-required={!isEditing}
             rightIcon={
               <div
                 onClick={() => setShowPassword(!showPassword)}
