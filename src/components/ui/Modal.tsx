@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { cn } from '../utils/cn';
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export interface ModalProps {
   open: boolean;
@@ -28,18 +31,60 @@ export const Modal: React.FC<ModalProps> = ({
   className,
   overlayClassName,
 }) => {
-  React.useEffect(() => {
-    if (!closeOnEsc) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && onClose) {
-        onClose();
-      }
-    };
-    if (open) {
-      window.addEventListener('keydown', handleKeyDown);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const trapFocus = useCallback((e: KeyboardEvent) => {
+    if (e.key !== 'Tab' || !contentRef.current) return;
+
+    const focusable = contentRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+    if (focusable.length === 0) {
+      e.preventDefault();
+      return;
     }
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, closeOnEsc, onClose]);
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+
+      requestAnimationFrame(() => {
+        if (contentRef.current) {
+          const first = contentRef.current.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+          first?.focus();
+        }
+      });
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && onClose) {
+          onClose();
+        }
+        trapFocus(e);
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        previousFocusRef.current?.focus();
+        previousFocusRef.current = null;
+      };
+    }
+  }, [open, closeOnEsc, onClose, trapFocus]);
 
   if (!open) return null;
 
@@ -53,6 +98,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
+        ref={contentRef}
         className={cn(
           "bg-card rounded-lg shadow-lg overflow-hidden border border-border",
           {

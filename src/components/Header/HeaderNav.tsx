@@ -8,6 +8,7 @@ import Link from "next/link";
 
 interface HeaderNavProps {
   className?: string;
+  onRequestLogout?: () => void;
 }
 
 const menuItems = (userRole: string) => {
@@ -34,19 +35,17 @@ const menuItems = (userRole: string) => {
   return items;
 };
 
-export const HeaderNav = ({ className }: HeaderNavProps) => {
-  const { user, logout } = useAuth();
+export const HeaderNav = ({ className, onRequestLogout }: HeaderNavProps) => {
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (!user) return null;
 
   const items = menuItems(user.role);
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  const isAdminHome = pathname === "/admin";
 
   return (
     <nav className={`flex items-center gap-2 ${className ?? ""}`}>
-      {/* Compact menu */}
       <div className="relative">
         <Button
           size="icon"
@@ -66,6 +65,7 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
                   href={item.href}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
                   onClick={() => setMenuOpen(false)}
+                  aria-current={pathname === item.href ? "page" : undefined}
                 >
                   <item.icon className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">{item.label}</span>
@@ -78,7 +78,7 @@ export const HeaderNav = ({ className }: HeaderNavProps) => {
                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                 onClick={() => {
                   setMenuOpen(false);
-                  logout();
+                  onRequestLogout?.();
                 }}
               >
                 <LogOut className="h-4 w-4" />

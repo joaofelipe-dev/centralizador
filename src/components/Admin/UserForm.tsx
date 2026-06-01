@@ -128,6 +128,7 @@ export function UserForm({
             disabled={loading}
             status={errors.username && touched.username ? "error" : "default"}
             fullWidth
+            aria-required="true"
           />
           {errors.username && touched.username && (
             <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
@@ -149,6 +150,7 @@ export function UserForm({
             disabled={loading}
             status={errors.name && touched.name ? "error" : "default"}
             fullWidth
+            aria-required="true"
           />
           {errors.name && touched.name && (
             <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
@@ -190,6 +192,7 @@ export function UserForm({
             disabled={loading}
             status={errors.password && touched.password ? "error" : "default"}
             fullWidth
+            aria-required={String(!isEditing)}
             rightIcon={
               <div
                 onClick={() => setShowPassword(!showPassword)}

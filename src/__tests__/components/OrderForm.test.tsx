@@ -16,7 +16,7 @@ vi.mock('@/lib/api', () => ({
 import * as apiModule from '@/lib/api'
 
 const mockStore: Store = {
-  id: 1,
+  id: '1',
   name: 'Loja Centro',
   address: 'Rua A, 123',
 }
@@ -25,19 +25,19 @@ const mockOnBack = vi.fn()
 
 const mockCategories: Category[] = [
   {
-    id: 1,
+    id: '1',
     name: 'Legumes',
     products: [
-      { id: 1, name: 'Cenoura', categoryId: 1, stockCD: 100 },
-      { id: 2, name: 'Batata', categoryId: 1, stockCD: 50 },
+      { id: '1', name: 'Cenoura', categoryId: '1', stockCD: 100 },
+      { id: '2', name: 'Batata', categoryId: '1', stockCD: 50 },
     ]
   },
   {
-    id: 2,
+    id: '2',
     name: 'Frutas',
     products: [
-      { id: 3, name: 'Maçã', categoryId: 2, stockCD: 80 },
-      { id: 4, name: 'Banana', categoryId: 2, stockCD: 60 },
+      { id: '3', name: 'Maçã', categoryId: '2', stockCD: 80 },
+      { id: '4', name: 'Banana', categoryId: '2', stockCD: 60 },
     ]
   }
 ]
@@ -83,10 +83,17 @@ describe('OrderForm Component', () => {
       expect(screen.getByText(/cenoura/i)).toBeInTheDocument()
     })
 
-    // Find number inputs (for quantity or stock)
-    const numberInputs = screen.getAllByRole('spinbutton')
-    expect(numberInputs.length).toBeGreaterThan(0)
+    // Click the product card to expand it
+    const productCard = screen.getByText(/cenoura/i).closest('[class*="rounded-xl"]')!
+    await user.click(productCard)
 
+    // Find number inputs (for quantity or stock) after expanding
+    await waitFor(() => {
+      const numberInputs = screen.getAllByRole('spinbutton')
+      expect(numberInputs.length).toBeGreaterThan(0)
+    })
+
+    const numberInputs = screen.getAllByRole('spinbutton')
     if (numberInputs[0]) {
       await user.clear(numberInputs[0])
       await user.type(numberInputs[0], '5')
@@ -131,9 +138,17 @@ describe('OrderForm Component', () => {
       expect(screen.getByText(/cenoura/i)).toBeInTheDocument()
     })
 
-    // Find all spinbutton inputs
-    const inputs = screen.getAllByRole('spinbutton')
+    // Click the product card to expand it
+    const productCard = screen.getByText(/cenoura/i).closest('[class*="rounded-xl"]')!
+    await user.click(productCard)
 
+    // Find all spinbutton inputs after expanding
+    await waitFor(() => {
+      const inputs = screen.getAllByRole('spinbutton')
+      expect(inputs.length).toBeGreaterThan(0)
+    })
+
+    const inputs = screen.getAllByRole('spinbutton')
     if (inputs.length > 0) {
       await user.clear(inputs[0])
       await user.type(inputs[0], '10')

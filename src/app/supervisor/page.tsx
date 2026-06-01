@@ -23,6 +23,7 @@ import { DateInput } from "@/components/DateInput/DateInput";
 import type { Order, OrderItem } from "@/types/order";
 import { PageNav } from "@/components/PageNav";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmDialog } from "@/components/Admin/ConfirmDialog";
 
 const STATUS_CONFIG: Record<string, {
   label: string;
@@ -47,6 +48,7 @@ export default function SupervisorOrdersPage() {
   const [savingOrder, setSavingOrder] = useState<boolean>(false);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
+  const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
 
   const loadOrders = useCallback(async () => {
     setIsLoading(true);
@@ -83,7 +85,7 @@ export default function SupervisorOrdersPage() {
       await loadOrders();
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
-      toast.error("Erro ao atualizar status: " + (error as Error).message);
+      toast.error("Erro ao alterar status do pedido. Verifique a conexão e tente novamente.");
     } finally {
       setSavingOrder(false);
     }
@@ -97,7 +99,7 @@ export default function SupervisorOrdersPage() {
       await loadOrders();
     } catch (error) {
       console.error("Erro ao atualizar pedido:", error);
-      toast.error("Erro ao atualizar pedido: " + (error as Error).message);
+      toast.error("Erro ao salvar alterações do pedido. Verifique os dados e tente novamente.");
     } finally {
       setSavingOrder(false);
     }
@@ -340,7 +342,7 @@ export default function SupervisorOrdersPage() {
                           variant="destructive"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleStatusChange(order.id, "CANCELLED");
+                            setCancellingOrder(order.id);
                           }}
                           disabled={savingOrder}
                           className="gap-1.5 text-xs md:text-sm flex-1 sm:flex-none"
@@ -366,6 +368,21 @@ export default function SupervisorOrdersPage() {
           isSaving={savingOrder}
         />
       )}
+
+      <ConfirmDialog
+        open={!!cancellingOrder}
+        onOpenChange={(open) => { if (!open) setCancellingOrder(null); }}
+        onConfirm={async () => {
+          if (cancellingOrder) {
+            await handleStatusChange(cancellingOrder, "CANCELLED");
+            setCancellingOrder(null);
+          }
+        }}
+        title="Cancelar Pedido"
+        description="Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita."
+        confirmText="Cancelar Pedido"
+        cancelText="Voltar"
+      />
     </div>
   );
 }

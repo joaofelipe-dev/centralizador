@@ -21,7 +21,7 @@ export default function LoginPage() {
     const result = await login(username, password);
 
     if (!result.success) {
-      setError(result.message || "Falha na autenticação");
+      setError(result.message || "Falha na autenticação. Verifique seu usuário e senha e tente novamente.");
       setIsLoading(false);
     }
   }
@@ -49,16 +49,17 @@ export default function LoginPage() {
                   <UserRound className="h-4 w-4" />
                   Usuário
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="usuario"
-                  aria-label="Nome de usuário"
-                  autoComplete="username"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="usuario"
+                    aria-label="Nome de usuário"
+                    aria-required="true"
+                    autoComplete="username"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
               </div>
 
               <div className="space-y-2">
@@ -66,16 +67,17 @@ export default function LoginPage() {
                   <Lock className="h-4 w-4" />
                   Senha
                 </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  aria-label="Senha"
-                  autoComplete="current-password"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    aria-label="Senha"
+                    aria-required="true"
+                    autoComplete="current-password"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
               </div>
             </div>
 

@@ -13,6 +13,7 @@ import type {
 import type { Product, Category, Store } from '@/types/product';
 import type { Order, CreateOrderRequest, OrderStatus } from '@/types/order';
 import type { User } from '@/types/auth';
+import { enqueueOrder } from '@/lib/offline/queue';
 
 const isLocalhost = typeof window !== 'undefined' && 
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -107,7 +108,19 @@ export const api: ApiInterface = {
     body: JSON.stringify(userData),
   }),
   getMe: () => apiRequest<{ user: User }>('/auth/me'),
-  getProducts: () => apiRequest<Product[]>('/products'),
+  getProducts: async () => {
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    if (!isOnline) {
+      const { getCachedProducts } = await import('@/lib/offline/cache');
+      return getCachedProducts();
+    }
+    try {
+      return await apiRequest<Product[]>('/products');
+    } catch {
+      const { getCachedProducts } = await import('@/lib/offline/cache');
+      return getCachedProducts();
+    }
+  },
   createProduct: (data) => apiRequest<Product>('/products', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -131,8 +144,32 @@ export const api: ApiInterface = {
   deleteUser: (id) => apiRequest<void>(`/users/${id}`, {
     method: 'DELETE',
   }),
-  getStores: () => apiRequest<Store[]>('/stores'),
-  getCategories: () => apiRequest<Category[]>('/categories'),
+  getStores: async () => {
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    if (!isOnline) {
+      const { getCachedStores } = await import('@/lib/offline/cache');
+      return getCachedStores();
+    }
+    try {
+      return await apiRequest<Store[]>('/stores');
+    } catch {
+      const { getCachedStores } = await import('@/lib/offline/cache');
+      return getCachedStores();
+    }
+  },
+  getCategories: async () => {
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    if (!isOnline) {
+      const { getCachedCategories } = await import('@/lib/offline/cache');
+      return getCachedCategories();
+    }
+    try {
+      return await apiRequest<Category[]>('/categories');
+    } catch {
+      const { getCachedCategories } = await import('@/lib/offline/cache');
+      return getCachedCategories();
+    }
+  },
   getOrders: (date?: string, status?: OrderStatus) => {
     const params = new URLSearchParams();
     if (date) params.append('date', date);
@@ -140,10 +177,51 @@ export const api: ApiInterface = {
     const query = params.toString();
     return apiRequest<OrderListResponse>(`/orders${query ? `?${query}` : ''}`);
   },
-  createOrder: (orderData) => apiRequest<Order>('/orders', {
-    method: 'POST',
-    body: JSON.stringify(orderData),
-  }),
+  createOrder: async (orderData) => {
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    if (!isOnline) {
+      await enqueueOrder(orderData);
+      return {
+        id: `offline_${Date.now()}`,
+        storeId: orderData.storeId,
+        orderDate: orderData.orderDate,
+        status: 'PENDING' as OrderStatus,
+        items: orderData.items.map((item) => ({
+          id: `pending_${item.productId}`,
+          productId: item.productId,
+          quantity: item.quantity,
+          currentStock: item.currentStock ?? 0,
+          product: { name: '' },
+        })),
+        createdAt: new Date().toISOString(),
+      } as Order;
+    }
+    try {
+      return await apiRequest<Order>('/orders', {
+        method: 'POST',
+        body: JSON.stringify(orderData),
+      });
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        await enqueueOrder(orderData);
+        return {
+          id: `offline_${Date.now()}`,
+          storeId: orderData.storeId,
+          orderDate: orderData.orderDate,
+          status: 'PENDING' as OrderStatus,
+          items: orderData.items.map((item) => ({
+            id: `pending_${item.productId}`,
+            productId: item.productId,
+            quantity: item.quantity,
+            currentStock: item.currentStock ?? 0,
+            product: { name: '' },
+          })),
+          createdAt: new Date().toISOString(),
+        } as Order;
+      }
+      throw error;
+    }
+  },
   getConsolidatedOrders: (date?: string) => apiRequest<ConsolidatedOrder[]>(`/orders/consolidated${date ? `?date=${date}` : ''}`),
   updateOrder: (id, data) => apiRequest<Order>(`/orders/${id}`, {
     method: 'PUT',

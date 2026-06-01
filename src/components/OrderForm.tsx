@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Package,
   Plus,
@@ -8,6 +8,7 @@ import {
   Send,
   CheckCircle2,
   ChevronLeft,
+  ChevronDown,
   Carrot,
   Apple,
   LeafyGreen,
@@ -15,6 +16,7 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
+import { cn } from "@/components/utils/cn";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
@@ -28,13 +30,15 @@ interface ProductRowProps {
   product: Product;
   categoryName: string;
   cartItem?: CartItem;
+  expanded: boolean;
+  onToggleExpand: (id: string) => void;
   updateField: (
-    id: number | string,
+    id: string,
     field: keyof CartItem,
     value: number | boolean,
   ) => void;
   handleInputChange: (
-    id: number | string,
+    id: string,
     field: "quantity" | "currentStock",
     value: string,
   ) => void;
@@ -46,125 +50,217 @@ const ProductRow = React.memo(
     product,
     categoryName,
     cartItem,
+    expanded,
+    onToggleExpand,
     updateField,
     handleInputChange,
     getProductIcon,
-  }: ProductRowProps) => (
-    <Card
-      variant="default"
-      padding="sm"
-      className={`bg-background rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-white/10 group ${cartItem?.needsReview ? "border-red-500/50 bg-red-500/5" : ""}`}
-    >
-      <div className="flex items-center gap-4 flex-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            updateField(product.id, "needsReview", !cartItem?.needsReview)
-          }
-          className={`h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-all cursor-pointer ${cartItem?.needsReview
-            ? "border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/30"
-            : "border-white/20 bg-white/5 text-white/40 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
-            }`}
-        >
-          <AlertCircle className="h-4 w-4" />
-        </Button>
-        <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 text-primary group-hover:bg-primary group-hover:text-white transition-all">
-          {getProductIcon(categoryName)}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-white group-hover:text-primary transition-colors whitespace-normal break-words leading-tight">
-            {product.name}
-          </h3>
-        </div>
-      </div>
+  }: ProductRowProps) => {
+    const hasCDStock = (product.stockCD ?? 0) > 0;
+    const confirmed = cartItem?.confirmed ?? false;
 
-      <div className="flex items-center justify-between lg:justify-center w-full lg:w-[120px] px-3 py-2 lg:py-0 rounded-lg bg-white/5 lg:bg-transparent">
-        <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
-          Estoque CD
-        </span>
-        <div className="flex items-center gap-1 min-w-[60px] justify-center">
-          <Package className="h-3.5 w-3.5 text-primary/50" />
-          <span className="text-sm font-bold text-primary">
-            {product.stockCD ?? 0}
-          </span>
-        </div>
-      </div>
+    return (
+      <Card
+        variant="default"
+        padding="sm"
+        className={cn(
+          "bg-card rounded-xl flex flex-col gap-3 transition-all border-2",
+          hasCDStock &&
+            "border-primary shadow-[0_0_12px_-3px] shadow-primary",
+          confirmed && "border-green-500 bg-green-500/20 shadow-[0_0_12px_-3px] shadow-green-500",
+          !hasCDStock && !confirmed && "border-white/10 hover:border-white/20",
+        )}
+        onClick={() => onToggleExpand(product.id)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 shrink-0">
+            {getProductIcon(categoryName)}
+          </div>
 
-      <div className="flex items-center justify-between lg:justify-center w-full lg:w-[160px]">
-        <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
-          Estoque Atual
-        </span>
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-white whitespace-normal break-words leading-tight text-sm lg:text-base">
+              {product.name}
+            </h3>
+          </div>
+          {expanded ? null : (
+            <span className="text-center text-xs text-muted-foreground/50 shrink-0">
+              Clique para abrir detalhes e ajustar quantidades.
+            </span>
+          )}
+
+          <div
+            className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border shrink-0",
+              hasCDStock
+                ? "bg-primary/10 border-primary/20"
+                : "bg-white/5 border-white/10",
+            )}
+          >
+            <Package
+              className={cn(
+                "h-3.5 w-3.5",
+                hasCDStock ? "text-primary" : "text-white/30",
+              )}
+            />
+            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+              CD:
+            </span>
+            <span
+              className={cn(
+                "text-xs font-bold",
+                hasCDStock ? "text-primary" : "text-white/40",
+              )}
+            >
+              {product.stockCD ?? 0}
+            </span>
+          </div>
+
           <Button
             type="button"
-            variant="ghost"
+            variant={confirmed ? "default" : "ghost"}
             size="icon"
-            onClick={() => updateField(product.id, "currentStock", -1)}
-            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              updateField(product.id, "confirmed", !confirmed);
+            }}
+            className={cn(
+              "h-9 w-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0",
+              confirmed
+                ? "bg-green-500 text-white shadow-lg shadow-green-500/30 hover:bg-green-600"
+                : "border-2 border-white/20 bg-white/5 text-white/40 hover:border-green-500/50 hover:bg-green-500/10 hover:text-green-400",
+            )}
           >
-            <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+            <CheckCircle2 className="h-4 w-4" />
           </Button>
-          <Input
-            type="number"
-            inputMode="numeric"
-            value={cartItem?.currentStock > 0 ? cartItem?.currentStock : ""}
-            onChange={(e) =>
-              handleInputChange(product.id, "currentStock", e.target.value)
-            }
-            placeholder="0"
-            className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
+
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 text-white/30 transition-transform shrink-0",
+              expanded && "rotate-180",
+            )}
           />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => updateField(product.id, "currentStock", 1)}
-            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
-          >
-            <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </Button>
         </div>
-      </div>
 
-      <div className="flex items-center justify-between lg:justify-end w-full lg:w-[160px]">
-        <span className="text-[10px] lg:hidden text-muted-foreground uppercase font-bold tracking-wider">
-          Pedir Agora
-        </span>
-        <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-xl border border-primary/20 shadow-inner">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => updateField(product.id, "quantity", -1)}
-            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-primary"
-          >
-            <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </Button>
-          <Input
-            type="number"
-            inputMode="numeric"
-            value={cartItem?.quantity > 0 ? cartItem?.quantity : ""}
-            onChange={(e) =>
-              handleInputChange(product.id, "quantity", e.target.value)
-            }
-            placeholder="0"
-            className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
-          />
-          <Button
-            type="button"
-            variant="default"
-            size="icon"
-            onClick={() => updateField(product.id, "quantity", 1)}
-            className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
-          >
-            <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-          </Button>
-        </div>
-      </div>
-    </Card>
-  ),
+        {expanded && (
+          <div className="flex flex-col gap-4 pt-3 border-t border-white/10">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 w-fit">
+              <Package
+                className={cn(
+                  "h-3.5 w-3.5",
+                  hasCDStock ? "text-primary" : "text-white/30",
+                )}
+              />
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                Estoque CD:
+              </span>
+              <span
+                className={cn(
+                  "text-xs font-bold",
+                  hasCDStock ? "text-primary" : "text-white/40",
+                )}
+              >
+                {product.stockCD ?? 0}
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
+                  Estoque Atual
+                </span>
+                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner w-fit">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateField(product.id, "currentStock", -1);
+                    }}
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                  >
+                    <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                  </Button>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    value={
+                      cartItem?.currentStock > 0 ? cartItem?.currentStock : ""
+                    }
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) =>
+                      handleInputChange(
+                        product.id,
+                        "currentStock",
+                        e.target.value,
+                      )
+                    }
+                    placeholder="0"
+                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateField(product.id, "currentStock", 1);
+                    }}
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                  >
+                    <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
+                  Pedir Agora
+                </span>
+                <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-xl border border-primary/20 shadow-inner w-fit">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateField(product.id, "quantity", -1);
+                    }}
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                  >
+                    <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                  </Button>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    value={cartItem?.quantity > 0 ? cartItem?.quantity : ""}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) =>
+                      handleInputChange(product.id, "quantity", e.target.value)
+                    }
+                    placeholder="0"
+                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateField(product.id, "quantity", 1);
+                    }}
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
+                  >
+                    <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </Card>
+    );
+  },
 );
 
 ProductRow.displayName = "ProductRow";
@@ -194,6 +290,22 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     search: string;
     categoryId: string | null;
   }>({ search: "", categoryId: null });
+
+  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleExpanded = useCallback((id: string) => {
+    setExpandedProducts((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -418,201 +530,217 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
   }
 
   return (
-    <div className="w-full mx-auto p-4 animate-slide-up">
-      {error && (
-        <div className="fixed bottom-24 left-4 right-4 z-[130] animate-in slide-in-from-bottom-4 duration-300">
-          <Card
-            variant="default"
-            padding="sm"
-            className="border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20 rounded-xl"
-          >
-            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
-            <span className="text-sm text-red-200 flex-1">{error}</span>
-            <Button
-              onClick={() => {
-                setAttentionAcknowledged(true);
-                setError(null);
-              }}
-              variant="ghost"
-              size="sm"
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/30 text-xs shrink-0"
+    <>
+      <div className="relative w-full bg-background mx-auto p-4 animate-slide-up">
+        {/* Error Alert */}
+        {error && (
+          <div className="fixed bottom-24 left-4 right-4 z-[130] animate-in slide-in-from-bottom-4 duration-300">
+            <Card
+              variant="default"
+              padding="sm"
+              className="border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20 rounded-xl"
             >
-              OK
-            </Button>
-          </Card>
+              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+              <span className="text-sm text-red-200 flex-1">{error}</span>
+              <Button
+                onClick={() => {
+                  setAttentionAcknowledged(true);
+                  setError(null);
+                }}
+                variant="ghost"
+                size="sm"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/30 text-xs shrink-0"
+              >
+                OK
+              </Button>
+            </Card>
+          </div>
+        )}
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={isReviewing ? () => setIsReviewing(false) : onBack}
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-full bg-secondary/50 text-white"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold text-white">
+              {isReviewing ? "Revisar Pedido" : store.name}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {isReviewing
+                ? "Confirme os itens selecionados"
+                : "Novo Pedido de Compra"}
+            </p>
+          </div>
         </div>
-      )}
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={isReviewing ? () => setIsReviewing(false) : onBack}
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 rounded-full bg-secondary/50 text-white"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h2 className="text-xl font-bold text-white">
-            {isReviewing ? "Revisar Pedido" : store.name}
+        <div className="text-center mt-8">
+          <h2 className="w-full text-2xl font-bold text-white">
+            Pedido de compras
           </h2>
-          <p className="text-xs text-muted-foreground">
-            {isReviewing
-              ? "Confirme os itens selecionados"
-              : "Novo Pedido de Compra"}
+          <p className="text-sm text-muted-foreground mb-6 px-4">
+            Selecione os produtos e as quantidades desejadas para criar um novo
+            pedido de compra para a <strong>{store.name}</strong>. Você poderá
+            revisar seu pedido antes de enviar.
           </p>
         </div>
-      </div>
-      <div className="text-center mt-8">
-        <h2 className="w-full text-2xl font-bold text-white">
-          Pedido de compras
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6 px-4">
-          Selecione os produtos e as quantidades desejadas para criar um novo
-          pedido de compra para a <strong>{store.name}</strong>. Você poderá
-          revisar seu pedido antes de enviar.
-        </p>
-      </div>
 
-      <div className="flex flex-col gap-6">
-
-        {!isReviewing && (
-          <Card
-            variant="default"
-            padding="sm"
-            className="glass-card rounded-xl flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span className="text-sm text-white font-medium">
-                Data do Pedido:
-              </span>
-            </div>
-            <DateInput
-              value={orderDate}
-              onChange={setOrderDate}
-              min={getTomorrowDate()}
-            />
-          </Card>
-        )}
-
-        {isReviewing ? (
-          <div className="space-y-6 pb-32">
-            <Card variant="default" padding="lg" className="space-y-4">
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Resumo do Pedido
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>{new Date(orderDate).toLocaleDateString("pt-BR")}</span>
-                </div>
+        <div className="flex flex-col gap-6">
+          {!isReviewing && (
+            <Card
+              variant="default"
+              padding="sm"
+              className="glass-card rounded-xl flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-primary" />
+                <span className="text-sm text-white font-medium">
+                  Data do Pedido:
+                </span>
               </div>
+              <DateInput
+                value={orderDate}
+                onChange={setOrderDate}
+                min={getTomorrowDate()}
+              />
+            </Card>
+          )}
 
-              <div className="space-y-3">
-                {categories
-                  .flatMap((c) => c.products || [])
-                  .filter(
-                    (p) =>
-                      (cart[p.id]?.quantity || 0) > 0 ||
-                      (cart[p.id]?.currentStock || 0) > 0,
-                  )
-                  .map((product) => {
-                    const item = cart[product.id];
-                    return (
-                      <div
-                        key={product.id}
-                        className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 group"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">
-                            {product.name}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-6">
-                          {item?.currentStock > 0 && (
-                            <div className="text-right">
-                              <p className="text-[9px] uppercase font-bold text-muted-foreground">
-                                Estoque
-                              </p>
-                              <p className="text-sm font-mono text-white/60">
-                                {item.currentStock}
-                              </p>
-                            </div>
-                          )}
-                          <div className="text-right min-w-[60px]">
-                            <p className="text-[9px] uppercase font-bold text-primary">
-                              Pedido
-                            </p>
-                            <p className="text-sm font-mono text-white font-black">
-                              {item?.quantity}
+          {isReviewing ? (
+            <div className="space-y-6 pb-32">
+              <Card variant="default" padding="lg" className="space-y-4">
+                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Resumo do Pedido
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {new Date(orderDate).toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {categories
+                    .flatMap((c) => c.products || [])
+                    .filter(
+                      (p) =>
+                        (cart[p.id]?.quantity || 0) > 0 ||
+                        (cart[p.id]?.currentStock || 0) > 0,
+                    )
+                    .map((product) => {
+                      const item = cart[product.id];
+                      return (
+                        <div
+                          key={product.id}
+                          className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 group"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">
+                              {product.name}
                             </p>
                           </div>
+                          <div className="flex items-center gap-6">
+                            {item?.currentStock > 0 && (
+                              <div className="text-right">
+                                <p className="text-[9px] uppercase font-bold text-muted-foreground">
+                                  Estoque
+                                </p>
+                                <p className="text-sm font-mono text-white/60">
+                                  {item.currentStock}
+                                </p>
+                              </div>
+                            )}
+                            <div className="text-right min-w-[60px]">
+                              <p className="text-[9px] uppercase font-bold text-primary">
+                                Pedido
+                              </p>
+                              <p className="text-sm font-mono text-white font-black">
+                                {item?.quantity}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </Card>
+                      );
+                    })}
+                </div>
+              </Card>
 
-            <Button
-              onClick={() => setIsReviewing(false)}
-              variant="outline"
-              className="w-full h-12 border-white/10 text-white hover:bg-white/5"
-            >
-              Voltar ao Catálogo
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4 pb-32">
-            <ProductFilter
-              categories={categories}
-              selectedCategory={filter.categoryId}
-              searchTerm={filter.search}
-              filteredCount={filteredProducts.length}
-              totalCount={totalProductCount}
-              onCategoryChange={(categoryId) =>
-                setFilter({ ...filter, categoryId })
-              }
-              onSearchChange={(search) => setFilter({ ...filter, search })}
-              onClear={() => setFilter({ search: "", categoryId: null })}
-            />
+              <Button
+                onClick={() => setIsReviewing(false)}
+                variant="outline"
+                className="w-full h-12 border-white/10 text-white hover:bg-white/5"
+              >
+                Voltar ao Catálogo
+              </Button>
+            </div>
+          ) : (
+            <div className="relative space-y-4 pb-32">
+              <ProductFilter
+                categories={categories}
+                selectedCategory={filter.categoryId}
+                searchTerm={filter.search}
+                filteredCount={filteredProducts.length}
+                totalCount={totalProductCount}
+                onCategoryChange={(categoryId) =>
+                  setFilter({ ...filter, categoryId })
+                }
+                onSearchChange={(search) => setFilter({ ...filter, search })}
+                onClear={() => setFilter({ search: "", categoryId: null })}
+              />
 
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setCart({})}
-                  disabled={Object.keys(cart).length === 0}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  Limpar Pedido Completo
-                </Button>
-              </div>
+              <div className="relative flex flex-col gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {Object.values(cart).filter((i) => i.confirmed).length} /{" "}
+                    {Object.keys(cart).length} conferidos
+                  </span>
 
-              {filteredProducts.length === 0 ? (
-                <Card
-                  variant="default"
-                  padding="lg"
-                  className="rounded-xl text-center"
-                >
-                  <p className="text-muted-foreground text-sm">
-                    Nenhum produto encontrado com os filtros selecionados.
-                  </p>
-                </Card>
-              ) : (
-                <Card
-                  variant="default"
-                  padding="sm"
-                  className="glass-card rounded-xl"
-                >
-                  <div className="hidden lg:grid grid-cols-[1fr_120px_160px_160px] gap-4 px-6 text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-3 pb-3 border-b border-white/5">
-                    <span>Produto</span>
-                    <span className="text-center">Estoque CD</span>
-                    <span className="text-center">Estoque Atual</span>
-                    <span className="text-right pr-4">Quantidade</span>
-                  </div>
+                  <Button
+                    onClick={() => {
+                      setCart((prev) => {
+                        const next = { ...prev };
+                        for (const id of Object.keys(next)) {
+                          next[id] = { ...next[id], confirmed: true };
+                        }
+                        return next;
+                      });
+                    }}
+                    disabled={Object.keys(cart).length === 0}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    <CheckCircle2 className="h-3 w-3" />
+                    Conferir Todos
+                  </Button>
+
+                  <Button
+                    onClick={() => setCart({})}
+                    disabled={Object.keys(cart).length === 0}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    Limpar Pedido Completo
+                  </Button>
+                </div>
+
+                {filteredProducts.length === 0 ? (
+                  <Card
+                    variant="default"
+                    padding="lg"
+                    className="rounded-xl  text-center"
+                  >
+                    <p className="text-muted-foreground text-sm">
+                      Nenhum produto encontrado com os filtros selecionados.
+                    </p>
+                  </Card>
+                ) : (
                   <div className="space-y-3">
                     {filteredProducts.map((product) => (
                       <ProductRow
@@ -620,24 +748,26 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                         product={product}
                         categoryName={getCategoryName(product.id)}
                         cartItem={cart[product.id]}
+                        expanded={expandedProducts.has(product.id)}
+                        onToggleExpand={toggleExpanded}
                         updateField={updateField}
                         handleInputChange={handleInputChange}
                         getProductIcon={getProductIcon}
                       />
                     ))}
                   </div>
-                </Card>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )}
-
+          )}
+        </div>
+      </div>
       {hasItems && (
-        <div className="absolute bottom-6 left-0 right-0 px-4 flex justify-center z-[80]">
+        <div className="fixed bottom-15 left-0 right-0 px-4 flex justify-center z-[80]">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-white" : "glass"}`}
+            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-white" : "glass backdrop-blur-[3px] shadow-xl shadow-primary/50"}`}
           >
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -663,7 +793,6 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           </Button>
         </div>
       )}
-      </div>
-    </div>
+    </>
   );
 }

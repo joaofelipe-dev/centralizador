@@ -16,11 +16,11 @@ export interface SearchInputProps {
 
 export interface ProductFilterProps {
   categories: Category[];
-  selectedCategory: number | null;
+  selectedCategory: string | null;
   searchTerm: string;
   filteredCount: number;
   totalCount: number;
-  onCategoryChange: (categoryId: number | null) => void;
+  onCategoryChange: (categoryId: string | null) => void;
   onSearchChange: (search: string) => void;
   onClear: () => void;
 }
@@ -41,8 +41,10 @@ export interface ProductRowProps {
   product: Product;
   categoryName: string;
   cartItem?: Cart[string];
-  updateField: (id: number, field: string, value: number | boolean) => void;
-  handleInputChange: (id: number, field: string, value: string) => void;
+  expanded: boolean;
+  onToggleExpand: (id: string) => void;
+  updateField: (id: string, field: string, value: number | boolean) => void;
+  handleInputChange: (id: string, field: string, value: string) => void;
   getProductIcon: (categoryName: string) => React.ReactNode;
 }
 
