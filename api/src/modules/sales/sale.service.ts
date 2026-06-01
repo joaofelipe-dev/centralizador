@@ -24,7 +24,7 @@ export async function createSale(data: {
 
   for (const item of items) {
     const product = products.find(p => p.id === item.productId)
-    if (!product || product.stockCD < item.quantity) {
+    if (!product || (product.stockCD ?? 0) < item.quantity) {
       throw new Error(`Insufficient stock for product ${product?.name || item.productId}`)
     }
   }
