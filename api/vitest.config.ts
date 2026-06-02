@@ -16,6 +16,12 @@ export default defineConfig({
         'src/__mocks__/',
         'dist/',
       ],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 70,
+        statements: 80,
+      },
     },
   },
   resolve: {

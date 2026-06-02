@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:frontend": "next dev",
+    "dev:backend": "cd api && npm run dev",
+    "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
@@ -12,7 +15,6 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
-    "@types/react-window": "^1.8.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -21,7 +23,6 @@
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
-    "react-window": "^2.2.7",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "xlsx": "^0.18.5"
@@ -35,6 +36,7 @@
     "@types/react": "^19.2.14",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "happy-dom": "^12.10.3",
