@@ -1,192 +1,63 @@
 import { prisma } from '../../lib/prisma.js'
+import { StockCountRepository } from './stock-count.repository.js'
 
 export class StockCountService {
-  async createStockCount(userId: string) {
-    const activeProducts = await prisma.product.findMany({
-      where: { stockCD: { not: null } }
-    })
+  private repo: StockCountRepository
 
-    const stockCount = await prisma.stockCount.create({
-      data: {
-        userId,
-        status: 'OPEN',
-        items: {
-          create: activeProducts.map(product => ({
-            productId: product.id,
-            systemQty: product.stockCD || 0,
-            physicalQty: 0,
-            divergence: 0
-          }))
-        }
-      },
-      include: {
-        items: {
-          include: {
-            product: true
-          }
-        },
-        user: {
-          select: { id: true, name: true, username: true }
-        }
-      }
-    })
-
-    return stockCount
+  constructor(repo?: StockCountRepository) {
+    this.repo = repo || new StockCountRepository()
   }
 
-  async listStockCounts(filters?: {
+  async createStockCount(userId: string) {
+    return this.repo.create({ userId, status: 'OPEN' })
+  }
+
+  async listStockCounts(filters: {
     status?: string
     startDate?: string
     endDate?: string
-    limit?: number
-    offset?: number
+    limit: number
+    offset: number
   }) {
-    const where: any = {}
-
-    if (filters?.status) {
-      where.status = filters.status
-    }
-    if (filters?.startDate || filters?.endDate) {
-      where.createdAt = {}
-      if (filters.startDate) {
-        where.createdAt.gte = new Date(filters.startDate)
-      }
-      if (filters.endDate) {
-        where.createdAt.lte = new Date(filters.endDate)
-      }
-    }
-
-    const limit = filters?.limit || 50
-    const offset = filters?.offset || 0
-
-    const [stockCounts, total] = await Promise.all([
-      prisma.stockCount.findMany({
-        where,
-        include: {
-          user: {
-            select: { id: true, name: true, username: true }
-          },
-          _count: {
-            select: { items: true }
-          }
-        },
-        orderBy: { createdAt: 'desc' },
-        take: limit,
-        skip: offset
-      }),
-      prisma.stockCount.count({ where })
-    ])
-
-    return {
-      total,
-      limit,
-      offset,
-      data: stockCounts
-    }
+    const [stockCounts, total] = await this.repo.findMany(filters)
+    return { total, limit: filters.limit, offset: filters.offset, data: stockCounts }
   }
 
   async getStockCountById(id: string) {
-    const stockCount = await prisma.stockCount.findUnique({
-      where: { id },
-      include: {
-        items: {
-          include: {
-            product: true
-          }
-        },
-        user: {
-          select: { id: true, name: true, username: true }
-        }
-      }
-    })
-
-    if (!stockCount) {
-      throw new Error('Stock count not found')
-    }
-
+    const stockCount = await this.repo.findById(id)
+    if (!stockCount) throw new Error('Stock count not found')
     return stockCount
   }
 
-  async updateCountItem(stockCountId: string, productId: string, physicalQty: number) {
-    const stockCount = await prisma.stockCount.findUnique({
-      where: { id: stockCountId }
-    })
+  async updateCountItems(stockCountId: string, items: { productId: string; physicalQty: number }[]) {
+    const stockCount = await this.repo.findById(stockCountId)
+    if (!stockCount) throw new Error('Stock count not found')
+    if (stockCount.status === 'CLOSED') throw new Error('Cannot update items of a closed stock count')
 
-    if (!stockCount) {
-      throw new Error('Stock count not found')
+    const results = []
+    for (const item of items) {
+      const existingItem = stockCount.items.find(i => i.productId === item.productId)
+      if (!existingItem) throw new Error(`Stock count item for product ${item.productId} not found`)
+
+      const divergence = item.physicalQty - existingItem.systemQty
+      const updated = await this.repo.updateItem(stockCountId, item.productId, item.physicalQty, divergence)
+      results.push(updated)
     }
 
-    if (stockCount.status === 'CLOSED') {
-      throw new Error('Cannot update items of a closed stock count')
-    }
-
-    const item = await prisma.stockCountItem.findFirst({
-      where: {
-        stockCountId,
-        productId
-      }
-    })
-
-    if (!item) {
-      throw new Error('Stock count item not found')
-    }
-
-    const divergence = physicalQty - item.systemQty
-
-    const existingItem = await prisma.stockCountItem.findFirst({
-      where: {
-        stockCountId,
-        productId
-      }
-    })
-
-    if (!existingItem) {
-      throw new Error('Stock count item not found')
-    }
-
-    const updatedItem = await prisma.stockCountItem.update({
-      where: {
-        id: existingItem.id
-      },
-      data: {
-        physicalQty,
-        divergence
-      }
-    })
-
-    return updatedItem
+    return results
   }
 
   async closeStockCount(id: string, userId: string) {
-    const stockCount = await prisma.stockCount.findUnique({
-      where: { id },
-      include: {
-        items: {
-          include: {
-            product: true
-          }
-        }
-      }
-    })
-
-    if (!stockCount) {
-      throw new Error('Stock count not found')
-    }
-
-    if (stockCount.status === 'CLOSED') {
-      throw new Error('Stock count is already closed')
-    }
+    const stockCount = await this.repo.findById(id)
+    if (!stockCount) throw new Error('Stock count not found')
+    if (stockCount.status === 'CLOSED') throw new Error('Stock count is already closed')
 
     return await prisma.$transaction(async (tx) => {
       for (const item of stockCount.items) {
         if (item.divergence !== 0) {
           await tx.product.update({
             where: { id: item.productId },
-            data: {
-              stockCD: {
-                increment: item.divergence
-              }
-            }
+            data: { stockCD: { increment: item.divergence } },
           })
 
           await tx.stockMovement.create({
@@ -195,28 +66,13 @@ export class StockCountService {
               type: 'ADJUST',
               quantity: item.divergence,
               reason: 'Ajuste após contagem física',
-              userId
-            }
+              userId,
+            },
           })
         }
       }
 
-      const updatedStockCount = await tx.stockCount.update({
-        where: { id },
-        data: { status: 'CLOSED' },
-        include: {
-          items: {
-            include: {
-              product: true
-            }
-          },
-          user: {
-            select: { id: true, name: true, username: true }
-          }
-        }
-      })
-
-      return updatedStockCount
+      return this.repo.updateStatus(id, 'CLOSED')
     })
   }
 }

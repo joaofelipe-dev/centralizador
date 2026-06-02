@@ -31,7 +31,9 @@ export async function exportOrderToNetwork(order: any, storeName: string, storeC
     
     const templateBuffer = fs.readFileSync(DEFAULT_TEMPLATE_PATH)
     const wb = XLSX.read(templateBuffer)
-    const ws = wb.Sheets[wb.SheetNames[0]]
+    const sheetName = wb.SheetNames[0]
+    if (!sheetName) throw new Error('Planilha sem sheets')
+    const ws = wb.Sheets[sheetName]
     const data: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][]
     
     data[0] = [formattedDate, storeName]
