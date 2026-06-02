@@ -591,20 +591,28 @@ const productCategories: { category: string; products: SeedProduct[] }[] = [
   }
 ]
 
+async function safeDelete(table: () => Promise<unknown>) {
+  try { await table() } catch (e: unknown) {
+    if (e instanceof Error && e.message.includes('does not exist')) {
+      console.warn(`  Table not found, skipping: ${e.message.split('\n')[0]}`)
+    } else { throw e }
+  }
+}
+
 async function main() {
   console.log('Seed started...')
 
   const adminUsername = 'admin'
   const supervisorUsername = 'supervisor'
 
-  await prisma.stockCountItem.deleteMany({})
-  await prisma.stockCount.deleteMany({})
-  await prisma.stockMovement.deleteMany({})
-  await prisma.purchaseOrderItem.deleteMany({})
-  await prisma.purchaseOrder.deleteMany({})
-  await prisma.supplier.deleteMany({})
-  await prisma.orderItem.deleteMany({})
-  await prisma.order.deleteMany({})
+  await safeDelete(() => prisma.stockCountItem.deleteMany({}))
+  await safeDelete(() => prisma.stockCount.deleteMany({}))
+  await safeDelete(() => prisma.stockMovement.deleteMany({}))
+  await safeDelete(() => prisma.purchaseOrderItem.deleteMany({}))
+  await safeDelete(() => prisma.purchaseOrder.deleteMany({}))
+  await safeDelete(() => prisma.supplier.deleteMany({}))
+  await safeDelete(() => prisma.orderItem.deleteMany({}))
+  await safeDelete(() => prisma.order.deleteMany({}))
   await prisma.product.deleteMany({})
   await prisma.category.deleteMany({})
   await prisma.user.deleteMany({ where: { OR: [{ username: adminUsername }, { username: supervisorUsername }] } })
