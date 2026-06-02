@@ -34,7 +34,7 @@ export function isOnline(): boolean {
 
 let lastOnlineState = isOnline()
 
-export function setupConnectivityMonitor(): void {
+function setupConnectivityMonitor(): void {
   window.addEventListener('online', () => {
     if (!lastOnlineState) {
       lastOnlineState = true

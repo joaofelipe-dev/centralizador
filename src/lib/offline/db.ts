@@ -64,15 +64,6 @@ export async function setItem(storeName: string, key: string, value: unknown): P
   })
 }
 
-export async function getAll<T>(storeName: string): Promise<T[]> {
-  const store = await getStore(storeName)
-  return new Promise((resolve, reject) => {
-    const request = store.getAll()
-    request.onsuccess = () => resolve(request.result?.map((r: { value: T }) => r.value) ?? [])
-    request.onerror = () => reject(request.error)
-  })
-}
-
 export async function getAllRecords<T>(storeName: string): Promise<{ key: string; value: T }[]> {
   const store = await getStore(storeName)
   return new Promise((resolve, reject) => {

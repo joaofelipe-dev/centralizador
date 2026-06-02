@@ -32,4 +32,3 @@ export interface Cart {
   [productId: string]: CartItem;
 }
 
-export type CategoryOrder = 'Legumes' | 'Frutas' | 'Verduras';

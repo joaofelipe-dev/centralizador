@@ -21,9 +21,7 @@ export interface StockCountListResponse {
   offset: number
 }
 
-export interface UpdateCountItemsPayload {
-  items: { productId: string; physicalQty: number }[]
-}
+
 
 export const stockCountApi = {
   createStockCount: async (): Promise<CreateStockCountResponse> => {

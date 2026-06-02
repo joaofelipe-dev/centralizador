@@ -1,10 +1,8 @@
-export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'USER';
-
 export interface User {
   id: string;
   username: string;
   email: string;
-  role: UserRole;
+  role: 'ADMIN' | 'SUPERVISOR' | 'USER';
   storeId?: string;
   storeName?: string;
   stores?: import('./product').Store[];

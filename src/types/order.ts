@@ -26,20 +26,3 @@ export interface CreateOrderRequest {
   items: OrderItem[];
   orderDate: string;
 }
-
-export interface OrderFilters {
-  date?: string;
-  status?: OrderStatus;
-}
-
-export interface OrderListItem {
-  id: string;
-  storeId: string;
-  store?: { name?: string };
-  userId?: string;
-  user?: { name?: string };
-  orderDate: string;
-  status: OrderStatus;
-  items?: OrderItem[];
-  createdAt: string;
-}

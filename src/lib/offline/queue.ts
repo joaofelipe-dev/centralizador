@@ -1,4 +1,4 @@
-import { putRecord, getByIndex, deleteItem, countStore, getItem, getAllRecords } from './db'
+import { putRecord, getByIndex, deleteItem, countStore, getItem } from './db'
 import type { CreateOrderRequest } from '@/types/order'
 
 export interface QueuedOrder {
@@ -35,19 +35,6 @@ export async function getPendingOrders(): Promise<QueuedOrder[]> {
   return getByIndex<QueuedOrder>('queue', 'status', 'PENDING')
 }
 
-export async function getAllQueuedOrders(): Promise<QueuedOrder[]> {
-  const records = await getAllRecords<QueuedOrder>('queue')
-  return records.map(r => r.value)
-}
-
-export async function markSyncing(clientId: string): Promise<QueuedOrder | null> {
-  const item = await getItem<QueuedOrder>('queue', clientId)
-  if (!item) return null
-  item.status = 'SYNCING'
-  await putRecord('queue', { key: clientId, value: item })
-  return item
-}
-
 export async function markSynced(clientId: string): Promise<void> {
   await deleteItem('queue', clientId)
 }
@@ -66,7 +53,4 @@ export async function getQueueSize(): Promise<number> {
   return countStore('queue')
 }
 
-export async function clearQueue(): Promise<void> {
-  const { clearStore } = await import('./db')
-  await clearStore('queue')
-}
+

@@ -8,16 +8,6 @@ export interface UserResponse {
   token: string;
 }
 
-export interface ApiError extends Error {
-  status?: number;
-  data?: unknown;
-}
-
-export interface ApiResponse<T> {
-  data?: T;
-  error?: ApiError;
-}
-
 export interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
 }

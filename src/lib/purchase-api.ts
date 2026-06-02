@@ -17,10 +17,6 @@ export async function listPurchases(params?: { status?: string; supplierId?: str
   return Array.isArray(data) ? data : [];
 }
 
-export async function getPurchase(id: string) {
-  return apiRequest<PurchaseOrder>(`/purchases/${id}`);
-}
-
 export async function receivePurchase(id: string) {
   return apiRequest<PurchaseOrder>(`/purchases/${id}/receive`, {
     method: 'PATCH',

@@ -1,4 +1,4 @@
-import { setItem, getItem, clearStore } from './db'
+import { setItem, getItem } from './db'
 import { apiRequest } from '@/lib/api'
 import type { Product, Category, Store } from '@/types/product'
 
@@ -46,10 +46,6 @@ export async function isCacheStale(): Promise<boolean> {
   const lastSync = await getLastSyncTimestamp()
   if (!lastSync) return true
   return Date.now() - lastSync > CACHE_TTL_MS
-}
-
-export async function clearCache(): Promise<void> {
-  await clearStore('cache')
 }
 
 export async function hasCache(): Promise<boolean> {
