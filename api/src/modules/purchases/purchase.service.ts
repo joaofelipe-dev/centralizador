@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client'
 import { prisma } from '../../lib/prisma.js'
 import { PurchaseRepository } from './purchase.repository.js'
 import type { CreatePurchaseInput } from './purchase.schema.js'
