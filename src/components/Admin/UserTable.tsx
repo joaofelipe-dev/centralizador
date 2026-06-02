@@ -176,7 +176,7 @@ export function UserTable({
                       <p className="text-xs text-primary font-mono">{u.username}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all group-hover:border-opacity-50 ${roleConfig[u.role]?.color || roleConfig.DEFAULT.color}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all group-hover:border-opacity-50 ${roleConfig[u.role]?.color || roleConfig.DEFAULT?.color || ""}`}>
                         <RoleIcon className="h-3 w-3" />
                         {roleConfig[u.role]?.label || "Padrão"}
                       </span>

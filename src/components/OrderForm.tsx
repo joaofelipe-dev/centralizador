@@ -185,7 +185,7 @@ const ProductRow = React.memo(
                     type="number"
                     inputMode="numeric"
                     value={
-                      cartItem?.currentStock > 0 ? cartItem?.currentStock : ""
+                      (cartItem?.currentStock ?? 0) > 0 ? cartItem?.currentStock : ""
                     }
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) =>
@@ -233,7 +233,7 @@ const ProductRow = React.memo(
                   <Input
                     type="number"
                     inputMode="numeric"
-                    value={cartItem?.quantity > 0 ? cartItem?.quantity : ""}
+                    value={(cartItem?.quantity ?? 0) > 0 ? cartItem?.quantity : ""}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) =>
                       handleInputChange(product.id, "quantity", e.target.value)
@@ -265,10 +265,10 @@ const ProductRow = React.memo(
 
 ProductRow.displayName = "ProductRow";
 
-function getTomorrowDate() {
+function getTomorrowDate(): string {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  return tomorrow.toISOString().split("T")[0];
+  return tomorrow.toISOString().split("T")[0] || "";
 }
 
 interface OrderFormProps {
@@ -736,13 +736,13 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                             </p>
                           </div>
                           <div className="flex items-center gap-6">
-                            {item?.currentStock > 0 && (
+                            {(item?.currentStock ?? 0) > 0 && (
                               <div className="text-right">
                                 <p className="text-[9px] uppercase font-bold text-muted-foreground">
                                   Estoque
                                 </p>
                                 <p className="text-sm font-mono text-white/60">
-                                  {item.currentStock}
+                                  {item?.currentStock ?? 0}
                                 </p>
                               </div>
                             )}
@@ -797,7 +797,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                       setCart((prev) => {
                         const next = { ...prev };
                         for (const id of Object.keys(next)) {
-                          next[id] = { ...next[id], confirmed: true };
+                          next[id] = { ...next[id]!, confirmed: true } as CartItem;
                         }
                         return next;
                       });

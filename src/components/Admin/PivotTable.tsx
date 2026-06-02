@@ -75,15 +75,25 @@ export function PivotTable({ consolidated }: PivotTableProps) {
 
     consolidated.stores.forEach((store) => {
       const wb = XLSX.read(arrayBuffer);
-      const ws = wb.Sheets[wb.SheetNames[0]];
+      const sheetName = wb.SheetNames[0];
+      if (!sheetName) return;
+      const ws = wb.Sheets[sheetName];
+      if (!ws) return;
       const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as (string | number | undefined)[][];
 
-      const storeDate = store.orderDate || new Date().toISOString().split('T')[0];
+      const storeDate = store.orderDate || new Date().toISOString().split('T')[0] || "";
       
-      const [year, month, day] = storeDate.split("-").map(Number);
+      const dateParts = storeDate.split("-").map(Number);
+      const year = dateParts[0] ?? 0;
+      const month = dateParts[1] ?? 0;
+      const day = dateParts[2] ?? 0;
       const formattedDate = `${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}`;
       
-      data[0] = [formattedDate, store.name];
+      const headerRow = data[0];
+      if (headerRow) {
+        headerRow[0] = formattedDate;
+        headerRow[1] = store.name;
+      }
 
       const productMap: Record<string, { quantity: number; currentStock: number; categoryName: string }> = {};
       consolidated.products.forEach((product) => {

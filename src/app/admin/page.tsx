@@ -60,7 +60,7 @@ export default function AdminPage() {
     matrix: {},
   });
   const [filterDate, setFilterDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0] || ""
   );
   const [isDataLoading, setIsDataLoading] = useState<boolean>(true);
   const router = useRouter();
@@ -105,9 +105,10 @@ export default function AdminPage() {
         if (!matrix[order.productId]) {
           matrix[order.productId] = {};
         }
+        const productRow = matrix[order.productId]!
 
         for (const store of order.stores) {
-          matrix[order.productId][store.storeId] = {
+          productRow[store.storeId] = {
             quantity: store.quantity,
             currentStock: 0,
           };

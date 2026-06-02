@@ -42,7 +42,7 @@ export default function SupervisorOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split("T")[0] || "");
   const [filterStatus, setFilterStatus] = useState<import("@/types/order").OrderStatus | "">("");
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [savingOrder, setSavingOrder] = useState<boolean>(false);
@@ -228,7 +228,8 @@ export default function SupervisorOrdersPage() {
         ) : (
           <div className="space-y-3">
             {orders.map((order) => {
-              const statusConfig = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
+              const statusConfig = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.PENDING;
+              if (!statusConfig) return null
               const StatusIcon = statusConfig.icon;
               const nextStatus = getNextStatus(order.status);
               const isExpanded = expandedOrders[order.id];

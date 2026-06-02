@@ -50,6 +50,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   };
 
   const activeStep = steps[currentStep];
+  if (!activeStep) return null;
 
   return (
     <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-6 py-12 text-center space-y-8 animate-in fade-in zoom-in duration-500">

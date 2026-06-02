@@ -10,7 +10,10 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import "react-day-picker/style.css";
 
 function parseDateString(dateStr: string): Date {
-  const [year, month, day] = dateStr.split("-").map(Number);
+  const parts = dateStr.split("-").map(Number);
+  const year = parts[0] ?? 0;
+  const month = parts[1] ?? 0;
+  const day = parts[2] ?? 0;
   return new Date(year, month - 1, day);
 }
 
@@ -85,14 +88,14 @@ export function DateInput({
     }, 150);
   };
 
-  const handleDaySelect = (date: Date) => {
+  const handleDaySelect = (date: Date | undefined) => {
     if (date) {
       let selectedDate = date;
       if (minDate && date < minDate) {
         selectedDate = minDate;
       }
       onChange(format(selectedDate, "yyyy-MM-dd"));
-      setIsOpen(false);
+      close();
     }
   };
 
