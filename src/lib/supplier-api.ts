@@ -1,9 +1,8 @@
 import { apiRequest } from './api';
 
-export type Supplier = {
-  id: string
-  name: string
-  type: string
+import type { Supplier as PurchaseSupplier } from '@/types/purchase'
+
+export type Supplier = PurchaseSupplier & {
   email?: string
   phone?: string
   address?: string

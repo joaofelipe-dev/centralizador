@@ -15,15 +15,20 @@ import type { Order, CreateOrderRequest, OrderStatus } from '@/types/order';
 import type { User } from '@/types/auth';
 import { enqueueOrder } from '@/lib/offline/queue';
 
-const isLocalhost = typeof window !== 'undefined' && 
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const API_URL = isLocalhost ? 'http://localhost:3333' : 'http://192.168.0.245:3333';
+const API_URL = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL
+  ? process.env.NEXT_PUBLIC_API_URL
+  : (typeof window !== 'undefined' && 
+    ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    ? 'http://localhost:3333' 
+    : 'http://192.168.0.245:3333')
+
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('token')
+}
 
 export async function apiRequest<T = unknown>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> {
-  let token: string | null = null;
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token');
-  }
+  const token = getToken()
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -75,7 +80,7 @@ export async function apiRequest<T = unknown>(endpoint: string, options: ApiRequ
   }
 }
 
-interface ApiInterface {
+export interface ApiInterface {
   login: (credentials: LoginCredentials) => Promise<UserResponse>;
   register: (userData: CreateUserData) => Promise<UserResponse>;
   getMe: () => Promise<{ user: User }>;

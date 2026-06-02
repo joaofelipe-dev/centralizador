@@ -26,8 +26,13 @@ app.register(cors, {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 })
 
+const jwtSecret = process.env.JWT_SECRET
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
+
 app.register(jwt, {
-  secret: process.env.JWT_SECRET || 'supersecretkey',
+  secret: jwtSecret,
 })
 
 // Swagger/OpenAPI
