@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { Header } from '@/components/Header/Header'
+import Header from '@/components/Header/Header'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 vi.mock('@/context/AuthContext', async (importOriginal) => {
-  const actual = await importOriginal()
+  const actual = await importOriginal() as Record<string, unknown>
   return {
     ...actual,
     useAuth: vi.fn()
@@ -18,7 +18,7 @@ describe('Header Component', () => {
   })
 
   it('renders header component', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, logout: vi.fn() })
+    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
 
     render(
       <AuthProvider>
@@ -30,7 +30,7 @@ describe('Header Component', () => {
   })
 
   it('renders shopping bag logo', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, logout: vi.fn() })
+    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
 
     render(
       <AuthProvider>
@@ -44,7 +44,7 @@ describe('Header Component', () => {
   })
 
   it('renders branding text', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, logout: vi.fn() })
+    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
 
     const { container } = render(
       <AuthProvider>
@@ -59,10 +59,13 @@ describe('Header Component', () => {
     vi.mocked(useAuth).mockReturnValue({
       user: {
         id: '1',
+        username: 'testuser',
         email: 'test@example.com',
         role: 'ADMIN'
       },
-      logout: vi.fn()
+      login: vi.fn(),
+      logout: vi.fn(),
+      loading: false
     })
 
     const { container } = render(
@@ -76,7 +79,7 @@ describe('Header Component', () => {
   })
 
   it('includes flex layout for navigation', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, logout: vi.fn() })
+    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
 
     render(
       <AuthProvider>
@@ -89,7 +92,7 @@ describe('Header Component', () => {
   })
 
   it('renders without crashing', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, logout: vi.fn() })
+    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
 
     const { container } = render(
       <AuthProvider>

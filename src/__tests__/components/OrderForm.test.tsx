@@ -28,16 +28,16 @@ const mockCategories: Category[] = [
     id: '1',
     name: 'Legumes',
     products: [
-      { id: '1', name: 'Cenoura', categoryId: '1', stockCD: 100 },
-      { id: '2', name: 'Batata', categoryId: '1', stockCD: 50 },
+      { id: '1', name: 'Cenoura', categoryId: '1', price: 5, stock: 100, stockCD: 100 },
+      { id: '2', name: 'Batata', categoryId: '1', price: 3, stock: 50, stockCD: 50 },
     ]
   },
   {
     id: '2',
     name: 'Frutas',
     products: [
-      { id: '3', name: 'Maçã', categoryId: '2', stockCD: 80 },
-      { id: '4', name: 'Banana', categoryId: '2', stockCD: 60 },
+      { id: '3', name: 'Maçã', categoryId: '2', price: 7, stock: 80, stockCD: 80 },
+      { id: '4', name: 'Banana', categoryId: '2', price: 4, stock: 60, stockCD: 60 },
     ]
   }
 ]
@@ -149,10 +149,11 @@ describe('OrderForm Component', () => {
     })
 
     const inputs = screen.getAllByRole('spinbutton')
-    if (inputs.length > 0) {
-      await user.clear(inputs[0])
-      await user.type(inputs[0], '10')
-      expect(inputs[0]).toHaveValue(10)
+    const firstInput = inputs[0]
+    if (firstInput) {
+      await user.clear(firstInput)
+      await user.type(firstInput, '10')
+      expect(firstInput).toHaveValue(10)
     }
   })
 

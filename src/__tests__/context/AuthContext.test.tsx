@@ -81,7 +81,7 @@ describe('AuthContext', () => {
   it('handles login action', async () => {
     // Mock successful login
     vi.mocked(apiModule.api.login).mockResolvedValue({
-      user: { id: 1, username: 'testuser', email: 'test@test.com', role: 'USER' as const },
+      user: { id: '1', username: 'testuser', email: 'test@test.com', role: 'USER' as const },
       token: 'test-token-123'
     })
 
@@ -109,7 +109,7 @@ describe('AuthContext', () => {
 
     // Mock getMe to return a user
     vi.mocked(apiModule.api.getMe).mockResolvedValue({
-      user: { id: 1, username: 'testuser', email: 'test@test.com', role: 'USER' as const }
+      user: { id: '1', username: 'testuser', email: 'test@test.com', role: 'USER' as const }
     })
 
     render(
@@ -135,7 +135,7 @@ describe('AuthContext', () => {
   it('persists token to localStorage on login', async () => {
     // Mock successful login
     vi.mocked(apiModule.api.login).mockResolvedValue({
-      user: { id: 1, username: 'testuser', email: 'test@test.com', role: 'USER' as const },
+      user: { id: '1', username: 'testuser', email: 'test@test.com', role: 'USER' as const },
       token: 'test-token-123'
     })
 
@@ -164,7 +164,7 @@ describe('AuthContext', () => {
 
     // Mock getMe to return a user
     vi.mocked(apiModule.api.getMe).mockResolvedValue({
-      user: { id: 1, username: 'testuser', email: 'test@test.com', role: 'USER' as const }
+      user: { id: '1', username: 'testuser', email: 'test@test.com', role: 'USER' as const }
     })
 
     render(
