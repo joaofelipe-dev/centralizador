@@ -68,7 +68,7 @@ src/
 - CORS (`@fastify/cors`)
 - Zod (validação de schemas)
 - bcryptjs (hash de senhas)
-- TypeScript 5.3.3
+- TypeScript ~6.0.3
 
 **Estrutura de Diretórios**:
 ```
@@ -82,7 +82,11 @@ api/
 │   │   ├── product/       # Gerenciamento de produtos
 │   │   ├── category/      # Categorias de produtos
 │   │   ├── store/         # Lojas
-│   │   └── order/         # Pedidos (core do sistema)
+│   │   ├── order/         # Pedidos (core do sistema)
+│   │   ├── purchases/     # Compras (S/C/R completo)
+│   │   ├── sales/         # Vendas (S/C/R completo)
+│   │   ├── movements/     # Movimentações de estoque (S/C/R completo)
+│   │   └── stock-counts/  # Contagem de estoque (S/C/R completo)
 │   ├── middlewares/       # Middleware (auth, error handling)
 │   ├── utils/             # Funções utilitárias
 │   ├── lib/               # Bibliotecas
@@ -139,7 +143,7 @@ api/
 
 ### Configuração da API
 
-**URL da API**: `http://192.168.0.129:3333` (hardcoded em `src/lib/api.js`)
+**URL da API**: Configurada via `NEXT_PUBLIC_API_URL` (env var), fallback para `http://localhost:3333`
 
 **Cliente HTTP**: Fetch API nativa do navegador
 
@@ -363,8 +367,8 @@ Arquivo: `api/src/middlewares/auth.js`
 
 **Arquivo**: `src/lib/api.js`
 
-- URL da API é **hardcoded** para `http://192.168.0.129:3333`
-- Necessário trocar para variável de ambiente em produção
+- URL da API configurada via `NEXT_PUBLIC_API_URL` (env var)
+- Fallback automático para `http://localhost:3333` em desenvolvimento
 - Token enviado automaticamente em todo request autenticado
 
 **Arquivo**: `next.config.mjs`
@@ -377,11 +381,11 @@ Arquivo: `api/src/middlewares/auth.js`
 
 ```
 DATABASE_URL="file:dev.db"
-JWT_SECRET="supersecretkey"
+JWT_SECRET="your-secret-key-here"  # OBRIGATÓRIO: trocar para valor seguro
 PORT=3333
 ```
 
-**Em produção**: Mudar `JWT_SECRET` para valor seguro via variáveis de ambiente
+**Em produção**: `JWT_SECRET` é **obrigatório** (o backend falha se não configurado)
 
 **Arquivo**: `api/prisma.config.ts`
 
@@ -433,8 +437,8 @@ npm run prisma:seed              # Popula dados iniciais
 
 ### Pontos de Atenção
 
-- **URL da API**: Mudar `src/lib/api.js` de `192.168.0.129:3333` para IP/domínio real
-- **JWT_SECRET**: Usar valor seguro em produção (variável de ambiente)
+- **URL da API**: Configurar `NEXT_PUBLIC_API_URL` no `.env.local`
+- **JWT_SECRET**: **Obrigatório** em produção (backend falha sem ele)
 - **CORS**: Backend tem CORS aberto (`origin: true`), ajustar se necessário
 - **Database**: Em produção, usar PostgreSQL com Prisma ao invés de SQLite
 
@@ -458,8 +462,8 @@ PORT=3333                         # Porta da API
 
 ### Frontend
 
-- Não usa `.env` (URL hardcoded - **DEVE SER CORRIGIDO**)
-- Recomendado adicionar `NEXT_PUBLIC_API_URL` em `.env.local`
+- `NEXT_PUBLIC_API_URL`: URL da API (opcional, fallback localhost)
+- `JWT_SECRET`: **Obrigatório** no backend
 
 ## ✅ Checklist para Novos Desenvolvedores
 

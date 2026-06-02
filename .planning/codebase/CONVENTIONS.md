@@ -167,7 +167,7 @@ Key patterns:
 
 ### Module Structure
 
-Each feature module follows this structure:
+Each feature module follows the Service/Controller/Repository/Schema (S/C/R/S) pattern:
 
 `
 api/src/modules/{module}/
@@ -177,6 +177,10 @@ api/src/modules/{module}/
 ├── {module}.repository.ts  # Data access
 └── {module}.schema.ts      # Zod validation schemas
 `
+
+**All modules now follow this pattern:**
+- auth/, user/, product/, category/, store/, order/
+- purchases/, sales/, movements/, stock-counts/
 
 ---
 

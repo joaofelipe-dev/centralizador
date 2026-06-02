@@ -33,13 +33,13 @@ src/app/
 +-- globals.css            # Global Tailwind styles
 +-- favicon.ico            # Site favicon
 +-- login/
-¦   +-- page.jsx          # Login page
+ï¿½   +-- page.jsx          # Login page
 +-- pedidos/
-¦   +-- page.jsx          # Order creation flow (requires auth)
+ï¿½   +-- page.jsx          # Order creation flow (requires auth)
 +-- admin/
-¦   +-- page.jsx          # Admin dashboard with stats, pivot table, team management
-¦   +-- pedidos/
-¦       +-- page.jsx      # Admin order management
+ï¿½   +-- page.jsx          # Admin dashboard with stats, pivot table, team management
+ï¿½   +-- pedidos/
+ï¿½       +-- page.jsx      # Admin order management
 +-- supervisor/
     +-- page.jsx          # Supervisor order editing
 `
@@ -60,24 +60,24 @@ src/app/
 `
 src/components/
 +-- Button/               # Button component variants
-¦   +-- Button.jsx        # Main button component
-¦   +-- ButtonVariants.jsx # Variant definitions
+ï¿½   +-- Button.jsx        # Main button component
+ï¿½   +-- ButtonVariants.jsx # Variant definitions
 +-- Header/               # Application header
-¦   +-- Header.jsx        # Header wrapper with Logo/Nav/Extras pattern
-¦   +-- HeaderLogo.jsx    # Logo component
-¦   +-- HeaderNav.jsx     # Navigation links
+ï¿½   +-- Header.jsx        # Header wrapper with Logo/Nav/Extras pattern
+ï¿½   +-- HeaderLogo.jsx    # Logo component
+ï¿½   +-- HeaderNav.jsx     # Navigation links
 +-- Admin/                # Admin-specific components
-¦   +-- PivotTable.jsx    # Consolidated order data table with export
-¦   +-- StatsGallery.jsx  # Statistics cards display
-¦   +-- TeamManagement.jsx # User management form
-¦   +-- OrderList.jsx     # Order listing component
-¦   +-- OrderEditModal.jsx # Order editing modal
+ï¿½   +-- PivotTable.jsx    # Consolidated order data table with export
+ï¿½   +-- StatsGallery.jsx  # Statistics cards display
+ï¿½   +-- TeamManagement.jsx # User management form
+ï¿½   +-- OrderList.jsx     # Order listing component
+ï¿½   +-- OrderEditModal.jsx # Order editing modal
 +-- DateInput/            # Date picker component
-¦   +-- DateInput.tsx     # Calendar date input
+ï¿½   +-- DateInput.tsx     # Calendar date input
 +-- ui/                   # Shadcn/ui-style primitives
-¦   +-- button.jsx        # Base button styles
-¦   +-- calendar.jsx      # Calendar component
-¦   +-- popover.jsx       # Popover overlay
+ï¿½   +-- button.jsx        # Base button styles
+ï¿½   +-- calendar.jsx      # Calendar component
+ï¿½   +-- popover.jsx       # Popover overlay
 +-- Footer.jsx            # Application footer
 +-- Onboarding.jsx        # First-time user onboarding
 +-- OrderForm.jsx         # Main order creation form
@@ -144,15 +144,15 @@ src/constants/
 `
 src/__tests__/
 +-- context/
-¦   +-- AuthContext.test.jsx  # Auth context tests
+ï¿½   +-- AuthContext.test.jsx  # Auth context tests
 +-- components/
-¦   +-- Header.test.jsx       # Header component tests
-¦   +-- OrderForm.test.jsx    # Order form tests
-¦   +-- Button.test.jsx        # Button component tests
+ï¿½   +-- Header.test.jsx       # Header component tests
+ï¿½   +-- OrderForm.test.jsx    # Order form tests
+ï¿½   +-- Button.test.jsx        # Button component tests
 +-- lib/
-¦   +-- api.test.js           # API client tests
+ï¿½   +-- api.test.js           # API client tests
 +-- __mocks__/
-¦   +-- handlers.ts            # MSW mock handlers
+ï¿½   +-- handlers.ts            # MSW mock handlers
 +-- setup.ts                  # Test setup configuration
 `
 
@@ -174,7 +174,7 @@ api/src/
 
 ### api/src/modules/ - Feature Modules
 
-Each module follows the Service/Controller/Repository pattern:
+Each module follows the Service/Controller/Repository/Schema pattern (S/C/R/S):
 
 #### auth/ - Authentication Module
 `
@@ -235,6 +235,46 @@ modules/order/
 +-- order.schema.ts       # Zod validation
 `
 
+#### purchases/ - Purchase Orders Module
+`
+modules/purchases/
++-- purchase.routes.ts       # CRUD + receive routes
++-- purchase.controller.ts   # Request/response handling
++-- purchase.service.ts      # Business logic + stock updates
++-- purchase.repository.ts   # Prisma operations
++-- purchase.schema.ts       # Zod validation
+`
+
+#### sales/ - Sales Module
+`
+modules/sales/
++-- sale.routes.ts       # List, Get, Create routes
++-- sale.controller.ts   # Request/response handling
++-- sale.service.ts      # Sales logic + stock decrement
++-- sale.repository.ts   # Prisma operations
++-- sale.schema.ts       # Zod validation
+`
+
+#### movements/ - Stock Movements Module
+`
+modules/movements/
++-- movement.routes.ts       # List, Adjust routes
++-- movement.controller.ts   # Request/response handling
++-- movement.service.ts      # Adjustment logic
++-- movement.repository.ts   # Prisma operations
++-- movement.schema.ts       # Zod validation
+`
+
+#### stock-counts/ - Physical Stock Count Module
+`
+modules/stock-counts/
++-- stock-count.routes.ts       # CRUD + close routes
++-- stock-count.controller.ts   # Request/response handling
++-- stock-count.service.ts      # Count + divergence logic
++-- stock-count.repository.ts   # Prisma operations
++-- stock-count.schema.ts       # Zod validation
+``
+
 ### api/src/lib/ - Shared Libraries
 
 `
@@ -278,12 +318,12 @@ api/src/generated/prisma/
 +-- enums.ts              # Enum definitions
 +-- commonInputTypes.ts   # Shared input types
 +-- models/               # Individual model type files
-¦   +-- User.ts
-¦   +-- Store.ts
-¦   +-- Category.ts
-¦   +-- Product.ts
-¦   +-- Order.ts
-¦   +-- OrderItem.ts
+ï¿½   +-- User.ts
+ï¿½   +-- Store.ts
+ï¿½   +-- Category.ts
+ï¿½   +-- Product.ts
+ï¿½   +-- Order.ts
+ï¿½   +-- OrderItem.ts
 +-- internal/             # Prisma internal types
     +-- class.js
     +-- prismaNamespace.js
@@ -419,6 +459,15 @@ app.ts (registers routes)
 All repositories depend on:
 - lib/prisma.ts (PrismaClient singleton)
 - types/*.ts (Type definitions)
+
+## New Modules (Added in Code Review Fixes)
+
+| Module | Files | Pattern |
+|--------|-------|---------|
+| purchases/ | 5 files | S/C/R/S |
+| sales/ | 5 files | S/C/R/S |
+| movements/ | 5 files | S/C/R/S |
+| stock-counts/ | 5 files | S/C/R/S |
 
 ## Testing Structure
 
