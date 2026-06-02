@@ -5,6 +5,11 @@ import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { User, AuthContextType } from "@/types/auth";
 
+const STORAGE_KEYS = {
+  TOKEN: 'token',
+  USER: 'offline_user',
+} as const;
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -14,15 +19,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadUser() {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
       if (token) {
+        const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+
+        if (!isOnline) {
+          const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
+          if (savedUser) {
+            try {
+              setUser(JSON.parse(savedUser));
+            } catch {
+              localStorage.removeItem(STORAGE_KEYS.USER);
+            }
+          }
+          setLoading(false);
+          return;
+        }
+
         try {
           const { user } = await api.getMe();
           setUser(user);
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
         } catch (error) {
-          console.error("Erro ao carregar usuário:", error);
-          localStorage.removeItem('token');
-          setUser(null);
+          const isNetworkError = error instanceof Error && (
+            error.message === 'Failed to fetch' ||
+            error.message.includes('conectar ao servidor')
+          );
+
+          if (isNetworkError) {
+            const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
+            if (savedUser) {
+              try {
+                setUser(JSON.parse(savedUser));
+              } catch {
+                localStorage.removeItem(STORAGE_KEYS.TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USER);
+              }
+            }
+          } else {
+            console.error("Erro ao carregar usuário:", error);
+            localStorage.removeItem(STORAGE_KEYS.TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER);
+            setUser(null);
+          }
         }
       }
       setLoading(false);
@@ -34,7 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     try {
       const { user, token } = await api.login({ username, password });
-      localStorage.setItem('token', token);
+      localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
       setUser(user);
       router.push('/');
       console.info('Login bem-sucedido para usuário', user.username)
@@ -49,7 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
     setUser(null);
     router.push('/login');
   }

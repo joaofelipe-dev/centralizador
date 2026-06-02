@@ -276,6 +276,36 @@ interface OrderFormProps {
   onBack: () => void;
 }
 
+const DRAFT_KEY = "order_form_draft";
+
+interface Draft {
+  storeId: string;
+  cart: Cart;
+  orderDate: string;
+  isReviewing: boolean;
+  expandedProducts: string[];
+  filter: { search: string; categoryId: string | null };
+  scrollY: number;
+}
+
+function saveDraft(storeId: string, data: Omit<Draft, "storeId">) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ storeId, ...data }));
+  } catch { /* quota exceeded */ }
+}
+
+function loadDraft(storeId: string): Partial<Draft> | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const parsed: Draft = JSON.parse(raw);
+    if (parsed.storeId !== storeId) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export default function OrderForm({ store, onBack }: OrderFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [cart, setCart] = useState<Cart>({});
@@ -309,6 +339,15 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
 
   useEffect(() => {
     async function fetchProducts() {
+      const draft = loadDraft(store.id);
+      if (draft) {
+        setCart(draft.cart || {});
+        if (draft.orderDate) setOrderDate(draft.orderDate);
+        if (draft.isReviewing) setIsReviewing(true);
+        if (draft.expandedProducts) setExpandedProducts(new Set(draft.expandedProducts));
+        if (draft.filter) setFilter(draft.filter);
+      }
+
       try {
         const categoriesData = await api.getCategories();
         const order = ["Legumes", "Frutas", "Verduras"];
@@ -328,7 +367,45 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       }
     }
     fetchProducts();
-  }, []);
+  }, [store.id]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const restoredScrollY = loadDraft(store.id)?.scrollY;
+    if (restoredScrollY) {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: restoredScrollY, behavior: "instant" });
+      });
+    }
+  }, [isLoading, store.id]);
+
+  useEffect(() => {
+    if (isSuccess || isLoading) return;
+    const timer = setTimeout(() => {
+      const enriched: Cart = {};
+      for (const [id, item] of Object.entries(cart)) {
+        if (item.productName) {
+          enriched[id] = item;
+        } else {
+          let name = "";
+          for (const cat of categories) {
+            const p = cat.products?.find(pr => pr.id === id);
+            if (p) { name = p.name; break; }
+          }
+          enriched[id] = { ...item, productName: name || undefined };
+        }
+      }
+      saveDraft(store.id, {
+        cart: enriched,
+        orderDate,
+        isReviewing,
+        expandedProducts: [...expandedProducts],
+        filter,
+        scrollY: window.scrollY,
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [cart, orderDate, isReviewing, expandedProducts, filter, store.id, isSuccess, isLoading, categories]);
 
   const updateField = React.useCallback(
     (id: string, field: keyof CartItem, value: number | boolean) => {
@@ -430,6 +507,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       };
 
       await api.createOrder(orderData);
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       setIsSuccess(true);
     } catch (err: unknown) {
       console.error("Erro na submissão:", err);
@@ -625,14 +703,27 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                 </div>
 
                 <div className="space-y-3">
-                  {categories
-                    .flatMap((c) => c.products || [])
-                    .filter(
-                      (p) =>
-                        (cart[p.id]?.quantity || 0) > 0 ||
-                        (cart[p.id]?.currentStock || 0) > 0,
-                    )
-                    .map((product) => {
+                  {(() => {
+                    const productsInCart = categories
+                      .flatMap((c) => c.products || [])
+                      .filter(
+                        (p) =>
+                          (cart[p.id]?.quantity || 0) > 0 ||
+                          (cart[p.id]?.currentStock || 0) > 0,
+                      )
+                      .map((p) => ({ id: p.id, name: p.name }));
+                    const missingIds = Object.entries(cart)
+                      .filter(
+                        ([id, item]) =>
+                          !productsInCart.find((p) => p.id === id) &&
+                          ((item.quantity || 0) > 0 || (item.currentStock || 0) > 0),
+                      )
+                      .map(([id, item]) => ({
+                        id,
+                        name: item.productName || id,
+                      }));
+                    const allProducts = [...productsInCart, ...missingIds];
+                    return allProducts.map((product) => {
                       const item = cart[product.id];
                       return (
                         <div
@@ -666,7 +757,8 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                           </div>
                         </div>
                       );
-                    })}
+                    });
+                  })()}
                 </div>
               </Card>
 

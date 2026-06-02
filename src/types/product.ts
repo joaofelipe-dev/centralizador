@@ -25,6 +25,7 @@ export interface CartItem extends OrderItem {
   quantityRaw?: string;
   currentStockRaw?: string;
   confirmed?: boolean;
+  productName?: string;
 }
 
 export interface Cart {

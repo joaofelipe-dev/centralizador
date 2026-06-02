@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ShoppingBag, Loader2 } from "lucide-react";
 import StoreSelector from "@/components/StoreSelector";
 import OrderForm from "@/components/OrderForm";
@@ -8,8 +8,20 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import type { Store } from "@/types/product";
 
+const STORE_KEY = "current_order_store";
+
+function getSavedStore(): Store | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const saved = localStorage.getItem(STORE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function PedidosFlowPage() {
-  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [selectedStore, setSelectedStore] = useState<Store | null>(getSavedStore);
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -18,6 +30,21 @@ export default function PedidosFlowPage() {
       router.push('/login');
     }
   }, [user, loading, router]);
+
+  const handleSelectStore = useCallback((store: Store) => {
+    setSelectedStore(store);
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(store));
+    } catch { /* quota exceeded */ }
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setSelectedStore(null);
+    try {
+      localStorage.removeItem(STORE_KEY);
+      localStorage.removeItem("order_form_draft");
+    } catch { /* ignore */ }
+  }, []);
 
   if (loading || !user) {
     return (
@@ -38,7 +65,7 @@ export default function PedidosFlowPage() {
         {!selectedStore ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <StoreSelector
-              onSelect={setSelectedStore}
+              onSelect={handleSelectStore}
               stores={permittedStores}
               requiresAuth
             />
@@ -47,7 +74,7 @@ export default function PedidosFlowPage() {
           <div className="animate-in fade-in slide-in-from-right-4 duration-500">
             <OrderForm
               store={selectedStore}
-              onBack={() => setSelectedStore(null)}
+              onBack={handleBack}
             />
           </div>
         )}
