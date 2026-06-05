@@ -12,6 +12,8 @@ const CACHE_KEYS = {
 const CACHE_TTL_MS = 5 * 60 * 1000
 
 export async function prefetchCatalog(): Promise<void> {
+  if (typeof window !== 'undefined' && !localStorage.getItem('token')) return;
+
   const [products, stores, categories] = await Promise.all([
     apiRequest<Product[]>('/products'),
     apiRequest<Store[]>('/stores'),

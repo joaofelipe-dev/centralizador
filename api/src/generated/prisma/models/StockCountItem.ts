@@ -504,6 +504,7 @@ export type StockCountItemCreateOrConnectWithoutProductInput = {
 
 export type StockCountItemCreateManyProductInputEnvelope = {
   data: Prisma.StockCountItemCreateManyProductInput | Prisma.StockCountItemCreateManyProductInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockCountItemUpsertWithWhereUniqueWithoutProductInput = {
@@ -557,6 +558,7 @@ export type StockCountItemCreateOrConnectWithoutStockCountInput = {
 
 export type StockCountItemCreateManyStockCountInputEnvelope = {
   data: Prisma.StockCountItemCreateManyStockCountInput | Prisma.StockCountItemCreateManyStockCountInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockCountItemUpsertWithWhereUniqueWithoutStockCountInput = {
@@ -1375,6 +1377,7 @@ export type StockCountItemCreateManyArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many StockCountItems.
    */
   data: Prisma.StockCountItemCreateManyInput | Prisma.StockCountItemCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1393,6 +1396,7 @@ export type StockCountItemCreateManyAndReturnArgs<ExtArgs extends runtime.Types.
    * The data used to create many StockCountItems.
    */
   data: Prisma.StockCountItemCreateManyInput | Prisma.StockCountItemCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

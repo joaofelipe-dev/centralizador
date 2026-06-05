@@ -1274,6 +1274,7 @@ export type StoreCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * The data used to create many Stores.
    */
   data: Prisma.StoreCreateManyInput | Prisma.StoreCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1292,6 +1293,7 @@ export type StoreCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many Stores.
    */
   data: Prisma.StoreCreateManyInput | Prisma.StoreCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

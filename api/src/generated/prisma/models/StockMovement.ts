@@ -652,6 +652,7 @@ export type StockMovementCreateOrConnectWithoutUserInput = {
 
 export type StockMovementCreateManyUserInputEnvelope = {
   data: Prisma.StockMovementCreateManyUserInput | Prisma.StockMovementCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockMovementUpsertWithWhereUniqueWithoutUserInput = {
@@ -714,6 +715,7 @@ export type StockMovementCreateOrConnectWithoutProductInput = {
 
 export type StockMovementCreateManyProductInputEnvelope = {
   data: Prisma.StockMovementCreateManyProductInput | Prisma.StockMovementCreateManyProductInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockMovementUpsertWithWhereUniqueWithoutProductInput = {
@@ -761,6 +763,7 @@ export type StockMovementCreateOrConnectWithoutOrderInput = {
 
 export type StockMovementCreateManyOrderInputEnvelope = {
   data: Prisma.StockMovementCreateManyOrderInput | Prisma.StockMovementCreateManyOrderInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockMovementUpsertWithWhereUniqueWithoutOrderInput = {
@@ -808,6 +811,7 @@ export type StockMovementCreateOrConnectWithoutPurchaseOrderInput = {
 
 export type StockMovementCreateManyPurchaseOrderInputEnvelope = {
   data: Prisma.StockMovementCreateManyPurchaseOrderInput | Prisma.StockMovementCreateManyPurchaseOrderInput[]
+  skipDuplicates?: boolean
 }
 
 export type StockMovementUpsertWithWhereUniqueWithoutPurchaseOrderInput = {
@@ -1772,6 +1776,7 @@ export type StockMovementCreateManyArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many StockMovements.
    */
   data: Prisma.StockMovementCreateManyInput | Prisma.StockMovementCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1790,6 +1795,7 @@ export type StockMovementCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * The data used to create many StockMovements.
    */
   data: Prisma.StockMovementCreateManyInput | Prisma.StockMovementCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

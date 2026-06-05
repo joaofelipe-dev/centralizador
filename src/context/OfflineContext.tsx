@@ -32,6 +32,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
 
   const refreshCache = useCallback(async () => {
+    if (typeof window !== 'undefined' && !localStorage.getItem('token')) return;
     try {
       await prefetchCatalog();
     } catch (err) {
