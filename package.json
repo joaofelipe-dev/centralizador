@@ -9,6 +9,7 @@
     "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "build": "next build",
     "start": "next start",
+    "prod": "npm run build && npm run start",
     "lint": "eslint src",
     "test": "vitest",
     "test:ui": "vitest --ui",
