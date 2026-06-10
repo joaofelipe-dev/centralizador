@@ -65,7 +65,7 @@ export default function StockCountsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#050505]">
+    <div className="flex flex-col min-h-screen bg-background">
       <PageNav
         title="Contagem Física de Estoque"
         description="Inicie uma contagem e ajuste divergências"
@@ -88,7 +88,7 @@ export default function StockCountsPage() {
           <div className="glass-card p-6 rounded-xl max-w-lg mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <PackageSearch className="h-6 w-6 text-primary" />
-              <h2 className="text-xl font-bold text-white">Nova Contagem</h2>
+              <h2 className="text-xl font-bold text-foreground">Nova Contagem</h2>
             </div>
             <StockCountForm
               onSuccess={handleCountCreated}

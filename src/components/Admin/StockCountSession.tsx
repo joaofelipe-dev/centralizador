@@ -110,7 +110,7 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-foreground">
               Contagem de Estoque
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -124,20 +124,20 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left text-white p-3">Produto</th>
-              <th className="text-right text-white p-3">Qtd Sistema</th>
-              <th className="text-right text-white p-3">Qtd Física</th>
-              <th className="text-right text-white p-3">Divergência</th>
+            <tr className="border-b border-border">
+              <th className="text-left text-foreground p-3">Produto</th>
+              <th className="text-right text-foreground p-3">Qtd Sistema</th>
+              <th className="text-right text-foreground p-3">Qtd Física</th>
+              <th className="text-right text-foreground p-3">Divergência</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => {
               const divergence = getDivergence(item)
               return (
-                <tr key={item.id} className="border-b border-white/5">
-                  <td className="text-white p-3">{item.product?.name || item.productId}</td>
-                  <td className="text-right text-white p-3">{item.systemQty}</td>
+                <tr key={item.id} className="border-b border-border">
+                  <td className="text-foreground p-3">{item.product?.name || item.productId}</td>
+                  <td className="text-right text-foreground p-3">{item.systemQty}</td>
                   <td className="p-3">
                     <Input
                       type="number"
@@ -149,8 +149,8 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
                   </td>
                   <td className="text-right p-3">
                     <span className={
-                      divergence > 0 ? "text-green-500" :
-                      divergence < 0 ? "text-red-500" : "text-white"
+                      divergence > 0 ? "text-success" :
+                      divergence < 0 ? "text-destructive" : "text-foreground"
                     }>
                       {divergence > 0 ? "+" : ""}{divergence}
                     </span>
@@ -162,7 +162,7 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
         </table>
       </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-white/10">
+      <div className="flex justify-between items-center pt-4 border-t border-border">
         <div className="text-sm text-muted-foreground">
           {items.length} produtos • {divergences.length} com divergência
         </div>
@@ -189,26 +189,26 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
             Confirme o fechamento da contagem. Esta ação não pode ser desfeita.
           </p>
 
-          <div className="bg-white/5 rounded-lg p-4 space-y-2">
+          <div className="bg-card rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Total de itens:</span>
-              <span className="text-white">{items.length}</span>
+              <span className="text-foreground">{items.length}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Itens com divergência:</span>
-              <span className="text-white">{divergences.length}</span>
+              <span className="text-foreground">{divergences.length}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Ganhos:</span>
-              <span className="text-green-500">{gainItems.length} itens</span>
+              <span className="text-success">{gainItems.length} itens</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Perdas:</span>
-              <span className="text-red-500">{lossItems.length} itens</span>
+              <span className="text-destructive">{lossItems.length} itens</span>
             </div>
-            <div className="flex justify-between text-sm font-medium pt-2 border-t border-white/10">
-              <span className="text-white">Ganho líquido:</span>
-              <span className={netGain >= 0 ? "text-green-500" : "text-red-500"}>
+            <div className="flex justify-between text-sm font-medium pt-2 border-t border-border">
+              <span className="text-foreground">Ganho líquido:</span>
+              <span className={netGain >= 0 ? "text-success" : "text-destructive"}>
                 {netGain >= 0 ? "+" : ""}{netGain}
               </span>
             </div>
@@ -219,9 +219,9 @@ export function StockCountSession({ countId, onBack, onClose }: StockCountSessio
               {divergences.map((item) => {
                 const d = getDivergence(item)
                 return (
-                  <div key={item.id} className="flex justify-between text-xs p-2 bg-white/5 rounded">
-                    <span className="text-white truncate">{item.product?.name}</span>
-                    <span className={d > 0 ? "text-green-500" : "text-red-500"}>
+                  <div key={item.id} className="flex justify-between text-xs p-2 bg-card rounded">
+                    <span className="text-foreground truncate">{item.product?.name}</span>
+                    <span className={d > 0 ? "text-success" : "text-destructive"}>
                       {d > 0 ? "+" : ""}{d}
                     </span>
                   </div>

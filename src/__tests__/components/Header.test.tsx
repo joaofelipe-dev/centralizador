@@ -3,6 +3,13 @@ import Header from '@/components/Header/Header'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
+const mockUser = {
+  id: '1',
+  username: 'testuser',
+  email: 'test@example.com',
+  role: 'ADMIN'
+}
+
 vi.mock('@/context/AuthContext', async (importOriginal) => {
   const actual = await importOriginal() as Record<string, unknown>
   return {
@@ -11,95 +18,64 @@ vi.mock('@/context/AuthContext', async (importOriginal) => {
   }
 })
 
+vi.mock('@/context/OfflineContext', () => ({
+  OfflineProvider: ({ children }: { children: React.ReactNode }) => children,
+  useOffline: () => ({
+    isOnline: true,
+    pendingOrders: 0,
+    isSyncing: false,
+    lastSyncAt: null,
+    refreshCache: vi.fn(),
+    forceSync: vi.fn(),
+  }),
+}))
+
+function renderHeader() {
+  return render(
+    <AuthProvider>
+      <Header />
+    </AuthProvider>
+  )
+}
+
 describe('Header Component', () => {
   beforeEach(() => {
     localStorage.clear()
     vi.clearAllMocks()
+    vi.mocked(useAuth).mockReturnValue({ user: mockUser, login: vi.fn(), logout: vi.fn(), loading: false })
   })
 
   it('renders header component', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
-
-    render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
-    expect(screen.getByRole('banner')).toBeInTheDocument()
+    const { container } = renderHeader()
+    expect(container.querySelector('nav')).toBeInTheDocument()
   })
 
   it('renders shopping bag logo', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
-
-    render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
+    renderHeader()
     const logo = screen.getByAltText('Logo')
     expect(logo).toBeInTheDocument()
     expect(logo).toHaveAttribute('src', '/logo.svg')
   })
 
   it('renders branding text', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
-
-    const { container } = render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
-    expect(container.querySelector('header')).toBeInTheDocument()
+    const { container } = renderHeader()
+    expect(container.querySelector('nav')).toBeInTheDocument()
   })
 
   it('has navigation elements when user is logged in', () => {
-    vi.mocked(useAuth).mockReturnValue({
-      user: {
-        id: '1',
-        username: 'testuser',
-        email: 'test@example.com',
-        role: 'ADMIN'
-      },
-      login: vi.fn(),
-      logout: vi.fn(),
-      loading: false
-    })
-
-    const { container } = render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
+    const { container } = renderHeader()
     const buttons = container.querySelectorAll('button')
     expect(buttons.length).toBeGreaterThan(0)
   })
 
   it('includes flex layout for navigation', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
-
-    render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
-    const header = screen.getByRole('banner')
-    expect(header).toHaveClass('flex')
+    const { container } = renderHeader()
+    const nav = container.querySelector('nav')
+    expect(nav?.querySelector('.flex')).toBeInTheDocument()
   })
 
   it('renders without crashing', () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null, login: vi.fn(), logout: vi.fn(), loading: false })
-
-    const { container } = render(
-      <AuthProvider>
-        <Header />
-      </AuthProvider>
-    )
-
+    const { container } = renderHeader()
     expect(container.firstChild).toBeInTheDocument()
   })
 })

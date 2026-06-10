@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Plus, Loader2, Shield, Eye, User } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import type { Store } from "@/types/product";
 import { UserTable } from "./UserTable";
 import { UserDialog } from "./UserDialog";
@@ -15,9 +15,9 @@ interface RoleConfig {
 }
 
 export const roleConfig: Record<string, RoleConfig> = {
-  ADMIN: { label: 'Admin', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: Shield },
-  SUPERVISOR: { label: 'Supervisor', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', icon: Eye },
-  DEFAULT: { label: 'Padrão', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: User },
+  ADMIN: { label: 'Admin', color: 'bg-destructive/20 text-destructive border-destructive/30', icon: Shield },
+  SUPERVISOR: { label: 'Supervisor', color: 'bg-warning/20 text-warning-foreground border-warning/30', icon: Eye },
+  DEFAULT: { label: 'Padrão', color: 'bg-primary/20 text-primary border-primary/30', icon: User },
 };
 
 export type UserRole = "ADMIN" | "SUPERVISOR" | "DEFAULT";
@@ -136,7 +136,7 @@ export function TeamManagement({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Gerenciar Equipe</h2>
+        <h2 className="text-xl font-bold text-foreground">Gerenciar Equipe</h2>
         <Button
           onClick={handleOpenCreate}
           className="font-bold shadow-lg shadow-primary/20 gap-2"

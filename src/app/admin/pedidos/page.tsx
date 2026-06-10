@@ -21,6 +21,7 @@ import type { Product, Category } from "@/types/product";
 import { PageNav } from "@/components/PageNav";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { ConfirmDialog } from "@/components/Admin/ConfirmDialog";
 import { toast } from "sonner";
 
@@ -150,7 +151,7 @@ export default function PedidosAdminPage() {
 
   if (loading || isFetching) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <span className="ml-3 text-muted-foreground">Carregando produtos...</span>
       </div>
@@ -158,7 +159,7 @@ export default function PedidosAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <PageNav
         title="Gestão de Pedidos"
         description="Catálogo de produtos e estoques"
@@ -182,39 +183,39 @@ export default function PedidosAdminPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-8 animate-slide-up">
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-card p-6 rounded-xl text-center border border-white/5 bg-white/5">
+          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
             <Package className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Total de Produtos</h2>
+            <h2 className="text-xl font-bold text-foreground mb-2">Total de Produtos</h2>
             <p className="text-3xl font-bold text-primary">{products.length}</p>
           </div>
-          <div className="glass-card p-6 rounded-xl text-center border border-white/5 bg-white/5">
-            <ShoppingBag className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Estoque das Lojas</h2>
-            <p className="text-3xl font-bold text-yellow-500">{totalStock}</p>
+          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
+            <ShoppingBag className="h-12 w-12 text-warning mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-foreground mb-2">Estoque das Lojas</h2>
+            <p className="text-3xl font-bold text-warning">{totalStock}</p>
           </div>
-          <div className="glass-card p-6 rounded-xl text-center border border-white/5 bg-white/5">
-            <Clock className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Estoque CD</h2>
-            <p className="text-3xl font-bold text-purple-500">{totalStockCD}</p>
+          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
+            <Clock className="h-12 w-12 text-primary mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-foreground mb-2">Estoque CD</h2>
+            <p className="text-3xl font-bold text-primary">{totalStockCD}</p>
           </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar por nome ou categoria..."
               value={searchTerm}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              leftIcon={<Search className="h-4 w-4" />}
+              className="rounded-full"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="glass-card group p-5 space-y-4 hover:border-primary/30 transition-all duration-300 border border-white/5 bg-white/5 rounded-xl">
+            <div key={product.id} className="glass-card group p-5 space-y-4 hover:border-primary/30 transition-all duration-300 border-border bg-card rounded-xl">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
                   <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{product.name}</h3>
@@ -228,7 +229,7 @@ export default function PedidosAdminPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(product)}
-                    className="h-8 w-8 rounded-full hover:bg-white/5"
+                    className="h-8 w-8 rounded-full hover:bg-surface-hover"
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                   </Button>
@@ -236,14 +237,14 @@ export default function PedidosAdminPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(product.id)}
-                    className="h-8 w-8 rounded-full hover:bg-red-500/10 text-red-500/50 hover:text-red-500"
+                    className="h-8 w-8 rounded-full hover:bg-destructive/10 text-destructive/50 hover:text-destructive"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
 
-              <div className="flex justify-between items-end pt-2 border-t border-white/5">
+              <div className="flex justify-between items-end pt-2 border-t border-border">
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider">Estoque</p>
                   <div className="flex items-center gap-2">
@@ -253,7 +254,7 @@ export default function PedidosAdminPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider">Preço</p>
-                  <p className="text-xl font-bold text-white">
+                  <p className="text-xl font-bold text-foreground">
                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
                   </p>
                 </div>
@@ -273,16 +274,16 @@ export default function PedidosAdminPage() {
       <Modal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        className="glass-card border border-white/10 bg-[#121212] rounded-2xl"
+        className="bg-card border border-border"
       >
-        <h2 className="text-2xl font-bold mb-6">{editingId ? "Editar Item" : "Novo Item"}</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-6">{editingId ? "Editar Item" : "Novo Item"}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">Nome do Produto</label>
             <Input
               required
-              variant="glass"
+              variant="filled"
               value={formData.name}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, name: e.target.value }))}
               placeholder="Ex: Alface Americana"
@@ -292,25 +293,24 @@ export default function PedidosAdminPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Categoria</label>
-              <select
+              <Select
                 required
                 value={formData.categoryId}
                 onChange={(e: ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus:ring-primary appearance-none text-white"
               >
-                <option value="" className="bg-[#1a1a1a]">Selecionar...</option>
+                <option value="">Selecionar...</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.id} className="bg-[#1a1a1a]">
+                  <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Preço (R$)</label>
             <Input
               required
-              variant="glass"
+              variant="filled"
               type="number"
               step="0.01"
               value={formData.price}
@@ -323,7 +323,7 @@ export default function PedidosAdminPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">Estoque Inicial</label>
             <Input
-              variant="glass"
+              variant="filled"
               type="number"
               value={formData.stock}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, stock: e.target.value }))}

@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 import type { TeamUser, UserRole } from "./TeamManagement";
 import { roleConfig } from "./TeamManagement";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Spinner } from "@/components/ui/Spinner";
 import { Table } from "@/components/ui/Table";
 
 interface SortConfig {
@@ -100,10 +102,10 @@ export function UserTable({
         <div className="p-6 space-y-3">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="animate-pulse flex items-center gap-4">
-              <div className="h-4 bg-white/10 rounded w-1/4" />
-              <div className="h-4 bg-white/10 rounded w-1/6" />
-              <div className="h-4 bg-white/10 rounded w-1/4" />
-              <div className="h-4 bg-white/10 rounded w-20" />
+              <div className="h-4 bg-surface rounded w-1/4" />
+              <div className="h-4 bg-surface rounded w-1/6" />
+              <div className="h-4 bg-surface rounded w-1/4" />
+              <div className="h-4 bg-surface rounded w-20" />
             </div>
           ))}
         </div>
@@ -113,7 +115,7 @@ export function UserTable({
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="p-4 border-b border-white/5">
+      <div className="p-4 border-b border-border">
         <Input
           type="text"
           placeholder="Buscar por nome ou usuário..."
@@ -123,13 +125,13 @@ export function UserTable({
           rightIcon={search ? (
             <button
               onClick={() => setSearch("")}
-              className="text-muted-foreground hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Limpar busca"
             >
               <X className="h-4 w-4" />
             </button>
           ) : undefined}
-          className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 text-white focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full bg-surface border border-border rounded-xl py-2.5 text-foreground focus:ring-2 focus:ring-primary/50 transition-all"
           aria-label="Buscar usuários"
         />
         {search && (
@@ -141,10 +143,10 @@ export function UserTable({
 
       <div className="overflow-x-auto">
         <Table hoverable className="w-full text-left text-sm">
-          <thead className="bg-white/5 text-muted-foreground text-xs uppercase font-bold">
+          <thead className="bg-muted text-muted-foreground text-xs uppercase font-bold">
             <tr>
               <th
-                className="px-6 py-4 cursor-pointer hover:text-white transition-colors select-none"
+                className="px-6 py-4 cursor-pointer hover:text-foreground transition-colors select-none"
                 onClick={() => handleSort("name")}
                 aria-sort={sortConfig.key === "name" ? (sortConfig.direction === "asc" ? "ascending" : "descending") : "none"}
               >
@@ -153,7 +155,7 @@ export function UserTable({
                 </span>
               </th>
               <th
-                className="px-6 py-4 cursor-pointer hover:text-white transition-colors select-none"
+                className="px-6 py-4 cursor-pointer hover:text-foreground transition-colors select-none"
                 onClick={() => handleSort("role")}
                 aria-sort={sortConfig.key === "role" ? (sortConfig.direction === "asc" ? "ascending" : "descending") : "none"}
               >
@@ -165,26 +167,26 @@ export function UserTable({
               <th className="px-6 py-4 text-right">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {filteredAndSortedUsers.length > 0 ? (
               filteredAndSortedUsers.map(u => {
                 const RoleIcon = roleConfig[u.role]?.icon || Users;
                 return (
-                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <tr key={u.id} className="hover:bg-surface-hover transition-colors group">
                     <td className="px-6 py-4">
-                      <p className="font-bold text-white">{u.name}</p>
+                      <p className="font-bold text-foreground">{u.name}</p>
                       <p className="text-xs text-primary font-mono">{u.username}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all group-hover:border-opacity-50 ${roleConfig[u.role]?.color || roleConfig.DEFAULT?.color || ""}`}>
+                      <Badge variant="outline" color={u.role === "ADMIN" ? "danger" : u.role === "SUPERVISOR" ? "warning" : "primary"}>
                         <RoleIcon className="h-3 w-3" />
                         {roleConfig[u.role]?.label || "Padrão"}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1">
                         {(u.stores || []).map(s => (
-                          <span key={s.id} className="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[10px] text-muted-foreground">
+                          <span key={s.id} className="bg-muted border-border px-2 py-0.5 rounded text-[10px] text-muted-foreground">
                             {s.name}
                           </span>
                         ))}
@@ -196,7 +198,7 @@ export function UserTable({
                           variant="ghost"
                           size="icon"
                           onClick={() => onEdit(u)}
-                          className="rounded-full hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          className="rounded-full hover:bg-surface-hover min-w-[44px] min-h-[44px] flex items-center justify-center"
                           aria-label={`Editar ${u.name}`}
                         >
                           <Pencil className="h-4 w-4" />
@@ -206,11 +208,11 @@ export function UserTable({
                           size="icon"
                           onClick={() => onDelete(u.id)}
                           disabled={deleteLoadingId === u.id}
-                          className="text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          className="text-destructive/50 hover:text-destructive hover:bg-destructive/10 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
                           aria-label={`Excluir ${u.name}`}
                         >
                           {deleteLoadingId === u.id ? (
-                            <span className="animate-spin text-xs">⟳</span>
+                            <Spinner size="sm" />
                           ) : (
                             <Trash2 className="h-4 w-4" />
                           )}

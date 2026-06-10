@@ -40,15 +40,15 @@ export function PurchaseReceiveModal({ open, purchase, onClose, onSuccess }: Pur
     <Modal open={open} onClose={onClose} title="Confirmar Recebimento" size="lg">
       <div className="space-y-4">
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
             {error}
           </div>
         )}
 
-        <div className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
+        <div className="flex items-center gap-4 p-3 rounded-lg bg-surface">
           <Truck className="h-8 w-8 text-primary" />
           <div>
-            <p className="text-sm font-bold text-white">
+            <p className="text-sm font-bold text-foreground">
               {purchase.supplier?.name || 'CEASA'}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -58,7 +58,7 @@ export function PurchaseReceiveModal({ open, purchase, onClose, onSuccess }: Pur
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-white flex items-center gap-2">
+          <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
             <Package className="h-4 w-4" />
             Itens da Compra
           </h4>
@@ -67,9 +67,9 @@ export function PurchaseReceiveModal({ open, purchase, onClose, onSuccess }: Pur
             {purchase.items.map((item) => (
               <div
                 key={item.id}
-                className="grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-white/5 text-xs"
+                className="grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-surface text-xs"
               >
-                <div className="col-span-5 text-white truncate">
+                <div className="col-span-5 text-foreground truncate">
                   {item.product?.name || 'Produto'}
                 </div>
                 <div className="col-span-3 text-muted-foreground">
@@ -78,7 +78,7 @@ export function PurchaseReceiveModal({ open, purchase, onClose, onSuccess }: Pur
                 <div className="col-span-4 flex items-center gap-1 text-muted-foreground">
                   <span>Est: {item.product?.stockCD || 0}</span>
                   <ArrowRight className="h-3 w-3" />
-                  <span className="text-green-400">
+                  <span className="text-success">
                     {((item.product?.stockCD || 0) + item.quantity)}
                   </span>
                 </div>
@@ -87,13 +87,13 @@ export function PurchaseReceiveModal({ open, purchase, onClose, onSuccess }: Pur
           </div>
         </div>
 
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
-          <p className="text-xs text-yellow-400">
+        <div className="bg-warning/10 border border-warning/20 rounded-lg p-3">
+          <p className="text-xs text-warning">
             Ao confirmar, o estoque CD de cada produto será atualizado automaticamente.
           </p>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="ghost" onClick={onClose} disabled={loading}>
             Cancelar
           </Button>

@@ -60,9 +60,9 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
 
   const getMovementIcon = (type: string) => {
     switch (type) {
-      case 'ENTRY': return <ArrowDownCircle className="h-4 w-4 text-green-500" />;
-      case 'EXIT': return <ArrowUpCircle className="h-4 w-4 text-red-500" />;
-      case 'ADJUST': return <Settings className="h-4 w-4 text-yellow-500" />;
+      case 'ENTRY': return <ArrowDownCircle className="h-4 w-4 text-success" />;
+      case 'EXIT': return <ArrowUpCircle className="h-4 w-4 text-destructive" />;
+      case 'ADJUST': return <Settings className="h-4 w-4 text-warning" />;
       default: return null;
     }
   };
@@ -89,7 +89,7 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <Package className="text-primary h-5 w-5" />
           Histórico de Movimentações
         </h2>
@@ -140,7 +140,7 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
       </div>
 
       {error && (
-        <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500">
+        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
           {error}
         </div>
       )}
@@ -153,7 +153,7 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
         <div className="glass-card rounded-xl overflow-hidden">
           <Table hoverable className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="border-b border-border">
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Data</th>
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Produto</th>
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Tipo</th>
@@ -164,29 +164,29 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
             </thead>
             <tbody>
               {movements.map((movement) => (
-                <tr key={movement.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="p-4 text-sm text-white">
+                <tr key={movement.id} className="border-b border-border hover:bg-surface-hover">
+                  <td className="p-4 text-sm text-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
                       {formatDate(movement.createdAt)}
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-white font-medium">
+                  <td className="p-4 text-sm text-foreground font-medium">
                     {movement.product?.name || 'Produto não encontrado'}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       {getMovementIcon(movement.type)}
-                      <span className="text-sm text-white">{getMovementTypeLabel(movement.type)}</span>
+                      <span className="text-sm text-foreground">{getMovementTypeLabel(movement.type)}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-white font-bold">
+                  <td className="p-4 text-sm text-foreground font-bold">
                     {movement.quantity}
                   </td>
                   <td className="p-4 text-sm text-muted-foreground">
                     {movement.reason || '-'}
                   </td>
-                  <td className="p-4 text-sm text-white">
+                  <td className="p-4 text-sm text-foreground">
                     <div className="flex items-center gap-2">
                       <User className="h-3 w-3 text-muted-foreground" />
                       {movement.user?.name || 'Sistema'}

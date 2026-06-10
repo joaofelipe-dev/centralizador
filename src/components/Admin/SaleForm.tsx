@@ -135,7 +135,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white flex items-center gap-2">
+        <label className="text-sm font-medium text-foreground flex items-center gap-2">
           <ShoppingCart className="h-4 w-4 text-primary" />
           Fornecedor Externo
         </label>
@@ -154,7 +154,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
       </div>
 
       <div className="space-y-4">
-        <label className="text-sm font-medium text-white flex items-center gap-2">
+        <label className="text-sm font-medium text-foreground flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
           Produtos
         </label>
@@ -191,7 +191,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
           <div className="glass-card rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10">
+                  <tr className="border-b border-border">
                   <th className="text-left text-xs font-medium text-muted-foreground p-3">Produto</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3">Estoque CD</th>
                   <th className="text-left text-xs font-medium text-muted-foreground p-3">Qtd. Venda</th>
@@ -202,8 +202,8 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
                 {items.map((item) => {
                   const product = products.find((p) => p.id === item.productId);
                   return (
-                    <tr key={item.productId} className="border-b border-white/5">
-                      <td className="p-3 text-sm text-white">{item.product?.name}</td>
+                    <tr key={item.productId} className="border-b border-border">
+                      <td className="p-3 text-sm text-foreground">{item.product?.name}</td>
                       <td className="p-3 text-sm text-muted-foreground">{product?.stockCD || 0}</td>
                       <td className="p-3">
                         <Input
@@ -223,7 +223,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
                           variant="ghost"
                           size="icon"
                           onClick={() => removeItem(item.productId)}
-                          className="text-red-500 hover:bg-red-500/10"
+                          className="text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

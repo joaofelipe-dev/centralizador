@@ -62,7 +62,7 @@ export function AdjustmentForm({ onSuccess, onCancel }: AdjustmentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white flex items-center gap-2">
+        <label className="text-sm font-medium text-foreground flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
           Produto
         </label>
@@ -81,7 +81,7 @@ export function AdjustmentForm({ onSuccess, onCancel }: AdjustmentFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white flex items-center gap-2">
+        <label className="text-sm font-medium text-foreground flex items-center gap-2">
           <Settings className="h-4 w-4 text-primary" />
           Quantidade
         </label>
@@ -98,14 +98,14 @@ export function AdjustmentForm({ onSuccess, onCancel }: AdjustmentFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white">
+        <label className="text-sm font-medium text-foreground">
           Motivo
         </label>
         <textarea
           value={formData.reason}
           onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
           placeholder="Descreva o motivo do ajuste..."
-          className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           rows={3}
           required
         />

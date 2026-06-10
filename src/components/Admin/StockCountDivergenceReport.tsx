@@ -68,8 +68,8 @@ export function StockCountDivergenceReport({ countId, onBack }: StockCountDiverg
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h2 className="text-xl font-bold text-white">
-            Relatório de Divergências
+            <h2 className="text-xl font-bold text-foreground">
+              Relatório de Divergências
           </h2>
           <p className="text-sm text-muted-foreground">
             {new Date(count.createdAt).toLocaleDateString('pt-BR')} — {count.user?.name} — {count.status === "OPEN" ? "Aberta" : "Fechada"}
@@ -78,38 +78,38 @@ export function StockCountDivergenceReport({ countId, onBack }: StockCountDiverg
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/5 rounded-lg p-4">
+        <div className="bg-card rounded-lg p-4">
           <div className="text-sm text-muted-foreground">Total de Itens</div>
-          <div className="text-2xl font-bold text-white">{totalItems}</div>
+          <div className="text-2xl font-bold text-foreground">{totalItems}</div>
         </div>
-        <div className="bg-white/5 rounded-lg p-4">
+        <div className="bg-card rounded-lg p-4">
           <div className="text-sm text-muted-foreground">Itens com Divergência</div>
-          <div className="text-2xl font-bold text-yellow-500">{divergences.length}</div>
+          <div className="text-2xl font-bold text-warning">{divergences.length}</div>
         </div>
-        <div className="bg-white/5 rounded-lg p-4">
+        <div className="bg-card rounded-lg p-4">
           <div className="text-sm text-muted-foreground">Ganho Líquido</div>
-          <div className={`text-2xl font-bold ${netGain >= 0 ? "text-green-500" : "text-red-500"}`}>
+          <div className={`text-2xl font-bold ${netGain >= 0 ? "text-success" : "text-destructive"}`}>
             {netGain >= 0 ? "+" : ""}{netGain}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white/5 rounded-lg p-4">
+        <div className="bg-card rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-green-500" />
-            <span className="text-sm font-medium text-white">Ganhos ({gains.length})</span>
+            <TrendingUp className="h-4 w-4 text-success" />
+            <span className="text-sm font-medium text-foreground">Ganhos ({gains.length})</span>
           </div>
-          <div className="text-2xl font-bold text-green-500">
+          <div className="text-2xl font-bold text-success">
             +{gains.reduce((sum, item) => sum + item.divergence, 0)}
           </div>
         </div>
-        <div className="bg-white/5 rounded-lg p-4">
+        <div className="bg-card rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            <span className="text-sm font-medium text-white">Perdas ({losses.length})</span>
+            <TrendingDown className="h-4 w-4 text-destructive" />
+            <span className="text-sm font-medium text-foreground">Perdas ({losses.length})</span>
           </div>
-          <div className="text-2xl font-bold text-red-500">
+          <div className="text-2xl font-bold text-destructive">
             {losses.reduce((sum, item) => sum + item.divergence, 0)}
           </div>
         </div>
@@ -119,20 +119,20 @@ export function StockCountDivergenceReport({ countId, onBack }: StockCountDiverg
         <Table variant="striped">
           <thead>
             <tr>
-              <th className="text-left text-white">Produto</th>
-              <th className="text-right text-white">Qtd Sistema</th>
-              <th className="text-right text-white">Qtd Física</th>
-              <th className="text-right text-white">Divergência</th>
-              <th className="text-center text-white">Tipo</th>
+              <th className="text-left text-foreground">Produto</th>
+              <th className="text-right text-foreground">Qtd Sistema</th>
+              <th className="text-right text-foreground">Qtd Física</th>
+              <th className="text-right text-foreground">Divergência</th>
+              <th className="text-center text-foreground">Tipo</th>
             </tr>
           </thead>
           <tbody>
             {divergences.map((item) => (
               <tr key={item.id}>
-                <td className="text-white">{item.product?.name || item.productId}</td>
-                <td className="text-right text-white">{item.systemQty}</td>
-                <td className="text-right text-white">{item.physicalQty}</td>
-                <td className={`text-right ${item.divergence > 0 ? "text-green-500" : "text-red-500"}`}>
+                <td className="text-foreground">{item.product?.name || item.productId}</td>
+                <td className="text-right text-foreground">{item.systemQty}</td>
+                <td className="text-right text-foreground">{item.physicalQty}</td>
+                <td className={`text-right ${item.divergence > 0 ? "text-success" : "text-destructive"}`}>
                   {item.divergence > 0 ? "+" : ""}{item.divergence}
                 </td>
                 <td className="text-center">

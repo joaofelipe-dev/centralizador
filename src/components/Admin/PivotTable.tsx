@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Package, BarChart3, Download, FileSpreadsheet } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import * as XLSX from "xlsx";
 import type { Product, Store } from "@/types/product";
 
@@ -28,14 +28,14 @@ interface TableRowProps {
 }
 
 const TableRow = memo(({ product, stores, matrix }: TableRowProps) => (
-  <tr className="group hover:bg-white/[0.03] transition-colors">
-    <td className="px-6 py-4 border-r border-white/5">
+  <tr className="group hover:bg-surface-hover transition-colors">
+    <td className="px-6 py-4 border-r border-border">
       <div className="flex items-center gap-4">
-        <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+        <div className="h-10 w-10 rounded-lg bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
           <Package className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">{product.name || 'Sem nome'}</p>
+          <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{product.name || 'Sem nome'}</p>
           <p className="text-[10px] text-muted-foreground font-mono opacity-50 uppercase">R$ {typeof product.price === 'number' ? product.price.toFixed(2) : '0,00'}</p>
         </div>
       </div>
@@ -43,12 +43,12 @@ const TableRow = memo(({ product, stores, matrix }: TableRowProps) => (
     {stores.map(store => {
       const cell = matrix?.[product.id]?.[store.id] || { quantity: 0, currentStock: 0 };
       return (
-        <td key={store.id} className="px-4 py-4 text-center border-l border-white/5">
+        <td key={store.id} className="px-4 py-4 text-center border-l border-border">
           <div className="flex flex-col items-center">
-            <span className={`text-sm font-black ${cell.quantity > 0 ? 'text-primary' : 'text-white/20'}`}>
+            <span className={`text-sm font-black ${cell.quantity > 0 ? 'text-primary' : 'text-foreground/20'}`}>
               {Number(cell.quantity) || 0}
             </span>
-            <span className={`text-[10px] font-bold ${cell.currentStock > 0 ? 'text-green-500/60' : 'text-white/10'}`}>
+            <span className={`text-[10px] font-bold ${cell.currentStock > 0 ? 'text-success/60' : 'text-foreground/10'}`}>
               {Number(cell.currentStock) || 0}
             </span>
           </div>
@@ -175,14 +175,14 @@ export function PivotTable({ consolidated }: PivotTableProps) {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-3">
+          <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
             <BarChart3 className="text-primary" />
             Consolidado de Itens por Loja
           </h2>
           <p className="text-sm text-muted-foreground">Visão geral de pedidos (Qtd) e estoque informado (Est) em todas as filiais.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button onClick={handleExport} variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/5">
+          <Button onClick={handleExport} variant="outline" className="gap-2 border-border text-foreground hover:bg-surface-hover">
             <Download className="h-4 w-4" /> Exportar
           </Button>
           <Button onClick={handleExportStoreXLSX} variant="default" className="gap-2">
@@ -194,20 +194,20 @@ export function PivotTable({ consolidated }: PivotTableProps) {
       <div className="glass-card overflow-hidden border-primary/20 bg-primary/[0.02]">
         <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
           <table className="w-full text-left border-collapse border-separate border-spacing-0">
-            <thead className="sticky top-0 z-10 bg-[#0a0a0a] shadow-md shadow-black/50">
+            <thead className="sticky top-0 z-10 bg-background shadow-md shadow-black/50">
               <tr>
-                <th className="px-6 py-5 min-w-[300px] border-b border-white/10 text-xs font-black uppercase text-muted-foreground bg-[#0a0a0a]">
+                <th className="px-6 py-5 min-w-[300px] border-b border-border text-xs font-black uppercase text-muted-foreground bg-background">
                   Produto
                 </th>
                 {stores.map(store => (
-                  <th key={store.id} className="px-4 py-5 min-w-[140px] text-center border-b border-white/10 border-l border-white/5 bg-[#0a0a0a]">
-                    <p className="text-xs font-black text-white truncate max-w-[120px]">{store.name}</p>
+                  <th key={store.id} className="px-4 py-5 min-w-[140px] text-center border-b border-border border-l border-border bg-background">
+                    <p className="text-xs font-black text-foreground truncate max-w-[120px]">{store.name}</p>
                     <p className="text-[9px] text-muted-foreground font-medium opacity-50 uppercase tracking-tighter">Ped / Est</p>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {products.map(product => (
                 <TableRow
                   key={product.id}

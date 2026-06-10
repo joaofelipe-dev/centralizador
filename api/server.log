@@ -1,0 +1,44 @@
+{"level":30,"time":1780662579236,"pid":20892,"hostname":"DESKTOP-3G9459D","msg":"Server listening at http://127.0.0.1:3333"}
+Server is running at http://127.0.0.1:3333
+{"level":30,"time":1780662579236,"pid":20892,"hostname":"DESKTOP-3G9459D","msg":"Server listening at http://192.168.0.52:3333"}
+{"level":30,"time":1780662586525,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-1","req":{"method":"GET","url":"/docs","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":53894},"msg":"incoming request"}
+{"level":30,"time":1780662586531,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-1","res":{"statusCode":200},"responseTime":5.184800028800964,"msg":"request completed"}
+{"level":30,"time":1780662586562,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-2","req":{"method":"POST","url":"/auth/login","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":53894},"msg":"incoming request"}
+{"level":30,"time":1780662586566,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-2","body":{"username":"admin","password":"admin123"},"msg":"Requisição de login recebida"}
+{"level":30,"time":1780662586942,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-2","userId":"31d7ca7f-33df-410d-834b-b6b5aa5ae1e6","msg":"Login bem-sucedido"}
+{"level":30,"time":1780662586943,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-2","res":{"statusCode":200},"responseTime":380.80140006542206,"msg":"request completed"}
+{"level":30,"time":1780662586994,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-3","req":{"method":"GET","url":"/stores","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":53894},"msg":"incoming request"}
+{"level":30,"time":1780662587012,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-3","res":{"statusCode":200},"responseTime":18.43589997291565,"msg":"request completed"}
+{"level":30,"time":1780662587021,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-4","req":{"method":"GET","url":"/products","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":53894},"msg":"incoming request"}
+{"level":30,"time":1780662587089,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-4","res":{"statusCode":200},"responseTime":67.91719996929169,"msg":"request completed"}
+{"level":30,"time":1780662587171,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-5","req":{"method":"POST","url":"/orders","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":53894},"msg":"incoming request"}
+[ORDER-SERVICE] Order created: 66b077b4-c1c0-461f-8a28-7ac58e955c62, store: Av. Portugal (null)
+[ORDER-SERVICE] Order items count: 1
+[ORDER-SERVICE] Starting export for store: Av. Portugal
+[ORDER-EXPORT] Starting export for order: 66b077b4-c1c0-461f-8a28-7ac58e955c62, storeName: Av. Portugal, storeCode: undefined
+[ORDER-EXPORT] orderDate: Fri Jun 05 2026 09:00:00 GMT-0300 (Horário Padrão de Brasília)
+[ORDER-EXPORT] items count: 1
+[ORDER-EXPORT] Success: \\192.168.0.247\onedrive\Enviado\AV_06062026.xlsx
+[ORDER-SERVICE] Export result: {
+  success: true,
+  filepath: '\\\\192.168.0.247\\onedrive\\Enviado\\AV_06062026.xlsx'
+}
+{"level":30,"time":1780662587581,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-5","res":{"statusCode":201},"responseTime":409.4097000360489,"msg":"request completed"}
+{"level":30,"time":1780663565335,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-6","req":{"method":"OPTIONS","url":"/products","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":63462},"msg":"incoming request"}
+{"level":30,"time":1780663565339,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-6","res":{"statusCode":204},"responseTime":3.732100009918213,"msg":"request completed"}
+{"level":30,"time":1780663565341,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-7","req":{"method":"OPTIONS","url":"/stores","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":57470},"msg":"incoming request"}
+{"level":30,"time":1780663565342,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-7","res":{"statusCode":204},"responseTime":0.9459999799728394,"msg":"request completed"}
+{"level":30,"time":1780663565343,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-8","req":{"method":"OPTIONS","url":"/categories","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":54910},"msg":"incoming request"}
+{"level":30,"time":1780663565344,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-8","res":{"statusCode":204},"responseTime":0.736299991607666,"msg":"request completed"}
+{"level":30,"time":1780663565359,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-9","req":{"method":"GET","url":"/products","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":54910},"msg":"incoming request"}
+{"level":30,"time":1780663565362,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-9","res":{"statusCode":401},"responseTime":2.469200015068054,"msg":"request completed"}
+{"level":30,"time":1780663565370,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-a","req":{"method":"GET","url":"/stores","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":54910},"msg":"incoming request"}
+{"level":30,"time":1780663565371,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-a","res":{"statusCode":401},"responseTime":1.1119999885559082,"msg":"request completed"}
+{"level":30,"time":1780663565372,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-b","req":{"method":"GET","url":"/categories","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":57470},"msg":"incoming request"}
+{"level":30,"time":1780663565373,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-b","res":{"statusCode":401},"responseTime":0.6881999969482422,"msg":"request completed"}
+{"level":30,"time":1780663570832,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-c","req":{"method":"OPTIONS","url":"/auth/login","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":57470},"msg":"incoming request"}
+{"level":30,"time":1780663570833,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-c","res":{"statusCode":204},"responseTime":0.6125000715255737,"msg":"request completed"}
+{"level":30,"time":1780663570835,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-d","req":{"method":"POST","url":"/auth/login","host":"localhost:3333","remoteAddress":"127.0.0.1","remotePort":57470},"msg":"incoming request"}
+{"level":30,"time":1780663570836,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-d","body":{"username":"admin","password":"admin"},"msg":"Requisição de login recebida"}
+{"level":40,"time":1780663570837,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-d","err":{"type":"ZodError","message":"[\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_small\",\n    \"minimum\": 6,\n    \"inclusive\": true,\n    \"path\": [\n      \"password\"\n    ],\n    \"message\": \"Too small: expected string to have >=6 characters\"\n  }\n]","stack":"ZodError: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_small\",\n    \"minimum\": 6,\n    \"inclusive\": true,\n    \"path\": [\n      \"password\"\n    ],\n    \"message\": \"Too small: expected string to have >=6 characters\"\n  }\n]\n    at AuthController.login (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\src\\modules\\auth\\auth.controller.ts:46:32)\n    at Object.<anonymous> (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\src\\modules\\auth\\auth.routes.ts:15:57)\n    at preHandlerCallbackInner (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\handle-request.js:168:24)\n    at preHandlerCallback (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\handle-request.js:134:5)\n    at validationCompleted (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\handle-request.js:124:5)\n    at preValidationCallback (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\handle-request.js:101:5)\n    at handler (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\handle-request.js:78:7)\n    at onDone (C:\\Users\\joao.felipe\\Desktop\\centralizador\\api\\node_modules\\fastify\\lib\\content-type-parser.js:229:5)\n    at AsyncResource.runInAsyncScope (node:async_hooks:228:14)\n    at bound (node:async_hooks:259:16)","name":"ZodError"},"msg":"Falha ao autenticar usuário"}
+{"level":30,"time":1780663570841,"pid":20892,"hostname":"DESKTOP-3G9459D","reqId":"req-d","res":{"statusCode":400},"responseTime":5.984599947929382,"msg":"request completed"}

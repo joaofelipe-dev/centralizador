@@ -48,7 +48,7 @@ export default function PedidosFlowPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" />
           <p className="mt-4 text-muted-foreground">Carregando seus acessos...</p>

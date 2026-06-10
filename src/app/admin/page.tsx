@@ -193,7 +193,7 @@ export default function AdminPage() {
 
   if (loading || isDataLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
           <p className="text-muted-foreground animate-pulse text-sm font-medium">
@@ -205,7 +205,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#050505]">
+    <div className="flex flex-col min-h-screen bg-background">
       <PageNav
         title="Painel Administrativo"
         description="Visão consolidada do sistema"
@@ -223,7 +223,7 @@ export default function AdminPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-12 animate-slide-up">
         <div className="glass-card p-6 rounded-xl text-center">
           <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Gestão de Pedidos</h2>
+          <h2 className="text-xl font-bold text-foreground mb-2">Gestão de Pedidos</h2>
           <p className="text-muted-foreground mb-4">
             A edição de pedidos é realizada pelo Supervisor.
           </p>
@@ -238,19 +238,19 @@ export default function AdminPage() {
             label: "Lojas Ativas",
             value: allStores.length.toString(),
             icon: Clock,
-            color: "text-yellow-500",
+            color: "text-warning",
           },
           {
             label: "Total Usuários",
             value: users.length.toString(),
             icon: Users,
-            color: "text-purple-500",
+            color: "text-primary",
           },
           {
             label: "Itens Catálogo",
             value: consolidated.products.length.toString(),
             icon: Package,
-            color: "text-orange-500",
+            color: "text-warning",
           },
         ]} />
 

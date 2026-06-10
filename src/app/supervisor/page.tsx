@@ -15,6 +15,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Button } from "@/components/Button/Button";
+import { Select } from "@/components/ui/Select";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -133,7 +134,7 @@ export default function SupervisorOrdersPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050505] p-4">
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="text-center space-y-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
           <p className="text-muted-foreground animate-pulse text-sm font-medium">
@@ -145,7 +146,7 @@ export default function SupervisorOrdersPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#050505]">
+    <div className="flex flex-col min-h-screen bg-background">
       <PageNav
         title="Gestão de Pedidos"
         description="Aprovação e edição de pedidos"
@@ -156,7 +157,7 @@ export default function SupervisorOrdersPage() {
             onClick={() => setShowFilters(!showFilters)}
             variant="ghost"
             size="icon"
-            className="rounded-full text-white hover:bg-white/10 md:hidden"
+            className="rounded-full text-foreground hover:bg-surface-hover md:hidden"
           >
             <Filter className="h-5 w-5" />
           </Button>
@@ -171,20 +172,19 @@ export default function SupervisorOrdersPage() {
               className="flex-1"
             />
           </div>
-          <select
+          <Select
             value={filterStatus}
             onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value as import("@/types/order").OrderStatus | "")}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Todos os status</option>
             <option value="PENDING">Pendente</option>
             <option value="APPROVED">Aprovado</option>
             <option value="CONFIRMED">Confirmado</option>
             <option value="CANCELLED">Cancelado</option>
-          </select>
+          </Select>
         </div>
 
-        <div className="hidden md:flex items-center justify-between px-6 py-3 border-t border-white/5">
+        <div className="hidden md:flex items-center justify-between px-6 py-3 border-t border-border">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
@@ -193,19 +193,18 @@ export default function SupervisorOrdersPage() {
                 onChange={setFilterDate}
               />
             </div>
-            <select
+            <Select
               value={filterStatus}
               onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilterStatus(e.target.value as import("@/types/order").OrderStatus | "")}
-              className="bg-white/5 border border-white/10 rounded-md px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">Todos os status</option>
               <option value="PENDING">Pendente</option>
               <option value="APPROVED">Aprovado</option>
               <option value="CONFIRMED">Confirmado</option>
               <option value="CANCELLED">Cancelado</option>
-            </select>
+            </Select>
           </div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-primary" />
             {orders.length} pedido{orders.length !== 1 ? 's' : ''}
           </h2>
@@ -214,7 +213,7 @@ export default function SupervisorOrdersPage() {
 
       <main className="flex-1 w-full p-4 md:p-6 space-y-4">
         <div className="md:hidden">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-primary" />
             {orders.length} pedido{orders.length !== 1 ? 's' : ''}
           </h2>
@@ -249,7 +248,7 @@ export default function SupervisorOrdersPage() {
                           <ShoppingBag className="h-5 w-5 md:h-6 md:w-6" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-white truncate">{order.store?.name}</p>
+                          <p className="font-bold text-foreground truncate">{order.store?.name}</p>
                           <p className="text-xs md:text-sm text-muted-foreground truncate">
                             {order.user?.name}
                           </p>
@@ -277,7 +276,7 @@ export default function SupervisorOrdersPage() {
                   </div>
 
                   <div className={`px-4 pb-4 md:px-6 md:pb-6 space-y-4 ${isExpanded ? 'block' : 'hidden'} md:block`}>
-                    <div className="border-t border-white/5 pt-4">
+                    <div className="border-t border-border pt-4">
                       <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
                         Itens ({order.items?.length || 0})
                       </p>
@@ -285,10 +284,10 @@ export default function SupervisorOrdersPage() {
                         {order.items?.map((item) => (
                           <div
                             key={item.id}
-                            className="flex items-center justify-between bg-white/5 rounded-lg p-3"
+                            className="flex items-center justify-between bg-card rounded-lg p-3"
                           >
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-bold text-white truncate">
+                              <p className="text-sm font-bold text-foreground truncate">
                                 {item.product?.name}
                               </p>
                               <p className="text-xs text-muted-foreground">
@@ -435,13 +434,12 @@ function OrderEditPanel({ order, onClose, onSave, isSaving }: {
     <Modal
       open
       onClose={onClose}
-      variant="default"
-      overlayClassName="flex items-end md:items-center justify-center p-0 md:p-4 bg-black/95"
-      className="glass-card w-full max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 rounded-t-2xl md:rounded-2xl"
+      size="lg"
+      className="max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden"
     >
-      <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
-        <h3 className="text-lg md:text-xl font-bold text-white">Editar Pedido</h3>
-        <button onClick={onClose} className="text-muted-foreground hover:text-white p-2 -m-2">
+      <div className="p-4 md:p-6 border-b border-border flex items-center justify-between shrink-0">
+        <h3 className="text-lg md:text-xl font-bold text-foreground">Editar Pedido</h3>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-2 -m-2">
           ✕
         </button>
       </div>
@@ -450,28 +448,28 @@ function OrderEditPanel({ order, onClose, onSave, isSaving }: {
         {items.map((item) => (
           <div
             key={item.productId}
-            className="bg-white/5 rounded-xl p-4"
+            className="bg-card rounded-xl p-4"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="font-bold text-white text-sm md:text-base truncate pr-2">{item.name}</p>
+              <p className="font-bold text-foreground text-sm md:text-base truncate pr-2">{item.name}</p>
             </div>
 
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col items-center gap-1 flex-1">
                 <span className="text-[10px] uppercase text-muted-foreground">Estoque</span>
-                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg">
+                <div className="flex items-center gap-1 bg-surface p-1 rounded-lg">
                   <button
                     onClick={() => updateItem(item.productId, "currentStock", -1)}
-                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
+                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-surface-hover text-lg font-bold"
                   >
                     -
                   </button>
-                  <span className="w-12 text-center font-bold text-white text-base">
+                  <span className="w-12 text-center font-bold text-foreground text-base">
                     {item.currentStock}
                   </span>
                   <button
                     onClick={() => updateItem(item.productId, "currentStock", 1)}
-                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-white/10 text-lg font-bold"
+                    className="h-9 w-9 flex items-center justify-center rounded hover:bg-surface-hover text-lg font-bold"
                   >
                     +
                   </button>
@@ -483,16 +481,16 @@ function OrderEditPanel({ order, onClose, onSave, isSaving }: {
                 <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-lg border border-primary/20">
                   <button
                     onClick={() => updateItem(item.productId, "quantity", -1)}
-                    className="h-9 w-9 flex items-center justify-center rounded text-primary hover:bg-white/10 text-lg font-bold"
+                    className="h-9 w-9 flex items-center justify-center rounded text-primary hover:bg-surface-hover text-lg font-bold"
                   >
                     -
                   </button>
-                  <span className="w-12 text-center font-bold text-white text-base">
+                  <span className="w-12 text-center font-bold text-foreground text-base">
                     {item.quantity}
                   </span>
                   <button
                     onClick={() => updateItem(item.productId, "quantity", 1)}
-                    className="h-9 w-9 flex items-center justify-center rounded bg-primary text-white text-lg font-bold"
+                    className="h-9 w-9 flex items-center justify-center rounded bg-primary text-primary-foreground text-lg font-bold"
                   >
                     +
                   </button>
@@ -503,7 +501,7 @@ function OrderEditPanel({ order, onClose, onSave, isSaving }: {
         ))}
       </div>
 
-      <div className="p-4 md:p-6 border-t border-white/5 flex gap-3 shrink-0">
+      <div className="p-4 md:p-6 border-t border-border flex gap-3 shrink-0">
         <Button variant="outline" onClick={onClose} className="flex-1">
           Cancelar
         </Button>

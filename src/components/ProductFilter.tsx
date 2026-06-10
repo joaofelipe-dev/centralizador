@@ -1,4 +1,6 @@
-import { SearchInput } from '@/components/ui/SearchInput';
+import { useCallback, useState, useRef, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Category } from '@/types/product';
 
@@ -23,12 +25,28 @@ export function ProductFilter({
   onSearchChange,
   onClear
 }: ProductFilterProps) {
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => onSearchChange(value), 300);
+  }, [onSearchChange]);
+
   return (
     <div className="space-y-4 p-4 glass-card rounded-xl">
-      <SearchInput
-        value={searchTerm}
-        onChange={onSearchChange}
+      <Input
+        value={localSearch}
+        onChange={handleSearchChange}
         placeholder="Buscar produtos..."
+        leftIcon={<Search className="h-5 w-5" />}
+        fullWidth
       />
 
       <div className="flex gap-2 overflow-x-auto pb-2">
@@ -36,7 +54,7 @@ export function ProductFilter({
           onClick={() => onCategoryChange(null)}
           variant={selectedCategory === null ? 'default' : 'ghost'}
           size="sm"
-          className={selectedCategory === null ? '' : 'bg-white/5 text-muted-foreground hover:bg-white/10'}
+          className={selectedCategory === null ? '' : 'bg-muted text-muted-foreground hover:bg-surface-hover'}
         >
           Todos
         </Button>
@@ -46,7 +64,7 @@ export function ProductFilter({
             onClick={() => onCategoryChange(cat.id)}
             variant={selectedCategory === cat.id ? 'default' : 'ghost'}
             size="sm"
-            className={selectedCategory === cat.id ? '' : 'bg-white/5 text-muted-foreground hover:bg-white/10'}
+            className={selectedCategory === cat.id ? '' : 'bg-muted text-muted-foreground hover:bg-surface-hover'}
           >
             {cat.name}
           </Button>
@@ -62,7 +80,7 @@ export function ProductFilter({
             onClick={onClear}
             variant="ghost"
             size="sm"
-            className="text-xs px-3 py-1 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white"
+            className="text-xs px-3 py-1 bg-muted hover:bg-surface-hover text-muted-foreground hover:text-foreground"
           >
             Limpar filtros
           </Button>

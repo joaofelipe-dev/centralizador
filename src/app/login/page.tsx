@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { ShoppingBag, Lock, Loader2, User, UserRound } from "lucide-react";
 import { Button } from "@/components/Button/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function LoginPage() {
   const [username, setUsername] = useState<string>("");
@@ -38,7 +39,7 @@ export default function LoginPage() {
         <div className="glass-card rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center">
                 {error}
               </div>
             )}
@@ -49,7 +50,7 @@ export default function LoginPage() {
                   <UserRound className="h-4 w-4" />
                   Usuário
                 </label>
-                  <input
+                  <Input
                     type="text"
                     required
                     value={username}
@@ -58,7 +59,6 @@ export default function LoginPage() {
                     aria-label="Nome de usuário"
                     aria-required="true"
                     autoComplete="username"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
               </div>
 
@@ -67,7 +67,7 @@ export default function LoginPage() {
                   <Lock className="h-4 w-4" />
                   Senha
                 </label>
-                  <input
+                  <Input
                     type="password"
                     required
                     value={password}
@@ -76,7 +76,6 @@ export default function LoginPage() {
                     aria-label="Senha"
                     aria-required="true"
                     autoComplete="current-password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
               </div>
             </div>

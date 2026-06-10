@@ -54,7 +54,7 @@ export function SaleList({ onSaleClick }: SaleListProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
           <ShoppingCart className="text-primary h-5 w-5" />
           Histórico de Vendas
         </h2>
@@ -65,7 +65,7 @@ export function SaleList({ onSaleClick }: SaleListProps) {
       </div>
 
       {error && (
-        <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500">
+        <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
           {error}
         </div>
       )}
@@ -78,7 +78,7 @@ export function SaleList({ onSaleClick }: SaleListProps) {
         <div className="glass-card rounded-xl overflow-hidden">
           <Table hoverable className="w-full">
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="border-b border-border">
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Fornecedor</th>
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Data</th>
                 <th className="text-left text-xs font-medium text-muted-foreground p-4">Total de Itens</th>
@@ -88,25 +88,25 @@ export function SaleList({ onSaleClick }: SaleListProps) {
             </thead>
             <tbody>
               {sales.map((sale) => (
-                <tr key={sale.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="p-4 text-sm text-white font-medium">
+                <tr key={sale.id} className="border-b border-border hover:bg-surface-hover">
+                  <td className="p-4 text-sm text-foreground font-medium">
                     <div className="flex items-center gap-2">
                       <Package className="h-3 w-3 text-muted-foreground" />
                       {sale.supplier?.name || 'Fornecedor não encontrado'}
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-white">
+                  <td className="p-4 text-sm text-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
                       {formatDate(sale.createdAt)}
                     </div>
                   </td>
-                  <td className="p-4 text-sm text-white font-bold">
+                  <td className="p-4 text-sm text-foreground font-bold">
                     {sale.totalItems || sale.items?.length || 0} itens
                   </td>
-                  <td className="p-4 text-sm text-white font-bold">
+                  <td className="p-4 text-sm text-foreground font-bold">
                     <div className="flex items-center gap-2">
-                      <DollarSign className="h-3 w-3 text-green-500" />
+                      <DollarSign className="h-3 w-3 text-success" />
                       {sale.totalValue ? formatCurrency(sale.totalValue) : 'N/A'}
                     </div>
                   </td>

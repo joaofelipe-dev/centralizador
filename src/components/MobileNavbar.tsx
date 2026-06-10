@@ -60,7 +60,7 @@ export const MobileNavbar = () => {
             href={item.href}
             className={cn(
               "flex flex-col items-center justify-center gap-1 transition-all duration-300",
-              isActive ? "text-primary scale-110" : "text-muted-foreground hover:text-white"
+              isActive ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground"
             )}
             aria-current={isActive ? "page" : undefined}
           >

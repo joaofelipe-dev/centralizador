@@ -16,7 +16,7 @@ export function OfflineBanner() {
           className={`rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-xl ${
             isOnline
               ? "border-primary/30 bg-primary/10 text-primary"
-              : "border-yellow-500/30 bg-yellow-500/10 text-yellow-500"
+              : "border-warning/30 bg-warning/10 text-warning"
           }`}
         >
           <div className="flex items-center justify-between gap-3">
@@ -29,7 +29,7 @@ export function OfflineBanner() {
 
               <div className="min-w-0">
                 {isOnline ? (
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-foreground">
                     {isSyncing ? (
                       <span className="flex items-center gap-2">
                         <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -44,7 +44,7 @@ export function OfflineBanner() {
                     <p className="text-sm font-medium">
                       Você está offline
                     </p>
-                    <p className="text-[11px] text-white/60 mt-0.5">
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
                       Pedidos serão salvos e enviados automaticamente quando a conexão voltar
                     </p>
                   </>
@@ -63,7 +63,7 @@ export function OfflineBanner() {
             )}
 
             {!isOnline && (
-              <CloudOff className="h-5 w-5 shrink-0 text-yellow-500/50" />
+              <CloudOff className="h-5 w-5 shrink-0 text-warning/50" />
             )}
           </div>
         </div>

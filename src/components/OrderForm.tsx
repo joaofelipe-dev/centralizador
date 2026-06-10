@@ -67,18 +67,18 @@ const ProductRow = React.memo(
           "bg-card rounded-xl flex flex-col gap-3 transition-all border-2",
           hasCDStock &&
             "border-primary shadow-[0_0_12px_-3px] shadow-primary",
-          confirmed && "border-green-500 bg-green-500/20 shadow-[0_0_12px_-3px] shadow-green-500",
-          !hasCDStock && !confirmed && "border-white/10 hover:border-white/20",
+          confirmed && "border-success bg-success/20 shadow-[0_0_12px_-3px] shadow-success",
+          !hasCDStock && !confirmed && "border-border hover:border-foreground/20",
         )}
         onClick={() => onToggleExpand(product.id)}
       >
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 shrink-0">
+          <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-card shrink-0">
             {getProductIcon(categoryName)}
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-white whitespace-normal break-words leading-tight text-sm lg:text-base">
+            <h3 className="font-bold text-foreground whitespace-normal break-words leading-tight text-sm lg:text-base">
               {product.name}
             </h3>
           </div>
@@ -88,29 +88,29 @@ const ProductRow = React.memo(
             </span>
           )}
 
-          <div
+            <div
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border shrink-0",
               hasCDStock
                 ? "bg-primary/10 border-primary/20"
-                : "bg-white/5 border-white/10",
+                : "bg-card border-border",
             )}
           >
-            <Package
-              className={cn(
-                "h-3.5 w-3.5",
-                hasCDStock ? "text-primary" : "text-white/30",
-              )}
-            />
-            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              CD:
-            </span>
-            <span
-              className={cn(
-                "text-xs font-bold",
-                hasCDStock ? "text-primary" : "text-white/40",
-              )}
-            >
+              <Package
+                className={cn(
+                  "h-3.5 w-3.5",
+                  hasCDStock ? "text-primary" : "text-muted-foreground",
+                )}
+              />
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                CD:
+              </span>
+              <span
+                className={cn(
+                  "text-xs font-bold",
+                  hasCDStock ? "text-primary" : "text-muted-foreground",
+                )}
+              >
               {product.stockCD ?? 0}
             </span>
           </div>
@@ -126,8 +126,8 @@ const ProductRow = React.memo(
             className={cn(
               "h-9 w-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0",
               confirmed
-                ? "bg-green-500 text-white shadow-lg shadow-green-500/30 hover:bg-green-600"
-                : "border-2 border-white/20 bg-white/5 text-white/40 hover:border-green-500/50 hover:bg-green-500/10 hover:text-green-400",
+                ? "bg-success text-success-foreground shadow-lg shadow-success/30 hover:bg-success/90"
+                : "border-2 border-border bg-card text-muted-foreground hover:border-success/50 hover:bg-success/10 hover:text-success",
             )}
           >
             <CheckCircle2 className="h-4 w-4" />
@@ -135,19 +135,19 @@ const ProductRow = React.memo(
 
           <ChevronDown
             className={cn(
-              "h-5 w-5 text-white/30 transition-transform shrink-0",
+              "h-5 w-5 text-muted-foreground transition-transform shrink-0",
               expanded && "rotate-180",
             )}
           />
         </div>
 
         {expanded && (
-          <div className="flex flex-col gap-4 pt-3 border-t border-white/10">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 w-fit">
+          <div className="flex flex-col gap-4 pt-3 border-t border-border">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-card border border-border w-fit">
               <Package
                 className={cn(
                   "h-3.5 w-3.5",
-                  hasCDStock ? "text-primary" : "text-white/30",
+                  hasCDStock ? "text-primary" : "text-muted-foreground",
                 )}
               />
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
@@ -156,7 +156,7 @@ const ProductRow = React.memo(
               <span
                 className={cn(
                   "text-xs font-bold",
-                  hasCDStock ? "text-primary" : "text-white/40",
+                  hasCDStock ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 {product.stockCD ?? 0}
@@ -168,7 +168,7 @@ const ProductRow = React.memo(
                 <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
                   Estoque Atual
                 </span>
-                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner w-fit">
+                <div className="flex items-center gap-1 bg-card p-1 rounded-xl border border-border shadow-inner w-fit">
                   <Button
                     type="button"
                     variant="ghost"
@@ -177,7 +177,7 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "currentStock", -1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
                   >
                     <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
                   </Button>
@@ -196,7 +196,7 @@ const ProductRow = React.memo(
                       )
                     }
                     placeholder="0"
-                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
+                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-foreground focus:outline-none"
                   />
                   <Button
                     type="button"
@@ -206,7 +206,7 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "currentStock", 1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
                   >
                     <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
                   </Button>
@@ -226,7 +226,7 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "quantity", -1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-white/10 active:scale-90 transition-all text-muted-foreground hover:text-white"
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
                   >
                     <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
                   </Button>
@@ -239,7 +239,7 @@ const ProductRow = React.memo(
                       handleInputChange(product.id, "quantity", e.target.value)
                     }
                     placeholder="0"
-                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-white focus:outline-none"
+                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-foreground focus:outline-none"
                   />
                   <Button
                     type="button"
@@ -249,7 +249,7 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "quantity", 1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-white hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
                   >
                     <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
                   </Button>
@@ -530,7 +530,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     if (lowerName.includes("legume"))
       return <Carrot className="h-5 w-5 text-orange-500" />;
     if (lowerName.includes("fruta"))
-      return <Apple className="h-5 w-5 text-red-500" />;
+      return <Apple className="h-5 w-5 text-destructive" />;
     if (lowerName.includes("tempero") || lowerName.includes("verdura"))
       return <LeafyGreen className="h-5 w-5 text-green-500" />;
     return <Package className="h-5 w-5 text-blue-500" />;
@@ -592,7 +592,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
   if (isSuccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 animate-slide-up">
-        <div className="h-20 w-20 bg-green-500/10 text-green-500 flex items-center justify-center rounded-full mb-6">
+        <div className="h-20 w-20 bg-success/10 text-success flex items-center justify-center rounded-full mb-6">
           <CheckCircle2 className="h-10 w-10" />
         </div>
         <h2 className="text-2xl font-bold mb-2">Pedido Enviado!</h2>
@@ -616,10 +616,10 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             <Card
               variant="default"
               padding="sm"
-              className="border-red-500/40 bg-red-500/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-red-500/20 rounded-xl"
+              className="bg-destructive/10 border-destructive/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-destructive/20 rounded-xl"
             >
-              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
-              <span className="text-sm text-red-200 flex-1">{error}</span>
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+              <span className="text-sm text-destructive-foreground flex-1">{error}</span>
               <Button
                 onClick={() => {
                   setAttentionAcknowledged(true);
@@ -627,7 +627,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                 }}
                 variant="ghost"
                 size="sm"
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/30 text-xs shrink-0"
+                className="text-destructive hover:text-destructive-foreground hover:bg-destructive/20 text-xs shrink-0"
               >
                 OK
               </Button>
@@ -639,12 +639,12 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             onClick={isReviewing ? () => setIsReviewing(false) : onBack}
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full bg-secondary/50 text-white"
+            className="h-10 w-10 rounded-full bg-secondary/50 text-secondary-foreground"
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-foreground">
               {isReviewing ? "Revisar Pedido" : store.name}
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -655,7 +655,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           </div>
         </div>
         <div className="text-center mt-8">
-          <h2 className="w-full text-2xl font-bold text-white">
+          <h2 className="w-full text-2xl font-bold text-foreground">
             Pedido de compras
           </h2>
           <p className="text-sm text-muted-foreground mb-6 px-4">
@@ -674,12 +674,13 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             >
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-primary" />
-                <span className="text-sm text-white font-medium">
+                <span className="text-sm text-foreground font-medium">
                   Data do Pedido:
                 </span>
               </div>
               <DateInput
                 value={orderDate}
+                dropdownPosition="bottom-left"
                 onChange={setOrderDate}
                 min={getTomorrowDate()}
               />
@@ -689,7 +690,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           {isReviewing ? (
             <div className="space-y-6 pb-32">
               <Card variant="default" padding="lg" className="space-y-4">
-                <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <div className="flex items-center justify-between border-b border-border pb-3">
                   <h3 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4" />
                     Resumo do Pedido
@@ -728,10 +729,10 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                       return (
                         <div
                           key={product.id}
-                          className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 group"
+                          className="flex items-center justify-between py-3 border-b border-border last:border-0 group"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">
+                            <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
                               {product.name}
                             </p>
                           </div>
@@ -741,7 +742,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                                 <p className="text-[9px] uppercase font-bold text-muted-foreground">
                                   Estoque
                                 </p>
-                                <p className="text-sm font-mono text-white/60">
+                                <p className="text-sm font-mono text-muted-foreground">
                                   {item?.currentStock ?? 0}
                                 </p>
                               </div>
@@ -750,7 +751,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                               <p className="text-[9px] uppercase font-bold text-primary">
                                 Pedido
                               </p>
-                              <p className="text-sm font-mono text-white font-black">
+                              <p className="text-sm font-mono text-foreground font-black">
                                 {item?.quantity}
                               </p>
                             </div>
@@ -765,7 +766,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               <Button
                 onClick={() => setIsReviewing(false)}
                 variant="outline"
-                className="w-full h-12 border-white/10 text-white hover:bg-white/5"
+                className="w-full h-12 border-border text-foreground hover:bg-card"
               >
                 Voltar ao Catálogo
               </Button>
@@ -859,7 +860,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-white" : "glass backdrop-blur-[3px] shadow-xl shadow-primary/50"}`}
+            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-primary-foreground" : "glass backdrop-blur-[3px] shadow-xl shadow-primary/50"}`}
           >
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -867,16 +868,16 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               <div className="flex items-center justify-between w-full px-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`${isReviewing ? "bg-white text-primary" : "bg-primary text-white"} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}
+                    className={`${isReviewing ? "bg-card text-primary" : "bg-primary text-primary-foreground"} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}
                   >
                     {totalItems}
                   </div>
-                  <span className={isReviewing ? "text-white" : "text-white"}>
+                  <span className={isReviewing ? "text-primary-foreground" : "text-primary-foreground"}>
                     {isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}
                   </span>
                 </div>
                 {isReviewing ? (
-                  <Send className="h-5 w-5 text-white" />
+                  <Send className="h-5 w-5 text-primary-foreground" />
                 ) : (
                   <Send className="h-5 w-5 text-primary" />
                 )}

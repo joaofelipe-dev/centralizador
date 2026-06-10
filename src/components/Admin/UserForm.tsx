@@ -117,7 +117,7 @@ export function UserForm({
 
         <div>
           <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-            Usuário <span className="text-red-400">*</span>
+            Usuário <span className="text-destructive">*</span>
           </label>
           <Input
             type="text"
@@ -131,7 +131,7 @@ export function UserForm({
             aria-required="true"
           />
           {errors.username && touched.username && (
-            <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
+            <p className="text-xs text-destructive mt-1 animate-in fade-in duration-200">
               {errors.username}
             </p>
           )}
@@ -139,7 +139,7 @@ export function UserForm({
 
         <div>
           <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-            Nome Completo <span className="text-red-400">*</span>
+            Nome Completo <span className="text-destructive">*</span>
           </label>
           <Input
             type="text"
@@ -153,7 +153,7 @@ export function UserForm({
             aria-required="true"
           />
           {errors.name && touched.name && (
-            <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
+            <p className="text-xs text-destructive mt-1 animate-in fade-in duration-200">
               {errors.name}
             </p>
           )}
@@ -172,7 +172,7 @@ export function UserForm({
             fullWidth
           />
           {errors.email && touched.email && (
-            <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
+            <p className="text-xs text-destructive mt-1 animate-in fade-in duration-200">
               {errors.email}
             </p>
           )}
@@ -181,7 +181,7 @@ export function UserForm({
         <div>
           <label className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
             {isEditing ? "Nova Senha (opcional)" : "Senha"}
-            {!isEditing && <span className="text-red-400">*</span>}
+            {!isEditing && <span className="text-destructive">*</span>}
           </label>
           <Input
             type={showPassword ? "text" : "password"}
@@ -196,14 +196,14 @@ export function UserForm({
             rightIcon={
               <div
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer text-muted-foreground hover:text-white transition-colors"
+                className="cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </div>
             }
           />
           {errors.password && touched.password && (
-            <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
+            <p className="text-xs text-destructive mt-1 animate-in fade-in duration-200">
               {errors.password}
             </p>
           )}
@@ -241,7 +241,7 @@ export function UserForm({
             disabled={loading}
           />
           {errors.storeIds && touched.storeIds && (
-            <p className="text-xs text-red-400 mt-1 animate-in fade-in duration-200">
+            <p className="text-xs text-destructive mt-1 animate-in fade-in duration-200">
               {errors.storeIds}
             </p>
           )}

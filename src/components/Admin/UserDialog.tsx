@@ -57,22 +57,22 @@ export function UserDialog({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isEditing ? (
-              <div className="p-2 rounded-full bg-yellow-500/20">
-                <Pencil className="h-5 w-5 text-yellow-400" />
+              <div className="p-2 rounded-full bg-warning/20">
+                <Pencil className="h-5 w-5 text-warning-foreground" />
               </div>
             ) : (
               <div className="p-2 rounded-full bg-primary/20">
                 <UserPlus className="h-5 w-5 text-primary" />
               </div>
             )}
-            <h3 className="text-lg font-bold text-white">
+            <h3 className="text-lg font-bold text-foreground">
               {isEditing ? "Editar Usuário" : "Novo Usuário"}
             </h3>
           </div>
           <button
             onClick={() => !loading && onCancel()}
             disabled={loading}
-            className="rounded-full p-1 hover:bg-white/10 transition-colors"
+            className="rounded-full p-1 hover:bg-surface-hover transition-colors"
             aria-label="Fechar"
           >
             <X className="h-4 w-4" />

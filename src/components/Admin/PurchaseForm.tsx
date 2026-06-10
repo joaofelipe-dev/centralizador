@@ -150,7 +150,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Digite para buscar..."
-              variant="glass"
+              variant="default"
             />
           </div>
         </div>
@@ -161,7 +161,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
               <button
                 key={p.id}
                 onClick={() => addItem(p)}
-                className="w-full text-left px-3 py-2 hover:bg-white/10 flex items-center justify-between text-sm text-white transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-surface-hover flex items-center justify-between text-sm text-foreground transition-colors"
               >
                 <span>{p.name}</span>
                 <Plus className="h-3.5 w-3.5 text-muted-foreground" />
@@ -171,14 +171,14 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
         )}
 
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-white flex items-center gap-2">
+          <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
             <Package className="h-4 w-4" />
             Itens ({items.length})
           </h4>
 
           {items.map((item, index) => (
             <div key={index} className="grid grid-cols-12 gap-2 items-center p-2 rounded-lg bg-card border border-border">
-              <div className="col-span-4 text-xs text-white truncate">
+              <div className="col-span-4 text-xs text-foreground truncate">
                 {item.productName}
               </div>
               <div className="col-span-2 text-[10px] text-muted-foreground">
@@ -191,7 +191,7 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
                   onChange={e => updateItem(index, 'quantity', Number(e.target.value))}
                   min={1}
                   className="h-7 text-xs"
-                  variant="glass"
+                  variant="ghost"
                 />
               </div>
               <div className="col-span-3">
@@ -202,13 +202,13 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
                     placeholder="Custo"
                     step="0.01"
                     className="h-7 text-xs"
-                    variant="glass"
+                    variant="ghost"
                   />
               </div>
               <div className="col-span-1">
                 <button
                   onClick={() => removeItem(index)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
+                  className="text-destructive hover:text-destructive transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

@@ -22,7 +22,7 @@ function ConnectionBadge() {
       className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
         isOnline
           ? "bg-primary/10 text-primary"
-          : "bg-yellow-500/10 text-yellow-500 animate-pulse"
+          : "bg-warning/10 text-warning animate-pulse"
       }`}
       title={
         isOnline
@@ -68,7 +68,7 @@ export default function Header() {
         <Button
           size="icon"
           variant="ghost"
-          className="text-red-500 hover:bg-red-500/10"
+          className="text-destructive hover:bg-destructive/10"
           onClick={() => setConfirmingLogout(true)}
           title="Sair"
         >

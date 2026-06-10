@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { DayPicker } from "react-day-picker";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,8 @@ function parseDateString(dateStr: string): Date {
   return new Date(year, month - 1, day);
 }
 
+type DropdownPosition = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+
 interface DateInputProps {
   value: string;
   onChange: (date: string) => void;
@@ -24,6 +26,7 @@ interface DateInputProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  dropdownPosition?: DropdownPosition;
 }
 
 export function DateInput({
@@ -32,10 +35,10 @@ export function DateInput({
   min,
   placeholder = "DD/MM/AAAA",
   className = "",
-  disabled = false
+  disabled = false,
+  dropdownPosition = 'bottom-left'
 }: DateInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: true, left: true });
   const containerRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const selectedDate = value ? parseDateString(value) : undefined;
@@ -95,7 +98,7 @@ export function DateInput({
         selectedDate = minDate;
       }
       onChange(format(selectedDate, "yyyy-MM-dd"));
-      close();
+      setIsOpen(false);
     }
   };
 
@@ -105,15 +108,21 @@ export function DateInput({
     }
   };
 
+  const positionClasses: Record<DropdownPosition, string> = {
+    'bottom-left': 'top-full mt-2 right-0',
+    'bottom-right': 'top-full mt-2 left-0',
+    'top-left': 'bottom-full mb-2 right-0',
+    'top-right': 'bottom-full mb-2 left-0',
+  };
+
   const popupClasses = [
-    "absolute z-[110] bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl p-2",
-    position.top ? "top-full mt-2" : "bottom-full mb-2",
-    position.left ? "left-0" : "right-0"
+    "absolute z-[110] bg-background border border-border rounded-lg shadow-xl p-2",
+    positionClasses[dropdownPosition],
   ].join(" ");
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      <div className="flex items-center bg-white/5 border border-white/10 rounded-lg">
+      <div className="flex items-center bg-card border border-border rounded-lg">
         <Input
           type="text"
           inputMode="numeric"
@@ -132,7 +141,7 @@ export function DateInput({
           disabled={disabled}
           variant="ghost"
           size="icon"
-          className="px-2 text-muted-foreground hover:text-white disabled:opacity-50"
+          className="px-2 text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
           <CalendarIcon className="h-4 w-4" />
         </Button>
@@ -145,7 +154,7 @@ export function DateInput({
             onSelect={handleDaySelect}
             fromDate={minDate}
             locale={ptBR}
-            className="text-white"
+            className="text-foreground"
           />
         </div>
       )}

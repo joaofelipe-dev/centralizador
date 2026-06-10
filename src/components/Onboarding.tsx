@@ -16,25 +16,25 @@ const steps: Step[] = [
     title: "Seja bem-vindo!",
     description: "O Central Pedidos é a sua nova plataforma premium para gerenciar compras e suprimentos de forma inteligente.",
     icon: ShoppingBag,
-    color: "bg-blue-500",
+    color: "bg-primary",
   },
   {
     title: "Selecione sua Loja",
     description: "Escolha em qual unidade você deseja realizar o pedido. Cada loja tem seu próprio catálogo e estoque.",
     icon: Store,
-    color: "bg-purple-500",
+    color: "bg-secondary",
   },
   {
     title: "Monte sua Lista",
     description: "Navegue pelas categorias e adicione os itens necessários ao seu carrinho com apenas alguns cliques.",
     icon: ClipboardList,
-    color: "bg-yellow-500",
+    color: "bg-warning",
   },
   {
     title: "Envie o Pedido",
     description: "Revise tudo e envie! O administrador receberá sua solicitação instantaneamente no painel de controle.",
     icon: Send,
-    color: "bg-green-500",
+    color: "bg-success",
   },
 ];
 
@@ -59,18 +59,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           <div 
             key={i} 
             className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === currentStep ? "w-8 bg-primary" : "w-2 bg-white/10"
+              i === currentStep ? "w-8 bg-primary" : "w-2 bg-muted"
             }`}
           />
         ))}
       </div>
 
-      <div className={`p-6 rounded-3xl ${activeStep.color} bg-opacity-10 ring-1 ring-white/10 shadow-2xl`}>
+      <div className={`p-6 rounded-3xl ${activeStep.color}/10 ring-1 ring-white/10 shadow-2xl`}>
         <activeStep.icon className={`h-12 w-12 ${activeStep.color.replace('bg-', 'text-')}`} />
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-3xl font-bold tracking-tight text-white">{activeStep.title}</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">{activeStep.title}</h2>
         <p className="text-lg text-muted-foreground leading-relaxed">
           {activeStep.description}
         </p>
@@ -89,7 +89,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           onClick={onComplete}
           variant="ghost"
           size="sm"
-          className="text-sm text-muted-foreground hover:text-white"
+          className="text-sm text-muted-foreground hover:text-foreground"
         >
           Pular introdução
         </Button>

@@ -50,20 +50,20 @@ export const HeaderNav = ({ className, onRequestLogout }: HeaderNavProps) => {
         <Button
           size="icon"
           variant="ghost"
-          className="text-white hover:bg-white/10"
+          className="text-foreground hover:bg-surface-hover"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
 
         {menuOpen && (
-          <div className="absolute right-0 z-[110] top-full mt-2 w-56 rounded-xl bg-background/95 backdrop-blur-xl border border-white/10 shadow-xl p-2">
+          <div className="absolute right-0 z-[110] top-full mt-2 w-56 rounded-xl bg-background/95 backdrop-blur-xl border border-border shadow-xl p-2">
             <div className="space-y-1">
               {items.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-surface-hover transition-colors"
                   onClick={() => setMenuOpen(false)}
                   aria-current={pathname === item.href ? "page" : undefined}
                 >
@@ -75,7 +75,7 @@ export const HeaderNav = ({ className, onRequestLogout }: HeaderNavProps) => {
               <Button
                 variant="ghost"
                 fullWidth
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                 onClick={() => {
                   setMenuOpen(false);
                   onRequestLogout?.();
