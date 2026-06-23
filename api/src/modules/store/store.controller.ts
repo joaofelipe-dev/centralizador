@@ -21,7 +21,15 @@ export class StoreController {
 
   async findById(request: FastifyRequest, reply: FastifyReply) {
     const { id } = z.object({ id: z.string() }).parse(request.params)
+    const user = request.user as { sub: string, role: UserRole }
     const store = await this.storeService.getStoreById(id)
+    if (user.role === 'DEFAULT') {
+      const userStores = await this.storeService.listStores(user.sub, user.role)
+      const hasAccess = userStores.some(s => s.id === id)
+      if (!hasAccess) {
+        return reply.status(403).send({ message: 'Forbidden: You do not have access to this store' })
+      }
+    }
     return reply.status(200).send(store)
   }
 

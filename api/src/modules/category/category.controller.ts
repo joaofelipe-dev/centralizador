@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { CategoryService } from './category.service.js'
-import { createCategorySchema, updateCategorySchema } from './category.schema.js'
+import { createCategorySchema } from './category.schema.js'
 
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
