@@ -207,7 +207,7 @@ export type StockCountItemGroupByOutputType = {
   _max: StockCountItemMaxAggregateOutputType | null
 }
 
-type GetStockCountItemGroupByPayload<T extends StockCountItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetStockCountItemGroupByPayload<T extends StockCountItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<StockCountItemGroupByOutputType, T['by']> &
       {

@@ -213,7 +213,7 @@ export type SyncLogGroupByOutputType = {
   _max: SyncLogMaxAggregateOutputType | null
 }
 
-type GetSyncLogGroupByPayload<T extends SyncLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetSyncLogGroupByPayload<T extends SyncLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SyncLogGroupByOutputType, T['by']> &
       {
