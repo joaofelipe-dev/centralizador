@@ -4,6 +4,7 @@ import { AuthService } from './auth.service.js'
 import { UserRepository } from '../user/user.repository.js'
 import { UserService } from '../user/user.service.js'
 import { authMiddleware } from '../../middlewares/auth.js'
+import { loginBody, createUserBody, authResponse, userSchema, errorResponse } from '../../lib/swagger-schemas.js'
 
 export async function authRoutes(app: FastifyInstance) {
   const userRepository = new UserRepository()
@@ -11,12 +12,48 @@ export async function authRoutes(app: FastifyInstance) {
   const authService = new AuthService(userRepository)
   const authController = new AuthController(authService, userService)
 
-  app.post('/register', (request, reply) => authController.register(request, reply))
-  app.post('/login', (request, reply) => authController.login(request, reply))
+  app.post('/register', {
+    schema: {
+      security: [],
+      body: createUserBody,
+      response: {
+        201: authResponse,
+        400: errorResponse[400],
+        409: errorResponse[409],
+        500: errorResponse[500]
+      }
+    }
+  }, (request, reply) => authController.register(request, reply))
+
+  app.post('/login', {
+    schema: {
+      security: [],
+      body: loginBody,
+      response: {
+        200: authResponse,
+        400: errorResponse[400],
+        401: errorResponse[401],
+        500: errorResponse[500]
+      }
+    }
+  }, (request, reply) => authController.login(request, reply))
 
   app.register(async (protectedApp) => {
     protectedApp.addHook('preHandler', authMiddleware)
 
-    protectedApp.get('/me', (request, reply) => authController.me(request, reply))
+    protectedApp.get('/me', {
+      schema: {
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              user: userSchema
+            }
+          },
+          401: errorResponse[401],
+          500: errorResponse[500]
+        }
+      }
+    }, (request, reply) => authController.me(request, reply))
   })
 }

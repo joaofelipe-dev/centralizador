@@ -15,9 +15,15 @@ export class AuthController {
   async register(request: FastifyRequest, reply: FastifyReply) {
     try {
       const data = createUserSchema.parse(request.body)
-      const user = await this.userService.createUser(data)
+      const user = await this.userService.createUser({ ...data, role: 'DEFAULT' })
 
       const token = await reply.jwtSign({ sub: user.id, role: user.role as UserRole })
+      reply.setCookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+      })
       request.log.info({ userId: user.id }, 'Usuário registrado com sucesso')
 
       return reply.status(201).send({ user, token })
@@ -40,13 +46,17 @@ export class AuthController {
   }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
-    request.log.info({ body: request.body }, 'Requisição de login recebida')
-
     try {
       const data = loginSchema.parse(request.body)
       const { user } = await this.authService.authenticate(data)
 
       const token = await reply.jwtSign({ sub: user.id, role: user.role as UserRole })
+      reply.setCookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+      })
       request.log.info({ userId: user.id }, 'Login bem-sucedido')
 
       return reply.status(200).send({ user, token })
