@@ -35,6 +35,7 @@ yarn-error.log*
 .env.local
 .env.development
 .env.production
+.env.prod
 
 # but allow .env.example
 !.env.example
@@ -48,3 +49,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+api/server.log
+api/data/

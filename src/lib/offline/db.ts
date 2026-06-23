@@ -64,28 +64,10 @@ export async function setItem(storeName: string, key: string, value: unknown): P
   })
 }
 
-export async function getAllRecords<T>(storeName: string): Promise<{ key: string; value: T }[]> {
-  const store = await getStore(storeName)
-  return new Promise((resolve, reject) => {
-    const request = store.getAll()
-    request.onsuccess = () => resolve(request.result ?? [])
-    request.onerror = () => reject(request.error)
-  })
-}
-
 export async function deleteItem(storeName: string, key: string): Promise<void> {
   const store = await getStore(storeName, 'readwrite')
   return new Promise((resolve, reject) => {
     const request = store.delete(key)
-    request.onsuccess = () => resolve()
-    request.onerror = () => reject(request.error)
-  })
-}
-
-export async function clearStore(storeName: string): Promise<void> {
-  const store = await getStore(storeName, 'readwrite')
-  return new Promise((resolve, reject) => {
-    const request = store.clear()
     request.onsuccess = () => resolve()
     request.onerror = () => reject(request.error)
   })

@@ -7,7 +7,7 @@ const mockUser = {
   id: '1',
   username: 'testuser',
   email: 'test@example.com',
-  role: 'ADMIN'
+  role: 'ADMIN' as const
 }
 
 vi.mock('@/context/AuthContext', async (importOriginal) => {

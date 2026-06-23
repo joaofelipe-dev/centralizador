@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Button } from '@/components/Button/Button'
-import type { ButtonProps } from '@/components/Button/Button'
+import { Button } from '@/components/ui/Button'
+import type { ButtonProps } from '@/components/ui/Button'
 
 describe('Button Component', () => {
   it('renders with text content', () => {

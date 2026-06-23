@@ -68,8 +68,7 @@ async function checkApiHealth(): Promise<boolean> {
 
 function getApiBaseUrl(): string {
   if (typeof window === 'undefined') return 'http://localhost:3333'
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  return isLocalhost ? 'http://localhost:3333' : 'http://192.168.0.245:3333'
+  return `${window.location.protocol}//${window.location.hostname}:3333`
 }
 
 export async function processQueue(): Promise<{ synced: number; failed: number }> {
@@ -109,6 +108,7 @@ export async function processQueue(): Promise<{ synced: number; failed: number }
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
+          credentials: 'include',
           body: JSON.stringify(order.data),
         })
 
