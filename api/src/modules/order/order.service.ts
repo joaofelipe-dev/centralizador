@@ -4,6 +4,7 @@ import { CreateOrderInput, UpdateOrderInput } from './order.schema.js'
 import { UserRepository } from '../user/user.repository.js'
 import { UserRole } from '../../middlewares/auth.js'
 import { exportOrderToNetwork } from '../../lib/order-export.js'
+import { prisma } from '../../lib/prisma.js'
 
 export class OrderService {
   constructor(
@@ -24,22 +25,9 @@ export class OrderService {
 
     const order = await this.orderRepository.create(userId, data)
 
-    console.log(`[ORDER-SERVICE] Order created: ${order?.id}, store: ${order?.store?.name} (${order?.store?.code})`)
-    console.log(`[ORDER-SERVICE] Order items count: ${order?.items?.length}`)
-
     if (order && order.store) {
-      console.log(`[ORDER-SERVICE] Starting export for store: ${order.store.name}`)
-      const exportResult = await exportOrderToNetwork(
-        order,
-        order.store.name || 'Loja',
-        order.store.code || undefined
-      )
-      console.log(`[ORDER-SERVICE] Export result:`, exportResult)
-      if (!exportResult.success) {
-        console.error(`[ORDER-SERVICE] Failed to export order ${order.id}: ${exportResult.error}`)
-      }
-    } else {
-      console.warn(`[ORDER-SERVICE] Order or store is null, skipping export`)
+      exportOrderToNetwork(order, order.store.name || 'Loja', order.store.code || undefined)
+        .catch(err => console.error('[ORDER-EXPORT] Async export failed:', err))
     }
 
     return order
@@ -162,8 +150,6 @@ export class OrderService {
   }
 
   private async processOrderApproval(order: any) {
-    const { prisma } = await import('../../lib/prisma.js')
-
     await prisma.$transaction(async (tx) => {
       for (const item of order.items) {
         await tx.stockMovement.create({

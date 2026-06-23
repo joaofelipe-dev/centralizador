@@ -26,7 +26,7 @@ export const listOrdersSchema = z.object({
   limit: z.number().int().min(1).max(100).default(50),
   offset: z.number().int().min(0).default(0),
   status: z.enum(ORDER_STATUS_VALUES).optional(),
-  storeId: z.string().uuid().optional(),
+  storeId: z.string().optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   date: z.string().optional(),

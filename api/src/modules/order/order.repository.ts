@@ -230,6 +230,7 @@ export class OrderRepository {
           store: true,
           user: {
             select: {
+              id: true,
               name: true,
               username: true,
             },
