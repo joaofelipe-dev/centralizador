@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { ShoppingBag, LogIn, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import Onboarding from "@/components/Onboarding";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";

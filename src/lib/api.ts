@@ -17,10 +17,9 @@ import { enqueueOrder } from '@/lib/offline/queue';
 
 const API_URL = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL
   ? process.env.NEXT_PUBLIC_API_URL
-  : (typeof window !== 'undefined' && 
-    ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    ? 'http://localhost:3333' 
-    : 'http://192.168.0.245:3333')
+  : typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:3333`
+    : 'http://localhost:3333'
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -40,6 +39,7 @@ export async function apiRequest<T = unknown>(endpoint: string, options: ApiRequ
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
+      credentials: 'include',
     });
 
     let data: unknown = null;
@@ -64,6 +64,7 @@ export async function apiRequest<T = unknown>(endpoint: string, options: ApiRequ
       console.error('Body:', data);
       console.groupEnd();
 
+      console.error(`[apiRequest] ${endpoint} failed:`, response.status, data);
       const error = new Error(errorMessage) as Error & { status?: number; data?: unknown };
       error.status = response.status;
       error.data = data;
@@ -170,7 +171,8 @@ export const api: ApiInterface = {
     }
     try {
       return await apiRequest<Category[]>('/categories');
-    } catch {
+    } catch (err) {
+      console.error('[getCategories] API error:', err);
       const { getCachedCategories } = await import('@/lib/offline/cache');
       return getCachedCategories();
     }

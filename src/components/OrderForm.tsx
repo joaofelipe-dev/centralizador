@@ -65,10 +65,12 @@ const ProductRow = React.memo(
         padding="sm"
         className={cn(
           "bg-card rounded-xl flex flex-col gap-3 transition-all border-2",
-          hasCDStock &&
-            "border-primary shadow-[0_0_12px_-3px] shadow-primary",
-          confirmed && "border-success bg-success/20 shadow-[0_0_12px_-3px] shadow-success",
-          !hasCDStock && !confirmed && "border-border hover:border-foreground/20",
+          hasCDStock && "border-primary shadow-[0_0_12px_-3px] shadow-primary",
+          confirmed &&
+            "border-success bg-success/20 shadow-[0_0_12px_-3px] shadow-success",
+          !hasCDStock &&
+            !confirmed &&
+            "border-border hover:border-foreground/20",            
         )}
         onClick={() => onToggleExpand(product.id)}
       >
@@ -78,17 +80,12 @@ const ProductRow = React.memo(
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-foreground whitespace-normal break-words leading-tight text-sm lg:text-base">
+            <h3 className="font-bold text-foreground whitespace-normal leading-tight text-sm lg:text-base">
               {product.name}
             </h3>
           </div>
-          {expanded ? null : (
-            <span className="text-center text-xs text-muted-foreground/50 shrink-0">
-              Clique para abrir detalhes e ajustar quantidades.
-            </span>
-          )}
 
-            <div
+          <div
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border shrink-0",
               hasCDStock
@@ -96,21 +93,21 @@ const ProductRow = React.memo(
                 : "bg-card border-border",
             )}
           >
-              <Package
-                className={cn(
-                  "h-3.5 w-3.5",
-                  hasCDStock ? "text-primary" : "text-muted-foreground",
-                )}
-              />
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                CD:
-              </span>
-              <span
-                className={cn(
-                  "text-xs font-bold",
-                  hasCDStock ? "text-primary" : "text-muted-foreground",
-                )}
-              >
+            <Package
+              className={cn(
+                "h-3.5 w-3.5",
+                hasCDStock ? "text-primary" : "text-muted-foreground",
+              )}
+            />
+            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+              CD:
+            </span>
+            <span
+              className={cn(
+                "text-xs font-bold",
+                hasCDStock ? "text-primary" : "text-muted-foreground",
+              )}
+            >
               {product.stockCD ?? 0}
             </span>
           </div>
@@ -163,7 +160,7 @@ const ProductRow = React.memo(
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col items-end sm:items-baseline sm:flex-row gap-4">
               <div className="flex-1">
                 <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
                   Estoque Atual
@@ -185,7 +182,9 @@ const ProductRow = React.memo(
                     type="number"
                     inputMode="numeric"
                     value={
-                      (cartItem?.currentStock ?? 0) > 0 ? cartItem?.currentStock : ""
+                      (cartItem?.currentStock ?? 0) > 0
+                        ? cartItem?.currentStock
+                        : ""
                     }
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) =>
@@ -233,7 +232,9 @@ const ProductRow = React.memo(
                   <Input
                     type="number"
                     inputMode="numeric"
-                    value={(cartItem?.quantity ?? 0) > 0 ? cartItem?.quantity : ""}
+                    value={
+                      (cartItem?.quantity ?? 0) > 0 ? cartItem?.quantity : ""
+                    }
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) =>
                       handleInputChange(product.id, "quantity", e.target.value)
@@ -243,13 +244,13 @@ const ProductRow = React.memo(
                   />
                   <Button
                     type="button"
-                    variant="default"
+                    variant="ghost"
                     size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       updateField(product.id, "quantity", 1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:opacity-80 active:scale-90 transition-all shadow-lg shadow-primary/20"
+                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg text-primary-foreground hover:bg-surface-hover active:scale-90 transition-all shadow-lg"
                   >
                     <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
                   </Button>
@@ -291,7 +292,9 @@ interface Draft {
 function saveDraft(storeId: string, data: Omit<Draft, "storeId">) {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ storeId, ...data }));
-  } catch { /* quota exceeded */ }
+  } catch {
+    /* quota exceeded */
+  }
 }
 
 function loadDraft(storeId: string): Partial<Draft> | null {
@@ -344,7 +347,8 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         setCart(draft.cart || {});
         if (draft.orderDate) setOrderDate(draft.orderDate);
         if (draft.isReviewing) setIsReviewing(true);
-        if (draft.expandedProducts) setExpandedProducts(new Set(draft.expandedProducts));
+        if (draft.expandedProducts)
+          setExpandedProducts(new Set(draft.expandedProducts));
         if (draft.filter) setFilter(draft.filter);
       }
 
@@ -389,8 +393,11 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         } else {
           let name = "";
           for (const cat of categories) {
-            const p = cat.products?.find(pr => pr.id === id);
-            if (p) { name = p.name; break; }
+            const p = cat.products?.find((pr) => pr.id === id);
+            if (p) {
+              name = p.name;
+              break;
+            }
           }
           enriched[id] = { ...item, productName: name || undefined };
         }
@@ -405,7 +412,17 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       });
     }, 300);
     return () => clearTimeout(timer);
-  }, [cart, orderDate, isReviewing, expandedProducts, filter, store.id, isSuccess, isLoading, categories]);
+  }, [
+    cart,
+    orderDate,
+    isReviewing,
+    expandedProducts,
+    filter,
+    store.id,
+    isSuccess,
+    isLoading,
+    categories,
+  ]);
 
   const updateField = React.useCallback(
     (id: string, field: keyof CartItem, value: number | boolean) => {
@@ -507,7 +524,11 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       };
 
       await api.createOrder(orderData);
-      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
       setIsSuccess(true);
     } catch (err: unknown) {
       console.error("Erro na submissão:", err);
@@ -619,7 +640,9 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               className="bg-destructive/10 border-destructive/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-destructive/20 rounded-xl"
             >
               <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-              <span className="text-sm text-destructive-foreground flex-1">{error}</span>
+              <span className="text-sm text-destructive-foreground flex-1">
+                {error}
+              </span>
               <Button
                 onClick={() => {
                   setAttentionAcknowledged(true);
@@ -680,7 +703,6 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               </div>
               <DateInput
                 value={orderDate}
-                dropdownPosition="bottom-left"
                 onChange={setOrderDate}
                 min={getTomorrowDate()}
               />
@@ -717,7 +739,8 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                       .filter(
                         ([id, item]) =>
                           !productsInCart.find((p) => p.id === id) &&
-                          ((item.quantity || 0) > 0 || (item.currentStock || 0) > 0),
+                          ((item.quantity || 0) > 0 ||
+                            (item.currentStock || 0) > 0),
                       )
                       .map(([id, item]) => ({
                         id,
@@ -798,7 +821,10 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                       setCart((prev) => {
                         const next = { ...prev };
                         for (const id of Object.keys(next)) {
-                          next[id] = { ...next[id]!, confirmed: true } as CartItem;
+                          next[id] = {
+                            ...next[id]!,
+                            confirmed: true,
+                          } as CartItem;
                         }
                         return next;
                       });
@@ -872,7 +898,13 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
                   >
                     {totalItems}
                   </div>
-                  <span className={isReviewing ? "text-primary-foreground" : "text-primary-foreground"}>
+                  <span
+                    className={
+                      isReviewing
+                        ? "text-primary-foreground"
+                        : "text-primary-foreground"
+                    }
+                  >
                     {isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}
                   </span>
                 </div>

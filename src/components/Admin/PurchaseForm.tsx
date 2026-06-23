@@ -42,8 +42,11 @@ export function PurchaseForm({ open, onClose, onSuccess }: PurchaseFormProps) {
   const fetchProducts = useCallback(async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}/products`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        `${process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:3333` : 'http://localhost:3333')}/products`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          credentials: 'include',
+        }
       );
       if (res.ok) {
         const data = await res.json();

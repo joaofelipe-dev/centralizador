@@ -9,7 +9,7 @@ import {
   Shield,
   ShieldCheck,
 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -168,7 +168,7 @@ export default function AdminPage() {
           username: data.username,
           name: data.name,
           email: data.email,
-          password: data.password || "changeme123",
+          password: data.password!,
           role: data.role,
           storeIds: data.storeIds,
         });

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { ShoppingBag, Lock, Loader2, User, UserRound } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 export default function LoginPage() {
@@ -52,6 +52,7 @@ export default function LoginPage() {
                 </label>
                   <Input
                     type="text"
+                    variant="outline"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -69,6 +70,7 @@ export default function LoginPage() {
                 </label>
                   <Input
                     type="password"
+                    variant="outline"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

@@ -5,7 +5,6 @@ import { Store, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { stores } from "@/constants/stores";
 import { Store as StoreType } from "@/types/product";
 
 interface StoreSelectorProps {
@@ -17,9 +16,7 @@ interface StoreSelectorProps {
 export default function StoreSelector({ onSelect, stores: assignedStores = [], requiresAuth = false }: StoreSelectorProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const storeList = assignedStores.length > 0 ? assignedStores : stores;
-
-  const filteredStores = storeList.filter(store =>
+  const filteredStores = assignedStores.filter(store =>
     store.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

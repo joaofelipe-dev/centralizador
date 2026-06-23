@@ -2,7 +2,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  role: 'ADMIN' | 'SUPERVISOR' | 'USER';
+  role: 'ADMIN' | 'SUPERVISOR' | 'DEFAULT';
   storeId?: string;
   storeName?: string;
   stores?: import('./product').Store[];

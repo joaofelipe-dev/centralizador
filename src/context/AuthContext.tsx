@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { User, AuthContextType } from "@/types/auth";
 
 const STORAGE_KEYS = {
-  TOKEN: 'token',
   USER: 'offline_user',
+  TOKEN: 'token',
 } as const;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,50 +19,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadUser() {
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      if (token) {
-        const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+      // ponytail: restaura user do cache antes de chamar API
+      // Assim a UI aparece instantaneamente no refresh
+      const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
+      if (savedUser) {
+        try { setUser(JSON.parse(savedUser)); } catch { localStorage.removeItem(STORAGE_KEYS.USER); }
+      }
 
-        if (!isOnline) {
-          const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
-          if (savedUser) {
-            try {
-              setUser(JSON.parse(savedUser));
-            } catch {
-              localStorage.removeItem(STORAGE_KEYS.USER);
-            }
-          }
-          setLoading(false);
-          return;
-        }
+      const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+      if (!isOnline) {
+        setLoading(false);
+        return;
+      }
 
-        try {
-          const { user } = await api.getMe();
-          setUser(user);
-          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-        } catch (error) {
-          const isNetworkError = error instanceof Error && (
-            error.message === 'Failed to fetch' ||
-            error.message.includes('conectar ao servidor')
-          );
-
-          if (isNetworkError) {
-            const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
-            if (savedUser) {
-              try {
-                setUser(JSON.parse(savedUser));
-              } catch {
-                localStorage.removeItem(STORAGE_KEYS.TOKEN);
-                localStorage.removeItem(STORAGE_KEYS.USER);
-              }
-            }
-          } else {
-            console.error("Erro ao carregar usuário:", error);
-            localStorage.removeItem(STORAGE_KEYS.TOKEN);
-            localStorage.removeItem(STORAGE_KEYS.USER);
-            setUser(null);
-          }
-        }
+      try {
+        const { user } = await api.getMe();
+        setUser(user);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      } catch {
+        // fallback silencioso — se já tem user do cache, mantém
       }
       setLoading(false);
     }
@@ -73,14 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(username: string, password: string) {
     try {
       const { user, token } = await api.login({ username, password });
-      localStorage.setItem(STORAGE_KEYS.TOKEN, token);
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      localStorage.setItem(STORAGE_KEYS.TOKEN, token);
       setUser(user);
       router.push('/');
-      console.info('Login bem-sucedido para usuário', user.username)
       return { success: true };
     } catch (error: unknown) {
-      console.error('Erro no login:', error)
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Falha na autenticação',
@@ -89,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
     setUser(null);
     router.push('/login');
   }

@@ -14,7 +14,7 @@ import {
   ChevronDown,
   Shield,
 } from "lucide-react";
-import { Button } from "@/components/Button/Button";
+import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
