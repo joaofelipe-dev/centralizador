@@ -1,6 +1,9 @@
 import fastify from 'fastify'
 import jwt from '@fastify/jwt'
 import cors from '@fastify/cors'
+import rateLimit from '@fastify/rate-limit'
+import helmet from '@fastify/helmet'
+import cookie from '@fastify/cookie'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import { errorHandler } from './utils/error-handler.js'
@@ -13,18 +16,39 @@ import { orderRoutes } from './modules/order/order.routes.js'
 import { purchaseRoutes } from './modules/purchases/purchase.routes.js'
 import { movementRoutes } from './modules/movements/movement.routes.js'
 import { cdStockRoutes } from './modules/cd-stock/cd-stock.routes.js'
+import { startCdStockScheduler } from './modules/cd-stock/cd-stock-scheduler.js'
 import { stockCountRoutes } from './modules/stock-counts/stock-count.routes.js'
 import { saleRoutes } from './modules/sales/sale.routes.js'
 import 'dotenv/config'
 
 export const app = fastify({
   logger: true,
+  bodyLimit: 1048576,
 })
 
-app.register(cors, {
-  origin: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+app.register(rateLimit, {
+  max: 100,
+  timeWindow: '1 minute',
 })
+
+app.register(helmet, {
+  contentSecurityPolicy: false,
+})
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000']
+
+app.register(cors, {
+  origin: async (origin: string | undefined) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return origin || false
+    }
+    return false
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true,
+})
+
+app.register(cookie)
 
 const jwtSecret = process.env.JWT_SECRET
 if (!jwtSecret) {
@@ -33,6 +57,11 @@ if (!jwtSecret) {
 
 app.register(jwt, {
   secret: jwtSecret,
+  sign: { expiresIn: '7d' },
+  cookie: {
+    cookieName: 'token',
+    signed: false,
+  },
 })
 
 // Swagger/OpenAPI
@@ -50,7 +79,8 @@ app.register(swagger, {
           bearerFormat: 'JWT'
         }
       }
-    }
+    },
+    security: [{ bearerAuth: [] }]
   }
 })
 
@@ -77,3 +107,5 @@ app.register(movementRoutes, { prefix: '/movements' })
 app.register(cdStockRoutes, { prefix: '/cd-stock' })
 app.register(stockCountRoutes, { prefix: '/stock-counts' })
 app.register(saleRoutes, { prefix: '/sales' })
+
+startCdStockScheduler()
