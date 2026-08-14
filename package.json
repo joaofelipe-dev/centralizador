@@ -10,7 +10,8 @@
     "start": "next start",
     "prod": "npm run build && npm run start",
     "lint": "eslint src",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:coverage": "vitest --coverage",
     "prepare": "husky"
   },

@@ -3,14 +3,28 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as XLSX from 'xlsx'
 
-const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.230\\Ti\\Diversos'
+const EXPORT_PATH = process.env.ORDER_EXPORT_PATH || '\\\\192.168.0.247\\onedrive\\Enviado'
 
 vi.mock('fs')
 vi.mock('xlsx')
 
+const mockTemplateData: unknown[][] = [
+  ['', ''],
+  [],
+  ['', '', '', '', '', '', '', '', ''],
+]
+
 describe('Order Export', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from(''))
+    vi.mocked(XLSX.read).mockReturnValue({
+      SheetNames: ['Sheet1'],
+      Sheets: { Sheet1: {} },
+    } as unknown as XLSX.WorkBook)
+    vi.mocked(XLSX.utils.sheet_to_json).mockReturnValue(
+      mockTemplateData.map((row) => [...row])
+    )
   })
 
   describe('exportOrderToNetwork', () => {

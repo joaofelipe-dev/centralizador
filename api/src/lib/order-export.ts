@@ -17,7 +17,7 @@ export async function exportOrderToNetwork(order: any, storeName: string, storeC
     
     const year = orderDate.getFullYear()
     const month = String(orderDate.getMonth() + 1).padStart(2, '0')
-    const day = String(orderDate.getDate() + 1 ).padStart(2, '0')
+    const day = String(orderDate.getDate()).padStart(2, '0')
     const formattedDate = `${day}/${month}/${year}`
     
     const storeCodeParam = storeCode || storeName.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 2)

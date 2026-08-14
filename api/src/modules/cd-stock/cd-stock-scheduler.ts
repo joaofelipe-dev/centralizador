@@ -1,9 +1,9 @@
-import cron from 'node-cron';
+import cron, { type ScheduledTask } from 'node-cron';
 import { SyncAndCopyService } from './sync-and-copy.js';
 
 const DEFAULT_CRON = '0 6 * * *';
 
-let task: cron.ScheduledTask | null = null;
+let task: ScheduledTask | null = null;
 
 export function startCdStockScheduler() {
   if (process.env.CD_SYNC_DISABLED === 'true') {
@@ -33,7 +33,6 @@ export function startCdStockScheduler() {
       console.error(`[CD-SCHEDULER] Erro na sync:`, error);
     }
   }, {
-    scheduled: true,
     timezone: 'America/Sao_Paulo'
   });
 
