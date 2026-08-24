@@ -51,9 +51,8 @@ export function UserDialog({
       size="lg"
       closeOnOverlayClick={!loading}
       closeOnEsc={!loading}
-      className="!bg-transparent !shadow-none !rounded-none !p-0"
     >
-      <div className="w-full max-w-lg p-6 space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isEditing ? (
