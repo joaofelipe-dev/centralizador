@@ -21,7 +21,6 @@ import { DateInput } from "@/components/DateInput/DateInput";
 import { TeamManagement } from "@/components/Admin/TeamManagement";
 import type { TeamUser, UserRole } from "@/components/Admin/TeamManagement";
 import type { Store, Product } from "@/types/product";
-import type { ConsolidatedOrder } from "@/types/api";
 import { PageNav } from "@/components/PageNav";
 
 interface MatrixCell {
@@ -68,11 +67,10 @@ export default function AdminPage() {
   const loadData = useCallback(async () => {
     setIsDataLoading(true);
     try {
-      const [usersData, storesData, productsData, consolidatedData] =
+      const [usersData, storesData, consolidatedData] =
         await Promise.all([
           api.getUsers(),
           api.getStores(),
-          api.getProducts(),
           api.getConsolidatedOrders(filterDate),
         ]);
 
@@ -88,37 +86,10 @@ export default function AdminPage() {
       );
       setAllStores(storesData || []);
 
-      const orders = consolidatedData || [];
-      const productMap = new Map<string, Product & { categoryName?: string }>();
-      const matrix: PivotMatrix = {};
-
-      for (const order of orders) {
-        productMap.set(order.productId, {
-          id: order.productId,
-          name: order.productName,
-          categoryName: order.categoryName,
-          categoryId: "",
-          price: 0,
-          stock: 0,
-        });
-
-        if (!matrix[order.productId]) {
-          matrix[order.productId] = {};
-        }
-        const productRow = matrix[order.productId]!
-
-        for (const store of order.stores) {
-          productRow[store.storeId] = {
-            quantity: store.quantity,
-            currentStock: 0,
-          };
-        }
-      }
-
       setConsolidated({
-        products: Array.from(productMap.values()),
-        stores: storesData || [],
-        matrix,
+        products: consolidatedData?.products || [],
+        stores: consolidatedData?.stores || [],
+        matrix: consolidatedData?.matrix || {},
       });
     } catch (error) {
       console.error("Falha ao carregar dados:", error);
@@ -221,7 +192,7 @@ export default function AdminPage() {
       />
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-12 animate-slide-up">
-        <div className="glass-card p-6 rounded-xl text-center">
+        <div className="border border-border bg-card p-6 rounded-xl text-center">
           <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
           <h2 className="text-xl font-bold text-foreground mb-2">Gestão de Pedidos</h2>
           <p className="text-muted-foreground mb-4">

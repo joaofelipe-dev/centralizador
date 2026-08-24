@@ -301,8 +301,8 @@ export const orderDashboardSchema: JSONSchema7 = {
 export const orderConsolidatedSchema: JSONSchema7 = {
   type: 'object',
   properties: {
-    products: { type: 'array', items: { type: 'object' } },
-    stores: { type: 'array', items: { type: 'object' } },
+    products: { type: 'array', items: { type: 'object', additionalProperties: true } },
+    stores: { type: 'array', items: { type: 'object', additionalProperties: true } },
     matrix: { type: 'object', additionalProperties: true }
   }
 }

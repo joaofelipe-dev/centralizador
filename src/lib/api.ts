@@ -7,19 +7,14 @@ import type {
   UpdateProductData,
   UpdateOrderData,
   ApiRequestOptions,
-  ConsolidatedOrder,
+  ConsolidatedData,
   OrderListResponse
 } from '@/types/api';
 import type { Product, Category, Store } from '@/types/product';
 import type { Order, CreateOrderRequest, OrderStatus } from '@/types/order';
 import type { User } from '@/types/auth';
 import { enqueueOrder } from '@/lib/offline/queue';
-
-const API_URL = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL
-  ? process.env.NEXT_PUBLIC_API_URL
-  : typeof window !== 'undefined'
-    ? `${window.location.protocol}//${window.location.hostname}:3333`
-    : 'http://localhost:3333'
+import { API_URL } from '@/lib/api-url';
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -83,8 +78,8 @@ export async function apiRequest<T = unknown>(endpoint: string, options: ApiRequ
 
 export interface ApiInterface {
   login: (credentials: LoginCredentials) => Promise<UserResponse>;
-  register: (userData: CreateUserData) => Promise<UserResponse>;
   getMe: () => Promise<{ user: User }>;
+  logout: () => Promise<void>;
   getProducts: () => Promise<Product[]>;
   createProduct: (data: CreateProductData) => Promise<Product>;
   updateProduct: (id: string, data: UpdateProductData) => Promise<Product>;
@@ -97,7 +92,7 @@ export interface ApiInterface {
   getCategories: () => Promise<Category[]>;
   getOrders: (date?: string, status?: OrderStatus) => Promise<OrderListResponse>;
   createOrder: (orderData: CreateOrderRequest) => Promise<Order>;
-  getConsolidatedOrders: (date?: string) => Promise<ConsolidatedOrder[]>;
+  getConsolidatedOrders: (date?: string) => Promise<ConsolidatedData>;
   updateOrder: (id: string, data: UpdateOrderData) => Promise<Order>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<Order>;
   getOrdersDashboard: (endpoint: string) => Promise<unknown>;
@@ -109,11 +104,8 @@ export const api: ApiInterface = {
     method: 'POST',
     body: JSON.stringify(credentials),
   }),
-  register: (userData) => apiRequest<UserResponse>('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(userData),
-  }),
   getMe: () => apiRequest<{ user: User }>('/auth/me'),
+  logout: () => apiRequest<void>('/auth/logout', { method: 'POST' }),
   getProducts: async () => {
     const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
     if (!isOnline) {
@@ -229,7 +221,7 @@ export const api: ApiInterface = {
       throw error;
     }
   },
-  getConsolidatedOrders: (date?: string) => apiRequest<ConsolidatedOrder[]>(`/orders/consolidated${date ? `?date=${date}` : ''}`),
+  getConsolidatedOrders: (date?: string) => apiRequest<ConsolidatedData>(`/orders/consolidated${date ? `?date=${date}` : ''}`),
   updateOrder: (id, data) => apiRequest<Order>(`/orders/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),

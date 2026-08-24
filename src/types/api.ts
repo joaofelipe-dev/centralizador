@@ -59,14 +59,17 @@ export interface OrderListResponse {
   data: import('./order').Order[];
 }
 
-export interface ConsolidatedOrder {
-  productId: string;
-  productName: string;
-  categoryName: string;
-  totalQuantity: number;
-  stores: {
-    storeId: string;
-    storeName: string;
-    quantity: number;
-  }[];
+export interface ConsolidatedMatrixCell {
+  quantity: number;
+  currentStock: number;
+}
+
+export interface ConsolidatedData {
+  products: (import('./product').Product & { categoryName?: string; price?: number })[];
+  stores: (import('./product').Store & { orderDate?: string; code?: string })[];
+  matrix: {
+    [productId: string]: {
+      [storeId: string]: ConsolidatedMatrixCell;
+    };
+  };
 }
