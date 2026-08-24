@@ -38,7 +38,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <OfflineBanner />
             <ServiceWorkerRegister />
-            <Toaster theme="dark" position="top-right" />
+            <Toaster
+              theme="light"
+              position="top-right"
+              toastOptions={{
+                classNames: {
+                  toast: "!rounded-lg !border !border-border !bg-card !text-card-foreground !shadow-lg",
+                  title: "!font-semibold",
+                  error: "!border-destructive !bg-destructive !text-destructive-foreground",
+                  success: "!border-success !bg-success !text-success-foreground",
+                  warning: "!border-warning !bg-warning !text-warning-foreground",
+                },
+              }}
+            />
           </OfflineProvider>
         </AuthProvider>
       </body>

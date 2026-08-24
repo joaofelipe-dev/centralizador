@@ -59,18 +59,18 @@ export const MobileNavbar = () => {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center gap-1 transition-all duration-300",
-              isActive ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground"
+              "flex min-w-[56px] flex-col items-center justify-center gap-1 py-1 transition-colors",
+              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
             )}
             aria-current={isActive ? "page" : undefined}
           >
             <div className={cn(
-              "p-2 rounded-xl transition-all duration-300",
-              isActive ? "bg-primary/10 shadow-[0_0_20px_rgba(var(--primary),0.2)]" : ""
+              "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+              isActive ? "bg-primary/10" : ""
             )}>
-              <Icon className="h-4 w-4" />
+              <Icon className="h-5 w-5" />
             </div>
-            <span className="text-[10px] font-medium tracking-wide uppercase">
+            <span className="text-[10px] font-semibold tracking-wide uppercase">
               {item.label}
             </span>
           </Link>

@@ -98,7 +98,7 @@ export function UserTable({
 
   if (loading) {
     return (
-      <div className="glass-card overflow-hidden">
+      <div className="border border-border bg-card overflow-hidden">
         <div className="p-6 space-y-3">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="animate-pulse flex items-center gap-4">
@@ -114,7 +114,7 @@ export function UserTable({
   }
 
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="border border-border bg-card overflow-hidden">
       <div className="p-4 border-b border-border">
         <Input
           type="text"

@@ -32,8 +32,8 @@ export const Spinner: React.FC<SpinnerProps> = ({
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className={cn('rounded-full motion-safe:animate-bounce', colorClass, sizePx.dot)}
-            style={{ animationDelay: `${i * 0.1}s` }}
+            className={cn('rounded-full motion-safe:animate-dot-fade', colorClass, sizePx.dot)}
+            style={{ animationDelay: `${i * 0.12}s` }}
           />
         ))}
         <span className="sr-only">Loading...</span>

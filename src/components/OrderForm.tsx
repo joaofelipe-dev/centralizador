@@ -64,18 +64,17 @@ const ProductRow = React.memo(
         variant="default"
         padding="sm"
         className={cn(
-          "bg-card rounded-xl flex flex-col gap-3 transition-all border-2",
-          hasCDStock && "border-primary shadow-[0_0_12px_-3px] shadow-primary",
-          confirmed &&
-            "border-success bg-success/20 shadow-[0_0_12px_-3px] shadow-success",
+          "bg-card rounded-xl flex flex-col gap-3 transition-colors border-2",
+          hasCDStock && !confirmed && "border-primary",
+          confirmed && "border-success bg-success/10",
           !hasCDStock &&
             !confirmed &&
-            "border-border hover:border-foreground/20",            
+            "border-border hover:border-foreground/30",
         )}
         onClick={() => onToggleExpand(product.id)}
       >
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-card shrink-0">
+          <div className="h-12 w-12 flex items-center justify-center rounded-md bg-muted shrink-0">
             {getProductIcon(categoryName)}
           </div>
 
@@ -121,10 +120,10 @@ const ProductRow = React.memo(
               updateField(product.id, "confirmed", !confirmed);
             }}
             className={cn(
-              "h-9 w-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0",
+              "h-11 w-11 rounded-md flex items-center justify-center transition-colors cursor-pointer shrink-0",
               confirmed
-                ? "bg-success text-success-foreground shadow-lg shadow-success/30 hover:bg-success/90"
-                : "border-2 border-border bg-card text-muted-foreground hover:border-success/50 hover:bg-success/10 hover:text-success",
+                ? "bg-success text-success-foreground hover:bg-success/90"
+                : "border-2 border-border bg-card text-muted-foreground hover:border-success hover:bg-success/10 hover:text-success",
             )}
           >
             <CheckCircle2 className="h-4 w-4" />
@@ -162,10 +161,10 @@ const ProductRow = React.memo(
 
             <div className="flex flex-col items-end sm:items-baseline sm:flex-row gap-4">
               <div className="flex-1">
-                <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
+                <span className="block text-xs text-muted-foreground uppercase font-bold tracking-wide mb-2">
                   Estoque Atual
                 </span>
-                <div className="flex items-center gap-1 bg-card p-1 rounded-xl border border-border shadow-inner w-fit">
+                <div className="flex items-center gap-1 rounded-md border border-border bg-muted p-1 w-fit">
                   <Button
                     type="button"
                     variant="ghost"
@@ -174,9 +173,9 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "currentStock", -1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
+                    className="h-11 w-11 rounded-md hover:bg-surface-hover active:scale-95 transition-transform text-foreground"
                   >
-                    <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                    <Minus className="h-5 w-5" />
                   </Button>
                   <Input
                     type="number"
@@ -195,7 +194,7 @@ const ProductRow = React.memo(
                       )
                     }
                     placeholder="0"
-                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-foreground focus:outline-none"
+                    className="w-14 h-11 bg-transparent border-0 text-center text-lg font-bold tabular-nums text-foreground focus-visible:ring-0"
                   />
                   <Button
                     type="button"
@@ -205,18 +204,18 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "currentStock", 1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
+                    className="h-11 w-11 rounded-md hover:bg-surface-hover active:scale-95 transition-transform text-foreground"
                   >
-                    <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                    <Plus className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
 
               <div className="flex-1">
-                <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">
+                <span className="block text-xs text-primary uppercase font-bold tracking-wide mb-2">
                   Pedir Agora
                 </span>
-                <div className="flex items-center gap-1 bg-primary/10 p-1 rounded-xl border border-primary/20 shadow-inner w-fit">
+                <div className="flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 p-1 w-fit">
                   <Button
                     type="button"
                     variant="ghost"
@@ -225,9 +224,9 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "quantity", -1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg hover:bg-surface-hover active:scale-90 transition-all text-muted-foreground hover:text-foreground"
+                    className="h-11 w-11 rounded-md hover:bg-primary/15 active:scale-95 transition-transform text-primary"
                   >
-                    <Minus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                    <Minus className="h-5 w-5" />
                   </Button>
                   <Input
                     type="number"
@@ -240,7 +239,7 @@ const ProductRow = React.memo(
                       handleInputChange(product.id, "quantity", e.target.value)
                     }
                     placeholder="0"
-                    className="w-12 lg:w-14 bg-transparent text-center text-sm lg:text-base font-bold text-foreground focus:outline-none"
+                    className="w-14 h-11 bg-transparent border-0 text-center text-lg font-bold tabular-nums text-foreground focus-visible:ring-0"
                   />
                   <Button
                     type="button"
@@ -250,9 +249,9 @@ const ProductRow = React.memo(
                       e.stopPropagation();
                       updateField(product.id, "quantity", 1);
                     }}
-                    className="h-8 w-8 lg:h-10 lg:w-10 flex items-center justify-center rounded-lg text-primary-foreground hover:bg-surface-hover active:scale-90 transition-all shadow-lg"
+                    className="h-11 w-11 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-transform"
                   >
-                    <Plus className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
+                    <Plus className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
@@ -633,28 +632,20 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       <div className="relative w-full bg-background mx-auto p-4 animate-slide-up">
         {/* Error Alert */}
         {error && (
-          <div className="fixed bottom-24 left-4 right-4 z-[130] animate-in slide-in-from-bottom-4 duration-300">
-            <Card
-              variant="default"
-              padding="sm"
-              className="bg-destructive/10 border-destructive/20 backdrop-blur-xl flex items-center gap-3 shadow-xl shadow-destructive/20 rounded-xl"
-            >
-              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-              <span className="text-sm text-destructive-foreground flex-1">
-                {error}
-              </span>
-              <Button
+          <div className="fixed bottom-24 left-4 right-4 z-[130] animate-slide-up">
+            <div className="flex items-center gap-3 rounded-lg border border-destructive bg-destructive px-4 py-3 text-destructive-foreground shadow-lg">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <span className="text-sm flex-1">{error}</span>
+              <button
                 onClick={() => {
                   setAttentionAcknowledged(true);
                   setError(null);
                 }}
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive-foreground hover:bg-destructive/20 text-xs shrink-0"
+                className="shrink-0 rounded-md bg-destructive-foreground/15 px-3 py-2 text-xs font-bold hover:bg-destructive-foreground/25 transition-colors"
               >
                 OK
-              </Button>
-            </Card>
+              </button>
+            </div>
           </div>
         )}
         <div className="flex items-center gap-4">
@@ -662,7 +653,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             onClick={isReviewing ? () => setIsReviewing(false) : onBack}
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full bg-secondary/50 text-secondary-foreground"
+            className="rounded-full bg-secondary/10 text-secondary"
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
@@ -693,7 +684,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
             <Card
               variant="default"
               padding="sm"
-              className="glass-card rounded-xl flex items-center justify-between"
+              className="flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -882,37 +873,23 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
         </div>
       </div>
       {hasItems && (
-        <div className="fixed bottom-15 left-0 right-0 px-4 flex justify-center z-[80]">
+        <div className="fixed bottom-24 left-0 right-0 px-4 flex justify-center z-[80] md:bottom-4">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`w-full max-w-sm h-16 rounded-2xl font-bold shadow-2xl border-primary/20 hover:border-primary/50 transition-all ${isReviewing ? "bg-primary text-primary-foreground" : "glass backdrop-blur-[3px] shadow-xl shadow-primary/50"}`}
+            className="w-full max-w-sm h-16 rounded-lg font-bold shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {isSubmitting ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <div className="flex items-center justify-between w-full px-4">
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`${isReviewing ? "bg-card text-primary" : "bg-primary text-primary-foreground"} h-7 w-7 rounded-full flex items-center justify-center text-xs font-black`}
-                  >
+                  <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-black bg-primary-foreground/20 tabular-nums">
                     {totalItems}
                   </div>
-                  <span
-                    className={
-                      isReviewing
-                        ? "text-primary-foreground"
-                        : "text-primary-foreground"
-                    }
-                  >
-                    {isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}
-                  </span>
+                  <span>{isReviewing ? "Confirmar e Enviar" : "Revisar Pedido"}</span>
                 </div>
-                {isReviewing ? (
-                  <Send className="h-5 w-5 text-primary-foreground" />
-                ) : (
-                  <Send className="h-5 w-5 text-primary" />
-                )}
+                <Send className="h-5 w-5" />
               </div>
             )}
           </Button>

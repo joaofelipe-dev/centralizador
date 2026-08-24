@@ -6,8 +6,10 @@ import { SaleList } from '@/components/Admin/SaleList';
 import { SaleForm } from '@/components/Admin/SaleForm';
 import { Modal } from '@/components/ui/Modal';
 import { PageNav } from '@/components/PageNav';
+import { useRequireRole } from '@/hooks/useRequireRole';
 
 export default function SalesPage() {
+  const { loading: authLoading, allowed } = useRequireRole(['ADMIN']);
   const [saleModalOpen, setSaleModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -15,6 +17,8 @@ export default function SalesPage() {
     setSaleModalOpen(false);
     setRefreshKey(k => k + 1);
   };
+
+  if (authLoading || !allowed) return null;
 
     return (
     <>

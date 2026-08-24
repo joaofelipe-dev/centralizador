@@ -27,16 +27,16 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           'rounded-lg bg-card text-card-foreground',
           {
-            'border shadow-sm': variant === 'default',
+            'border border-border': variant === 'default',
             'border-2 border-border': variant === 'outlined',
-            'shadow-lg': variant === 'elevated',
+            'border border-border shadow-lg': variant === 'elevated',
 
             'p-0': padding === 'none',
             'p-4': padding === 'sm',
             'p-6': padding === 'md',
             'p-8': padding === 'lg',
 
-            'transition-transform hover:-translate-y-1 hover:shadow-md cursor-pointer': interactive,
+            'transition-colors hover:border-foreground/30 cursor-pointer': interactive,
 
             'w-full': fullWidth,
           },

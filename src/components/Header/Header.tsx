@@ -19,10 +19,10 @@ function ConnectionBadge() {
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+      className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
         isOnline
-          ? "bg-primary/10 text-primary"
-          : "bg-warning/10 text-warning animate-pulse"
+          ? "border-primary/40 text-primary"
+          : "border-warning bg-warning text-warning-foreground animate-pulse"
       }`}
       title={
         isOnline

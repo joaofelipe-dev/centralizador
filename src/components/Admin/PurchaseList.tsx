@@ -51,7 +51,7 @@ export function PurchaseList({ purchases, loading, onNewPurchase, onReceive }: P
         </Button>
       </div>
 
-      <div className="glass-card rounded-xl overflow-hidden">
+      <div className="border border-border bg-card rounded-xl overflow-hidden">
         <Table hoverable loading={loading}>
           <thead>
             <tr className="border-b border-border">
@@ -96,7 +96,7 @@ export function PurchaseList({ purchases, loading, onNewPurchase, onReceive }: P
                   {purchase.status === 'DRAFT' && (
                     <Button
                       onClick={() => onReceive(purchase)}
-                      variant="glass"
+                      variant="outline"
                       size="sm"
                       className="gap-2 text-xs"
                     >

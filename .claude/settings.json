@@ -1,0 +1,10 @@
+{
+  "enabledPlugins": {
+    "prisma@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "modern-web-guidance@claude-plugins-official": true
+  }
+}

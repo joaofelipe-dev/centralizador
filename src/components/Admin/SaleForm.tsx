@@ -188,7 +188,7 @@ export function SaleForm({ onSuccess, onCancel }: SaleFormProps) {
         </div>
 
         {items.length > 0 && (
-          <div className="glass-card rounded-xl overflow-hidden">
+          <div className="border border-border bg-card rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
                   <tr className="border-b border-border">

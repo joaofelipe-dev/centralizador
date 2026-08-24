@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { ShoppingBag, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import Onboarding from "@/components/Onboarding";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
@@ -28,7 +29,7 @@ const Home = () => {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -37,7 +38,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar position="top" sticky className="z-[80]" maxWidth="max-w-7xl">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
             <ShoppingBag className="h-5 w-5" />
           </div>
           <span className="text-lg font-bold tracking-tight text-foreground whitespace-nowrap">

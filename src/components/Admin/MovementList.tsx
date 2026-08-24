@@ -99,7 +99,7 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 glass-card rounded-xl">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border border-border bg-card rounded-xl">
         <Select
           value={filters.type || ''}
           onChange={(e) => handleFilterChange('type', e.target.value)}
@@ -150,7 +150,7 @@ export function MovementList({ onAdjustmentClick }: MovementListProps) {
           <Spinner size="lg" />
         </div>
       ) : (
-        <div className="glass-card rounded-xl overflow-hidden">
+        <div className="border border-border bg-card rounded-xl overflow-hidden">
           <Table hoverable className="w-full">
             <thead>
               <tr className="border-b border-border">

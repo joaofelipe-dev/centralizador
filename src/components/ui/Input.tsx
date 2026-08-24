@@ -28,13 +28,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ) => {
     return (
       <div className={cn('relative flex items-center', fullWidth && 'w-full')}>
-        {leftIcon && <span className="absolute left-3 text-surface-foreground">{leftIcon}</span>}
+        {leftIcon && <span className="absolute left-3 text-muted-foreground">{leftIcon}</span>}
         <input
           ref={ref}
           disabled={disabled}
           readOnly={readOnly}
           className={cn(
-            'flex w-full rounded-md px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex w-full rounded-md px-3 py-2 text-base file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
             {
               'border border-input bg-background': variant === 'default',
               'bg-secondary text-secondary-foreground border-transparent': variant === 'filled',
@@ -42,9 +42,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'border-transparent bg-transparent hover:bg-accent hover:text-accent-foreground':
                 variant === 'ghost',
 
-              'h-8 px-2 text-xs': size === 'sm',
-              'h-10 px-3 py-2': size === 'md',
-              'h-12 px-4 text-base': size === 'lg',
+              // Field-usable default is 48px; sm stays for dense desktop/admin tables.
+              'h-10 px-2 text-sm': size === 'sm',
+              'h-12 px-3': size === 'md',
+              'h-14 px-4 text-lg': size === 'lg',
 
               'border-destructive focus-visible:ring-destructive': status === 'error',
               'border-success focus-visible:ring-ring-success': status === 'success',
@@ -57,7 +58,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           {...props}
         />
-        {rightIcon && <span className="absolute right-3 text-surface-foreground">{rightIcon}</span>}
+        {rightIcon && <span className="absolute right-3 text-muted-foreground">{rightIcon}</span>}
       </div>
     );
   },

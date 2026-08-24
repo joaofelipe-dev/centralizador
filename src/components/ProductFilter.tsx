@@ -40,7 +40,7 @@ export function ProductFilter({
   }, [onSearchChange]);
 
   return (
-    <div className="space-y-4 p-4 glass-card rounded-xl">
+    <div className="space-y-4 rounded-lg border border-border bg-card p-4">
       <Input
         value={localSearch}
         onChange={handleSearchChange}
@@ -49,12 +49,11 @@ export function ProductFilter({
         fullWidth
       />
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-1">
         <Button
           onClick={() => onCategoryChange(null)}
-          variant={selectedCategory === null ? 'default' : 'ghost'}
-          size="sm"
-          className={selectedCategory === null ? '' : 'bg-muted text-muted-foreground hover:bg-surface-hover'}
+          variant={selectedCategory === null ? 'default' : 'outline'}
+          className="shrink-0"
         >
           Todos
         </Button>
@@ -62,9 +61,8 @@ export function ProductFilter({
           <Button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            variant={selectedCategory === cat.id ? 'default' : 'ghost'}
-            size="sm"
-            className={selectedCategory === cat.id ? '' : 'bg-muted text-muted-foreground hover:bg-surface-hover'}
+            variant={selectedCategory === cat.id ? 'default' : 'outline'}
+            className="shrink-0"
           >
             {cat.name}
           </Button>
@@ -80,7 +78,6 @@ export function ProductFilter({
             onClick={onClear}
             variant="ghost"
             size="sm"
-            className="text-xs px-3 py-1 bg-muted hover:bg-surface-hover text-muted-foreground hover:text-foreground"
           >
             Limpar filtros
           </Button>

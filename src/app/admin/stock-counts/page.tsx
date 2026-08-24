@@ -85,7 +85,7 @@ export default function StockCountsPage() {
         )}
 
         {view === "new" && (
-          <div className="glass-card p-6 rounded-xl max-w-lg mx-auto">
+          <div className="border border-border bg-card p-6 rounded-xl max-w-lg mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <PackageSearch className="h-6 w-6 text-primary" />
               <h2 className="text-xl font-bold text-foreground">Nova Contagem</h2>

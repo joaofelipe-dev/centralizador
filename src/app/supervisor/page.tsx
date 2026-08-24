@@ -32,10 +32,10 @@ const STATUS_CONFIG: Record<string, {
   color: string;
   bg: string;
 }> = {
-  PENDING: { label: "Pendente", icon: Clock, color: "text-yellow-500", bg: "bg-yellow-500/10" },
-  APPROVED: { label: "Aprovado", icon: CheckCircle2, color: "text-blue-500", bg: "bg-blue-500/10" },
-  CONFIRMED: { label: "Confirmado", icon: CheckCircle2, color: "text-green-500", bg: "bg-green-500/10" },
-  CANCELLED: { label: "Cancelado", icon: XCircle, color: "text-red-500", bg: "bg-red-500/10" },
+  PENDING: { label: "Pendente", icon: Clock, color: "text-warning", bg: "bg-warning/10" },
+  APPROVED: { label: "Aprovado", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-600/10" },
+  CONFIRMED: { label: "Confirmado", icon: CheckCircle2, color: "text-success", bg: "bg-success/10" },
+  CANCELLED: { label: "Cancelado", icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
 };
 
 export default function SupervisorOrdersPage() {
@@ -220,7 +220,7 @@ export default function SupervisorOrdersPage() {
         </div>
 
         {orders.length === 0 ? (
-          <div className="glass-card rounded-xl p-8 md:p-12 text-center">
+          <div className="border border-border bg-card rounded-xl p-8 md:p-12 text-center">
             <Package className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">Nenhum pedido encontrado.</p>
           </div>
@@ -236,7 +236,7 @@ export default function SupervisorOrdersPage() {
               return (
                 <div
                   key={order.id}
-                  className="glass-card rounded-xl overflow-hidden"
+                  className="border border-border bg-card rounded-xl overflow-hidden"
                 >
                   <div
                     className="p-4 md:p-6 cursor-pointer"

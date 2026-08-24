@@ -57,7 +57,7 @@ export const HeaderNav = ({ className, onRequestLogout }: HeaderNavProps) => {
         </Button>
 
         {menuOpen && (
-          <div className="absolute right-0 z-[110] top-full mt-2 w-56 rounded-xl bg-background/95 backdrop-blur-xl border border-border shadow-xl p-2">
+          <div className="absolute right-0 z-[110] top-full mt-2 w-56 rounded-lg bg-background border border-border shadow-xl p-2">
             <div className="space-y-1">
               {items.map((item) => (
                 <Link

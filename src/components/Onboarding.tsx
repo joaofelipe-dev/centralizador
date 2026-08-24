@@ -14,7 +14,7 @@ import { Step, OnboardingProps } from "@/types/onboarding";
 const steps: Step[] = [
   {
     title: "Seja bem-vindo!",
-    description: "O Central Pedidos é a sua nova plataforma premium para gerenciar compras e suprimentos de forma inteligente.",
+    description: "O Central Pedidos centraliza os pedidos de compra e suprimentos da sua loja em um só lugar.",
     icon: ShoppingBag,
     color: "bg-primary",
   },
@@ -65,7 +65,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         ))}
       </div>
 
-      <div className={`p-6 rounded-3xl ${activeStep.color}/10 ring-1 ring-white/10 shadow-2xl`}>
+      <div className={`p-6 rounded-lg border border-border ${activeStep.color}/10`}>
         <activeStep.icon className={`h-12 w-12 ${activeStep.color.replace('bg-', 'text-')}`} />
       </div>
 
@@ -78,7 +78,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
       <Button 
         onClick={nextStep}
-        className="group relative flex items-center gap-2 rounded-full px-8 py-6 text-lg font-semibold shadow-xl shadow-primary/20 transition-all hover:scale-105"
+        className="group relative flex items-center gap-2 rounded-full px-8 py-6 text-lg font-semibold shadow-md"
       >
         {currentStep === steps.length - 1 ? "Começar agora" : "Continuar"}
         <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />

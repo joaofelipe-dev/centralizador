@@ -8,8 +8,10 @@ import { PurchaseReceiveModal } from '@/components/Admin/PurchaseReceiveModal';
 import type { PurchaseOrder } from '@/types/purchase';
 import { listPurchases } from '@/lib/purchase-api';
 import { PageNav } from '@/components/PageNav';
+import { useRequireRole } from '@/hooks/useRequireRole';
 
 export default function PurchasesPage() {
+  const { loading: authLoading, allowed } = useRequireRole(['ADMIN']);
   const [purchases, setPurchases] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
@@ -29,8 +31,9 @@ export default function PurchasesPage() {
   }, []);
 
   useEffect(() => {
+    if (!allowed) return;
     fetchPurchases();
-  }, [fetchPurchases]);
+  }, [fetchPurchases, allowed]);
 
   const handleNewPurchase = () => {
     setFormOpen(true);
@@ -40,6 +43,8 @@ export default function PurchasesPage() {
     setSelectedPurchase(purchase);
     setReceiveOpen(true);
   };
+
+  if (authLoading || !allowed) return null;
 
     return (
     <>

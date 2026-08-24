@@ -191,7 +191,7 @@ export function PivotTable({ consolidated }: PivotTableProps) {
         </div>
       </div>
 
-      <div className="glass-card overflow-hidden border-primary/20 bg-primary/[0.02]">
+      <div className="border border-border bg-card overflow-hidden rounded-lg">
         <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
           <table className="w-full text-left border-collapse border-separate border-spacing-0">
             <thead className="sticky top-0 z-10 bg-background shadow-md shadow-black/50">

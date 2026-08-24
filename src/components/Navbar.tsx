@@ -25,10 +25,10 @@ export const Navbar = ({
   return (
     <nav
       className={cn(
-        "w-full z-[90] bg-background/80 backdrop-blur-xl border-border",
-        sticky ? "sticky top-0" : "relative",
-        isTop ? "border-b" : "bottom-0 left-0 right-0 border-t h-20",
-        !isTop && "pb-safe animate-in slide-in-from-bottom duration-500",
+        "w-full z-[90] bg-background border-border",
+        isTop ? (sticky ? "sticky top-0" : "relative") : "fixed bottom-0 left-0 right-0",
+        isTop ? "border-b" : "border-t h-20",
+        !isTop && "pb-safe animate-slide-up",
         className
       )}
     >

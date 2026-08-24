@@ -31,15 +31,15 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             status === 'error' || status === 'success' ? `${props.id || ''}-status` : undefined
           }
           className={cn(
-            'flex w-full appearance-none rounded-md px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex w-full appearance-none rounded-md px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
             {
               'border border-input bg-background': variant === 'default',
               'border-2 border-input bg-transparent': variant === 'outline',
               'bg-secondary text-secondary-foreground border-transparent': variant === 'filled',
 
-              'h-8 text-xs': size === 'sm' && !multiple,
-              'h-10': size === 'md' && !multiple,
-              'h-12 text-base': size === 'lg' && !multiple,
+              'h-10 text-sm': size === 'sm' && !multiple,
+              'h-12': size === 'md' && !multiple,
+              'h-14 text-lg': size === 'lg' && !multiple,
 
               'border-destructive focus:ring-destructive': status === 'error',
               'border-success focus:ring-ring-success': status === 'success',
@@ -51,7 +51,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           {children}
         </select>
         {!multiple && (
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-surface-foreground">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
             <svg
               className="h-4 w-4 fill-current"
               xmlns="http://www.w3.org/2000/svg"

@@ -28,22 +28,22 @@ export default function LoginPage() {
   }
 
     return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-[#3DE585]/50 to-[#138565]/50">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md space-y-8">
         <div className="flex justify-center">
-          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center">
             <ShoppingBag className="h-8 w-8 text-primary" />
           </div>
         </div>
 
-        <div className="glass-card rounded-2xl p-8">
+        <div className="border border-border bg-card rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center">
                 {error}
               </div>
             )}
-            <User className="h-16 w-16 mx-auto rounded-full bg-primary p-3" />
+            <User className="h-16 w-16 mx-auto rounded-full bg-primary p-3 text-primary-foreground" />
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -85,7 +85,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-xl py-6 text-base font-semibold shadow-lg shadow-primary/20"
+              className="w-full rounded-xl py-6 text-base font-semibold shadow-md"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />

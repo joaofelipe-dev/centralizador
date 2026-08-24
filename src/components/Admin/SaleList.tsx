@@ -75,7 +75,7 @@ export function SaleList({ onSaleClick }: SaleListProps) {
           <Spinner size="lg" />
         </div>
       ) : (
-        <div className="glass-card rounded-xl overflow-hidden">
+        <div className="border border-border bg-card rounded-xl overflow-hidden">
           <Table hoverable className="w-full">
             <thead>
               <tr className="border-b border-border">

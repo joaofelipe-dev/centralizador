@@ -14,9 +14,8 @@ import {
   Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
+import { useRequireRole } from "@/hooks/useRequireRole";
 import { api } from "@/lib/api";
-import { useRouter } from "next/navigation";
 import type { Product, Category } from "@/types/product";
 import { PageNav } from "@/components/PageNav";
 import { Modal } from "@/components/ui/Modal";
@@ -26,7 +25,8 @@ import { ConfirmDialog } from "@/components/Admin/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function PedidosAdminPage() {
-  const { user, loading } = useAuth();
+  // Esta página cria e edita produtos — as escritas exigem ADMIN na API.
+  const { loading, allowed } = useRequireRole(["ADMIN"]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -43,17 +43,11 @@ export default function PedidosAdminPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const router = useRouter();
-
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-      return;
-    }
-    if (user) {
+    if (allowed) {
       loadInitialData();
     }
-  }, [user, loading, router]);
+  }, [allowed]);
 
   async function loadInitialData() {
     setIsFetching(true);
@@ -149,7 +143,7 @@ export default function PedidosAdminPage() {
   const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
   const totalStockCD = products.reduce((sum, p) => sum + (p.stockCD || 0), 0);
 
-  if (loading || isFetching) {
+  if (loading || !allowed || isFetching) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -183,17 +177,17 @@ export default function PedidosAdminPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-8 animate-slide-up">
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
+          <div className="border border-border bg-card p-6 rounded-xl text-center">
             <Package className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-xl font-bold text-foreground mb-2">Total de Produtos</h2>
             <p className="text-3xl font-bold text-primary">{products.length}</p>
           </div>
-          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
+          <div className="border border-border bg-card p-6 rounded-xl text-center">
             <ShoppingBag className="h-12 w-12 text-warning mx-auto mb-4" />
             <h2 className="text-xl font-bold text-foreground mb-2">Estoque das Lojas</h2>
             <p className="text-3xl font-bold text-warning">{totalStock}</p>
           </div>
-          <div className="glass-card p-6 rounded-xl text-center border-border bg-card">
+          <div className="border border-border bg-card p-6 rounded-xl text-center">
             <Clock className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-xl font-bold text-foreground mb-2">Estoque CD</h2>
             <p className="text-3xl font-bold text-primary">{totalStockCD}</p>
@@ -215,7 +209,7 @@ export default function PedidosAdminPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="glass-card group p-5 space-y-4 hover:border-primary/30 transition-all duration-300 border-border bg-card rounded-xl">
+            <div key={product.id} className="border border-border bg-card group p-5 space-y-4 hover:border-primary/30 transition-all duration-300 rounded-xl">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
                   <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{product.name}</h3>

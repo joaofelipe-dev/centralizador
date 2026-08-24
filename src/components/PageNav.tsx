@@ -47,7 +47,7 @@ export const PageNav = ({
           {showBack && (
             <button
               onClick={handleBack}
-              className="h-9 w-9 rounded-xl bg-card flex items-center justify-center hover:bg-surface-hover transition-colors shrink-0"
+              className="h-11 w-11 rounded-md border border-border bg-card flex items-center justify-center hover:bg-surface-hover transition-colors shrink-0"
             >
               <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>

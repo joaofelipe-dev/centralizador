@@ -139,7 +139,7 @@ export function TeamManagement({
         <h2 className="text-xl font-bold text-foreground">Gerenciar Equipe</h2>
         <Button
           onClick={handleOpenCreate}
-          className="font-bold shadow-lg shadow-primary/20 gap-2"
+          className="font-bold gap-2"
         >
           <Plus className="h-4 w-4" />
           Adicionar Membro
