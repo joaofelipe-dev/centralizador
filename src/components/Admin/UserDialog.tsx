@@ -51,7 +51,7 @@ export function UserDialog({
       size="lg"
       closeOnOverlayClick={!loading}
       closeOnEsc={!loading}
-      className="glass-card !bg-transparent !shadow-none !rounded-none !overflow-visible !p-0 overflow-y-auto custom-scrollbar"
+      className="glass-card !bg-transparent !shadow-none !rounded-none !p-0"
     >
       <div className="w-full max-w-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
