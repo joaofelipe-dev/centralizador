@@ -23,6 +23,7 @@ import { Card } from "@/components/ui/Card";
 import { api } from "@/lib/api";
 import { DateInput } from "@/components/DateInput/DateInput";
 import { ProductFilter } from "@/components/ProductFilter";
+import { usePedidosNav } from "@/context/PedidosNavContext";
 import type { Store, Category, Product } from "@/types/product";
 import type { Cart, CartItem } from "@/types/product";
 
@@ -327,6 +328,8 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
     new Set(),
   );
 
+  const { registerDepartments, clearDepartments } = usePedidosNav();
+
   const toggleExpanded = useCallback((id: string) => {
     setExpandedProducts((prev) => {
       const next = new Set(prev);
@@ -381,6 +384,36 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
       });
     }
   }, [isLoading, store.id]);
+
+  useEffect(() => {
+    if (isLoading || isReviewing || isSuccess || categories.length === 0) {
+      clearDepartments();
+      return;
+    }
+
+    registerDepartments(
+      categories.map((cat) => ({ id: cat.id, name: cat.name })),
+      filter.categoryId,
+      (categoryId) => {
+        setFilter((prev) => ({ ...prev, categoryId }));
+        requestAnimationFrame(() => {
+          document
+            .getElementById("pedidos-catalog")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      },
+    );
+
+    return () => clearDepartments();
+  }, [
+    isLoading,
+    isReviewing,
+    isSuccess,
+    categories,
+    filter.categoryId,
+    registerDepartments,
+    clearDepartments,
+  ]);
 
   useEffect(() => {
     if (isSuccess || isLoading) return;
@@ -786,7 +819,7 @@ export default function OrderForm({ store, onBack }: OrderFormProps) {
               </Button>
             </div>
           ) : (
-            <div className="relative space-y-4 pb-32">
+            <div id="pedidos-catalog" className="relative space-y-4 pb-32 scroll-mt-20">
               <ProductFilter
                 categories={categories}
                 selectedCategory={filter.categoryId}

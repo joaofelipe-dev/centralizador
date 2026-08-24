@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useId, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useId, useCallback, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../utils/cn';
+
+const emptySubscribe = () => () => {};
 
 export interface ModalProps {
   open: boolean;
@@ -35,11 +37,11 @@ export const Modal: React.FC<ModalProps> = ({
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const descId = useId();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {

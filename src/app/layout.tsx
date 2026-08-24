@@ -5,6 +5,7 @@ import Header from "@/components/Header/Header";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { OfflineProvider } from "@/context/OfflineContext";
+import { PedidosNavProvider } from "@/context/PedidosNavContext";
 import { Toaster } from "sonner";
 import { MobileNavbar } from "@/components/MobileNavbar";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
@@ -30,12 +31,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <AuthProvider>
           <OfflineProvider>
-            <div className="relative flex min-h-screen flex-col overflow-x-hidden">
-              <Header />
-              <main id="main-content" className="flex-1 pb-24 md:pb-0">{children}</main>
-              <Footer />
-              <MobileNavbar />
-            </div>
+            <PedidosNavProvider>
+              <div className="relative flex min-h-screen flex-col overflow-x-hidden">
+                <Header />
+                <main id="main-content" className="flex-1 pb-24 md:pb-0">{children}</main>
+                <Footer />
+                <MobileNavbar />
+              </div>
+            </PedidosNavProvider>
             <OfflineBanner />
             <ServiceWorkerRegister />
             <Toaster

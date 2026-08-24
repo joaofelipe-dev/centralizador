@@ -8,17 +8,64 @@ import {
   ShoppingCart,
   Package,
   Truck,
-  Settings
+  Settings,
+  Carrot,
+  Apple,
+  LeafyGreen,
 } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { usePedidosNav } from "@/context/PedidosNavContext";
+
+function getDepartmentIcon(name: string) {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("legume")) return Carrot;
+  if (lowerName.includes("fruta")) return Apple;
+  if (lowerName.includes("tempero") || lowerName.includes("verdura")) return LeafyGreen;
+  return Package;
+}
 
 export const MobileNavbar = () => {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { departments, activeDepartmentId, selectDepartment } = usePedidosNav();
 
   if (!user) return null;
+
+  if (pathname === "/pedidos" && departments.length > 0) {
+    return (
+      <Navbar className="md:hidden">
+        {departments.map((dept) => {
+          const isActive = activeDepartmentId === dept.id;
+          const Icon = getDepartmentIcon(dept.name);
+
+          return (
+            <button
+              key={dept.id}
+              type="button"
+              onClick={() => selectDepartment(isActive ? null : dept.id)}
+              className={cn(
+                "flex min-w-[56px] flex-col items-center justify-center gap-1 py-1 transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-current={isActive ? "true" : undefined}
+            >
+              <div className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                isActive ? "bg-primary/10" : ""
+              )}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <span className="text-[10px] font-semibold tracking-wide uppercase truncate max-w-[72px]">
+                {dept.name}
+              </span>
+            </button>
+          );
+        })}
+      </Navbar>
+    );
+  }
 
   const navItems = [
     {
