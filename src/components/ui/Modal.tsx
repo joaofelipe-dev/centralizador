@@ -112,13 +112,13 @@ export const Modal: React.FC<ModalProps> = ({
         aria-labelledby={title ? titleId : undefined}
         aria-describedby={description ? descId : undefined}
         className={cn(
-          'bg-background rounded-lg shadow-lg overflow-hidden',
+          'bg-background rounded-lg shadow-lg overflow-hidden flex flex-col max-h-[90vh]',
           {
             'w-full max-w-sm': size === 'sm',
             'w-full max-w-md': size === 'md',
             'w-full max-w-lg': size === 'lg',
             'w-full max-w-xl': size === 'xl',
-            'w-full h-full max-w-none rounded-none': size === 'full' || variant === 'fullscreen',
+            'w-full h-full max-w-none rounded-none max-h-none': size === 'full' || variant === 'fullscreen',
             'mx-auto mt-10': variant === 'default' && size !== 'full',
           },
           className,
@@ -126,7 +126,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {(title || description) && (
-          <div className="px-6 py-4 border-b border-border">
+          <div className="shrink-0 px-6 py-4 border-b border-border">
             {title && (
               <h2 id={titleId} className="text-lg font-semibold text-foreground">
                 {title}
@@ -139,7 +139,7 @@ export const Modal: React.FC<ModalProps> = ({
             )}
           </div>
         )}
-        <div className="px-6 py-4">{children}</div>
+        <div className="px-6 py-4 overflow-y-auto custom-scrollbar min-h-0 flex-1">{children}</div>
       </div>
     </div>
   );
