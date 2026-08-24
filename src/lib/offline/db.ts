@@ -1,5 +1,5 @@
 const DB_NAME = 'centralizador-offline'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 let dbPromise: Promise<IDBDatabase> | null = null
 
@@ -9,17 +9,24 @@ function openDB(): Promise<IDBDatabase> {
   dbPromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
 
-    request.onupgradeneeded = () => {
+    request.onupgradeneeded = (event) => {
       const db = request.result
 
       if (!db.objectStoreNames.contains('cache')) {
         db.createObjectStore('cache', { keyPath: 'key' })
       }
 
+      // A v1 criava 'queue' com keyPath 'clientId', mas putRecord grava o envelope
+      // { key, value } — sem 'clientId' no topo, todo put falhava com DataError e
+      // nenhum pedido chegava a ser enfileirado. Não há dado válido a preservar.
+      if (event.oldVersion < 2 && db.objectStoreNames.contains('queue')) {
+        db.deleteObjectStore('queue')
+      }
+
       if (!db.objectStoreNames.contains('queue')) {
-        const store = db.createObjectStore('queue', { keyPath: 'clientId' })
-        store.createIndex('status', 'status', { unique: false })
-        store.createIndex('createdAt', 'createdAt', { unique: false })
+        const store = db.createObjectStore('queue', { keyPath: 'key' })
+        store.createIndex('status', 'value.status', { unique: false })
+        store.createIndex('createdAt', 'value.createdAt', { unique: false })
       }
 
       if (!db.objectStoreNames.contains('metadata')) {

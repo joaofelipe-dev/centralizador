@@ -1,7 +1,7 @@
 import { getPendingOrders, markSynced, markFailed } from './queue'
+import { API_URL } from '@/lib/api-url'
 
 const SYNC_INTERVAL_MS = 30_000
-const MAX_RETRIES = 10
 const API_HEALTH_CHECK = '/'
 
 let syncTimer: ReturnType<typeof setInterval> | null = null
@@ -54,7 +54,7 @@ async function checkApiHealth(): Promise<boolean> {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5_000)
 
-    const response = await fetch(`${getApiBaseUrl()}${API_HEALTH_CHECK}`, {
+    const response = await fetch(`${API_URL}${API_HEALTH_CHECK}`, {
       method: 'GET',
       signal: controller.signal,
     })
@@ -64,11 +64,6 @@ async function checkApiHealth(): Promise<boolean> {
   } catch {
     return false
   }
-}
-
-function getApiBaseUrl(): string {
-  if (typeof window === 'undefined') return 'http://localhost:3333'
-  return `${window.location.protocol}//${window.location.hostname}:3333`
 }
 
 export async function processQueue(): Promise<{ synced: number; failed: number }> {
@@ -94,15 +89,9 @@ export async function processQueue(): Promise<{ synced: number; failed: number }
     let failed = 0
 
     for (const order of pending) {
-      if (order.retryCount >= MAX_RETRIES) {
-        await markFailed(order.clientId, 'Máximo de tentativas excedido')
-        failed++
-        continue
-      }
-
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`${getApiBaseUrl()}/orders`, {
+        const response = await fetch(`${API_URL}/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

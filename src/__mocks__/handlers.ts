@@ -26,35 +26,6 @@ export const handlers = [
     )
   }),
 
-  http.post(`${API_URL}/auth/register`, async ({ request }) => {
-    const body = await request.json() as any
-    
-    if (!body.email?.includes('@')) {
-      return HttpResponse.json(
-        { message: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    if (!body.password || body.password.length < 8) {
-      return HttpResponse.json(
-        { message: 'Password too short' },
-        { status: 400 }
-      )
-    }
-
-    return HttpResponse.json({
-      user: {
-        id: 'user-new-123',
-        username: body.username,
-        email: body.email,
-        isAdmin: false,
-        storeId: null,
-      },
-      token: 'test-jwt-token-new',
-    }, { status: 201 })
-  }),
-
   http.get(`${API_URL}/auth/me`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
     

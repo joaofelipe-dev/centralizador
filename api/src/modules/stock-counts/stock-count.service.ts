@@ -72,7 +72,7 @@ export class StockCountService {
         }
       }
 
-      return this.repo.updateStatus(id, 'CLOSED')
+      return this.repo.updateStatus(id, 'CLOSED', tx)
     })
   }
 }

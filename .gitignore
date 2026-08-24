@@ -41,7 +41,7 @@ yarn-error.log*
 !.env.example
 
 #database
-.db
+*.db
 
 # vercel
 .vercel

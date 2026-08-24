@@ -8,10 +8,6 @@ describe('API Client', () => {
       expect(typeof api.login).toBe('function')
     })
 
-    it('should export register method', () => {
-      expect(typeof api.register).toBe('function')
-    })
-
     it('should export getMe method', () => {
       expect(typeof api.getMe).toBe('function')
     })

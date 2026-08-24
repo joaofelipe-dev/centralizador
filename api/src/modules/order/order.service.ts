@@ -137,20 +137,29 @@ export class OrderService {
       throw new Error('Forbidden: Only supervisors and admins can change order status')
     }
 
-    const result = await this.orderRepository.update(orderId, { status })
-
-    if (status === 'APPROVED') {
-      const order = await this.orderRepository.findById(orderId)
-      if (order) {
-        await this.processOrderApproval(order)
-      }
+    const order = await this.orderRepository.findById(orderId)
+    if (!order) {
+      throw new Error('Order not found')
     }
 
-    return result
-  }
+    if (status !== 'APPROVED') {
+      return this.orderRepository.update(orderId, { status })
+    }
 
-  private async processOrderApproval(order: any) {
-    await prisma.$transaction(async (tx) => {
+    // Aprovar baixa o estoque do CD, então mudança de status e movimentos precisam
+    // cair na mesma transação. O updateMany condicional garante que apenas uma
+    // requisição consiga sair de "não aprovado" — um duplo-clique ou um retry não
+    // debita o estoque duas vezes.
+    return prisma.$transaction(async (tx) => {
+      const claimed = await tx.order.updateMany({
+        where: { id: orderId, status: { not: 'APPROVED' } },
+        data: { status: 'APPROVED' },
+      })
+
+      if (claimed.count === 0) {
+        throw new Error('Order already approved')
+      }
+
       for (const item of order.items) {
         await tx.stockMovement.create({
           data: {
@@ -159,19 +168,24 @@ export class OrderService {
             quantity: item.quantity,
             reason: `Order ${order.id} approved`,
             userId: order.userId,
-            orderId: order.id
-          }
+            orderId: order.id,
+          },
         })
 
         await tx.product.update({
           where: { id: item.productId },
-          data: {
-            stockCD: {
-              decrement: item.quantity
-            }
-          }
+          data: { stockCD: { decrement: item.quantity } },
         })
       }
+
+      return tx.order.findUniqueOrThrow({
+        where: { id: orderId },
+        include: {
+          items: { include: { product: true } },
+          store: true,
+          user: { select: { id: true, name: true, username: true } },
+        },
+      })
     })
   }
 

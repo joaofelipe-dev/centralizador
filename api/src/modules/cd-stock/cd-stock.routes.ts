@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { CDStockService } from './cd-stock.service.js';
 import { SyncAndCopyService } from './sync-and-copy.js';
-import { adminMiddleware } from '../../middlewares/auth.js';
+import { authMiddleware, adminMiddleware } from '../../middlewares/auth.js';
 import { prisma } from '../../lib/prisma.js';
 
 export async function cdStockRoutes(app: FastifyInstance) {
@@ -9,6 +9,7 @@ export async function cdStockRoutes(app: FastifyInstance) {
   const syncAndCopyService = new SyncAndCopyService();
 
   app.get('/status', {
+    preHandler: authMiddleware,
     schema: {
       response: {
         200: {

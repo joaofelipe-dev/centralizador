@@ -27,9 +27,11 @@ export const listOrdersSchema = z.object({
   offset: z.number().int().min(0).default(0),
   status: z.enum(ORDER_STATUS_VALUES).optional(),
   storeId: z.string().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  date: z.string().optional(),
+  // Rótulos de dia (YYYY-MM-DD): o repositório expande cada um para o intervalo
+  // completo do dia em UTC. Um datetime ISO aqui produziria uma data inválida.
+  startDate: z.iso.date().optional(),
+  endDate: z.iso.date().optional(),
+  date: z.iso.date().optional(),
 })
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>

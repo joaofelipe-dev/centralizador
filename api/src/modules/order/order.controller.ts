@@ -123,6 +123,12 @@ export class OrderController {
       if (error.message?.includes('Forbidden')) {
         return reply.status(403).send({ message: error.message })
       }
+      if (error.message === 'Order not found') {
+        return reply.status(404).send({ message: error.message })
+      }
+      if (error.message === 'Order already approved') {
+        return reply.status(409).send({ message: error.message })
+      }
       throw error
     }
   }

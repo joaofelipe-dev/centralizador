@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma/client.js'
+import { PrismaClient, Prisma } from '../generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import pg from 'pg'
 
@@ -18,3 +18,11 @@ const pool = new pg.Pool({
 const adapter = new PrismaPg(pool)
 
 export const prisma = new PrismaClient({ adapter })
+
+/**
+ * Cliente aceito pelos repositórios: o `prisma` global ou o `tx` de uma
+ * `$transaction`. Métodos de escrita chamados de dentro de uma transação
+ * precisam receber o `tx` — senão a escrita fica fora dela e sobrevive ao
+ * rollback, deixando o razão de estoque divergente dos documentos.
+ */
+export type DbClient = Prisma.TransactionClient

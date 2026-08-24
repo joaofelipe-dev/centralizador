@@ -2,7 +2,6 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { AuthService } from './auth.service.js'
 import { loginSchema } from './auth.schema.js'
-import { createUserSchema } from '../user/user.schema.js'
 import { UserService } from '../user/user.service.js'
 import { UserRole } from '../../middlewares/auth.js'
 
@@ -11,39 +10,6 @@ export class AuthController {
     private authService: AuthService,
     private userService: UserService
   ) {}
-
-  async register(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const data = createUserSchema.parse(request.body)
-      const user = await this.userService.createUser({ ...data, role: 'DEFAULT' })
-
-      const token = await reply.jwtSign({ sub: user.id, role: user.role as UserRole })
-      reply.setCookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-      })
-      request.log.info({ userId: user.id }, 'Usuário registrado com sucesso')
-
-      return reply.status(201).send({ user, token })
-    } catch (err) {
-      request.log.error({ err }, 'Erro no registro de usuário')
-
-      if (err instanceof Error && err.message === 'User already exists') {
-        return reply.status(409).send({ message: err.message })
-      }
-
-      if (err instanceof z.ZodError) {
-        return reply.status(400).send({
-          message: 'Validation error',
-          errors: err.flatten().fieldErrors,
-        })
-      }
-
-      return reply.status(500).send({ message: 'Internal server error' })
-    }
-  }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -76,6 +42,11 @@ export class AuthController {
 
       return reply.status(500).send({ message: 'Internal server error' })
     }
+  }
+
+  async logout(request: FastifyRequest, reply: FastifyReply) {
+    reply.clearCookie('token', { path: '/' })
+    return reply.status(204).send()
   }
 
   async me(request: FastifyRequest, reply: FastifyReply) {

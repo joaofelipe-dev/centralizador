@@ -26,7 +26,7 @@ export class MovementService {
     if (!product) throw new Error('Product not found')
 
     return await prisma.$transaction(async (tx) => {
-      const movement = await this.repo.create(data)
+      const movement = await this.repo.create(data, tx)
 
       await tx.product.update({
         where: { id: data.productId },

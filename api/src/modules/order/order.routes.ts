@@ -102,6 +102,8 @@ export async function orderRoutes(app: FastifyInstance) {
         200: orderSchema,
         400: errorResponse[400],
         403: errorResponse[403],
+        404: errorResponse[404],
+        409: errorResponse[409],
         500: errorResponse[500]
       }
     }

@@ -46,17 +46,16 @@ export class OrderRepository {
   ) {
     const where: any = {}
 
-    if (dateLabel) {
-      where.createdAt = {
-        gte: new Date(`${dateLabel}T00:00:00Z`),
-        lte: new Date(`${dateLabel}T23:59:59Z`),
-      }
-    }
+    // Todos os filtros de data são rótulos YYYY-MM-DD, expandidos para o dia
+    // inteiro em UTC. `date` é o atalho para "um único dia"; um intervalo pode
+    // vir aberto de um dos lados.
+    const from = startDate ?? dateLabel
+    const to = endDate ?? dateLabel
 
-    if (startDate && endDate) {
+    if (from || to) {
       where.createdAt = {
-        gte: new Date(`${startDate}T00:00:00Z`),
-        lte: new Date(`${endDate}T23:59:59Z`),
+        ...(from && { gte: new Date(`${from}T00:00:00.000Z`) }),
+        ...(to && { lte: new Date(`${to}T23:59:59.999Z`) }),
       }
     }
 

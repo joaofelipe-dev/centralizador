@@ -1,9 +1,9 @@
-import { prisma } from '../../lib/prisma.js'
+import { prisma, type DbClient } from '../../lib/prisma.js'
 import type { CreateSaleInput } from './sale.schema.js'
 
 export class SaleRepository {
-  async create(data: CreateSaleInput & { userId: string; status: string }) {
-    return prisma.purchaseOrder.create({
+  async create(data: CreateSaleInput & { userId: string; status: string }, db: DbClient = prisma) {
+    return db.purchaseOrder.create({
       data: {
         supplierId: data.supplierId,
         userId: data.userId,

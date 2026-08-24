@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma.js'
+import { prisma, type DbClient } from '../../lib/prisma.js'
 
 export class StockCountRepository {
   async create(data: { userId: string; status: string }) {
@@ -66,20 +66,20 @@ export class StockCountRepository {
     })
   }
 
-  async updateItem(stockCountId: string, productId: string, physicalQty: number, divergence: number) {
-    const existing = await prisma.stockCountItem.findFirst({
+  async updateItem(stockCountId: string, productId: string, physicalQty: number, divergence: number, db: DbClient = prisma) {
+    const existing = await db.stockCountItem.findFirst({
       where: { stockCountId, productId }
     })
     if (!existing) throw new Error('Stock count item not found')
 
-    return prisma.stockCountItem.update({
+    return db.stockCountItem.update({
       where: { id: existing.id },
       data: { physicalQty, divergence },
     })
   }
 
-  async updateStatus(id: string, status: string) {
-    return prisma.stockCount.update({
+  async updateStatus(id: string, status: string, db: DbClient = prisma) {
+    return db.stockCount.update({
       where: { id },
       data: { status },
       include: {

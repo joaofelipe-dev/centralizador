@@ -1,6 +1,15 @@
 node_modules
-# Keep environment variables out of version control
+
+# Environment variables — nunca versionar. Use .env.example como referência.
 .env
+.env.*
+!.env.example
+
+# Artefatos locais: logs e o SQLite legado já vazaram credenciais uma vez.
+server.log
+server.err
+*.db
+data/
 
 /generated/prisma
 /dist

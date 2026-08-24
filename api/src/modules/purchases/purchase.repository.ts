@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma.js'
+import { prisma, type DbClient } from '../../lib/prisma.js'
 import type { CreatePurchaseInput } from './purchase.schema.js'
 
 export class PurchaseRepository {
@@ -72,8 +72,8 @@ export class PurchaseRepository {
     ])
   }
 
-  async updateStatus(id: string, status: string) {
-    return prisma.purchaseOrder.update({
+  async updateStatus(id: string, status: string, db: DbClient = prisma) {
+    return db.purchaseOrder.update({
       where: { id },
       data: { status },
       include: {

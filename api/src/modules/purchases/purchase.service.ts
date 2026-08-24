@@ -68,7 +68,7 @@ export class PurchaseService {
         })
       }
 
-      return this.repo.updateStatus(id, 'RECEIVED')
+      return this.repo.updateStatus(id, 'RECEIVED', tx)
     })
   }
 }

@@ -12,6 +12,11 @@ const STORAGE_KEYS = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function clearSession() {
+  localStorage.removeItem(STORAGE_KEYS.USER);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,8 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { user } = await api.getMe();
         setUser(user);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-      } catch {
-        // fallback silencioso — se já tem user do cache, mantém
+      } catch (error) {
+        // 401 significa sessão inválida ou expirada: o cache local não vale mais
+        // nada e manter o usuário na tela só produz telas que falham uma a uma.
+        // Qualquer outra falha (rede caída, backend fora) preserva o cache —
+        // é exatamente o caso que o modo offline existe para atender.
+        if ((error as { status?: number })?.status === 401) {
+          clearSession();
+          setUser(null);
+        }
       }
       setLoading(false);
     }
@@ -61,9 +73,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  function logout() {
-    localStorage.removeItem(STORAGE_KEYS.USER);
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+  async function logout() {
+    // O cookie httpOnly vale 7 dias e o cliente não consegue apagá-lo sozinho —
+    // sem esta chamada a sessão sobrevive ao "sair". Se a rede falhar, ainda
+    // assim limpamos o lado do cliente.
+    try {
+      await api.logout();
+    } catch {
+      // sem rede: o cookie expira sozinho, seguimos com a limpeza local
+    }
+    clearSession();
     setUser(null);
     router.push('/login');
   }

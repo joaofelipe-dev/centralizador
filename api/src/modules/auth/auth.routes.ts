@@ -4,7 +4,7 @@ import { AuthService } from './auth.service.js'
 import { UserRepository } from '../user/user.repository.js'
 import { UserService } from '../user/user.service.js'
 import { authMiddleware } from '../../middlewares/auth.js'
-import { loginBody, createUserBody, authResponse, userSchema, errorResponse } from '../../lib/swagger-schemas.js'
+import { loginBody, authResponse, userSchema, errorResponse } from '../../lib/swagger-schemas.js'
 
 export async function authRoutes(app: FastifyInstance) {
   const userRepository = new UserRepository()
@@ -12,19 +12,7 @@ export async function authRoutes(app: FastifyInstance) {
   const authService = new AuthService(userRepository)
   const authController = new AuthController(authService, userService)
 
-  app.post('/register', {
-    schema: {
-      security: [],
-      body: createUserBody,
-      response: {
-        201: authResponse,
-        400: errorResponse[400],
-        409: errorResponse[409],
-        500: errorResponse[500]
-      }
-    }
-  }, (request, reply) => authController.register(request, reply))
-
+  // Não existe cadastro autoatendido: contas são criadas por ADMIN em POST /users.
   app.post('/login', {
     schema: {
       security: [],
@@ -37,6 +25,17 @@ export async function authRoutes(app: FastifyInstance) {
       }
     }
   }, (request, reply) => authController.login(request, reply))
+
+  // Sem autenticação de propósito: limpar o próprio cookie precisa funcionar
+  // mesmo com o token já expirado.
+  app.post('/logout', {
+    schema: {
+      security: [],
+      response: {
+        204: { type: 'null' }
+      }
+    }
+  }, (request, reply) => authController.logout(request, reply))
 
   app.register(async (protectedApp) => {
     protectedApp.addHook('preHandler', authMiddleware)

@@ -38,13 +38,6 @@ describe('Auth Routes (Integration Tests)', () => {
     })
   })
 
-  describe('POST /auth/register', () => {
-    it('should have register endpoint defined', async () => {
-      const { app } = await import('@/app')
-      expect(app).toBeDefined()
-    })
-  })
-
   describe('GET /auth/me', () => {
     it('should have auth middleware configured', async () => {
       const { app } = await import('@/app')

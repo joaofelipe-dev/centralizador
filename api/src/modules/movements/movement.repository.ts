@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma.js'
+import { prisma, type DbClient } from '../../lib/prisma.js'
 import type { CreateAdjustmentInput } from './movement.schema.js'
 
 export class MovementRepository {
@@ -36,8 +36,8 @@ export class MovementRepository {
     ])
   }
 
-  async create(data: CreateAdjustmentInput & { userId: string }) {
-    return prisma.stockMovement.create({
+  async create(data: CreateAdjustmentInput & { userId: string }, db: DbClient = prisma) {
+    return db.stockMovement.create({
       data: {
         productId: data.productId,
         type: 'ADJUST',

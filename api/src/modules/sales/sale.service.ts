@@ -31,7 +31,7 @@ export class SaleService {
     }
 
     return await prisma.$transaction(async (tx) => {
-      const sale = await this.repo.create({ ...data, status: 'RECEIVED' })
+      const sale = await this.repo.create({ ...data, status: 'RECEIVED' }, tx)
 
       for (const item of data.items) {
         await tx.product.update({
