@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useId, useCallback } from 'react';
+import React, { useEffect, useRef, useId, useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '../utils/cn';
 
 export interface ModalProps {
@@ -34,6 +35,11 @@ export const Modal: React.FC<ModalProps> = ({
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const descId = useId();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -91,9 +97,9 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [open, handleKeyDown]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
       ref={overlayRef}
       className={cn(
@@ -141,6 +147,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
         <div className="px-6 py-4 overflow-y-auto custom-scrollbar min-h-0 flex-1">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
